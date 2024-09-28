@@ -1,101 +1,129 @@
-import Image from "next/image";
+"use client";
 
-export default function Home() {
+import React, { useState } from "react";
+import { FaDownload, FaHistory, FaLock, FaWallet } from "react-icons/fa";
+import { IoLinkSharp } from "react-icons/io5";
+
+const Home = () => {
+  const [balance] = useState("0.000 SOL");
+  const [unrealizedPNL] = useState("-0.00%");
+  const [tokenInput, setTokenInput] = useState("");
+
+  const handlePaste = async () => {
+    try {
+      if (navigator.clipboard) {
+        const clipboardText = await navigator.clipboard.readText();
+        setTokenInput(clipboardText);
+      } else {
+        console.log("Clipboard API not supported");
+      }
+    } catch (error) {
+      console.error("Failed to paste content: ", error);
+    }
+  };
+
   return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="https://nextjs.org/icons/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              app/page.tsx
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
-
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="https://nextjs.org/icons/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+    <div
+      className="p-3 bg-black min-h-screen  bg-repeat-y"
+      style={{ backgroundImage: "url('/Rectangle.png')" }}
+    >
+      {/* Balance Overview Section */}
+      <section className="mb-4 bg-[#3C3C3C3B] border-[#0493CC] border-[.5px] text-white shadow-lg rounded-xl p-2">
+        <div className="flex justify-between items-center">
+          <div>
+            <p className="text-gray-400">Unrealized PNL: {unrealizedPNL}</p>
+            <p className="text-lg font-semibold">$0.00</p>
+          </div>
+          <FaHistory size={20} className="cursor-pointer" />
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
+
+        <div className="flex flex-col items-center justify-center">
+          <h2 className="text-3xl font-bold">{balance}</h2>
+          <p className="text-gray-400">$0.00</p>
+        </div>
+
+        {/* Action Buttons */}
+        <div className="flex justify-center space-x-4 mt-4">
+          <button
+            className="flex flex-col items-center p-2 text-white  rounded-lg shadow hover:bg-[#1C7496]"
+            onClick={() => console.log("Deposit")}
+          >
+            <FaWallet className="mr-2" /> Deposit
+          </button>
+
+          <button
+            className="flex flex-col items-center p-2  text-white rounded-lg shadow hover:bg-[#3F9E44]"
+            onClick={() => console.log("Withdraw")}
+          >
+            <FaDownload className="mr-2" /> Withdraw
+          </button>
+
+          <button
+            className="flex flex-col items-center p-2  text-white rounded-lg shadow hover:bg-[#E6AD12]"
+            onClick={() => console.log("History")}
+          >
+            <FaHistory className="mr-2" /> History
+          </button>
+
+          <button
+            className="flex flex-col items-center p-2 text-white rounded-lg shadow hover:bg-[#B71C1C]"
+            onClick={() => console.log("Export")}
+          >
+            <FaLock className="mr-2" /> Export
+          </button>
+        </div>
+      </section>
+
+      {/* Position Overview Section */}
+      <section>
+        <h2 className="text-xl font-bold mb-4">Position Overview</h2>
+        <ul className="space-y-2">
+          {/* Example Position Cells */}
+          {[
+            { name: "Hexacat", value: 0.5, price: 72.46, change: -98 },
+            { name: "Hexacat", value: 0.5, price: 72.46, change: +88 },
+            { name: "Hexacat", value: 0.5, price: 72.46, change: -98 },
+          ].map((position, idx) => (
+            <li
+              key={idx}
+              className="flex justify-between p-4 bg-background rounded-lg"
+            >
+              <div>
+                <p>{position.name}</p>
+                <p className="text-sm text-gray-400">
+                  MC: {position.value} sol
+                </p>
+                <p className="text-sm text-gray-400">LIQ: ${position.price}</p>
+              </div>
+              <div
+                className={`text-lg font-bold ${
+                  position.change < 0 ? "text-red-500" : "text-green-500"
+                }`}
+              >
+                {position.change}%
+              </div>
+            </li>
+          ))}
+        </ul>
+      </section>
+
+      <div className="bg-background mt-12  rounded-xl py-[14px] px-[8px] text-sm border-accent border leading-4">
+        <div className="flex items-center  text-[#797979]">
+          <IoLinkSharp className="text-2xl" />
+          <input
+            type="text"
+            placeholder="Contract Address or Token Link"
+            value={tokenInput}
+            onChange={(e) => setTokenInput(e.target.value)}
+            className="flex-grow px-1  bg-background border-none "
           />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+          <button onClick={handlePaste} className="text-accent">
+            Paste
+          </button>
+        </div>
+      </div>
     </div>
   );
-}
+};
+
+export default Home;
