@@ -25,7 +25,7 @@ const PositionsPage = () => {
 
   return (
     <div
-      className="p-3 bg-black min-h-screen  bg-repeat-y"
+      className="p-4 bg-black min-h-screen  bg-repeat-y"
       style={{ backgroundImage: "url('/Rectangle.png')" }}
     >
       {/* Header */}
@@ -37,11 +37,11 @@ const PositionsPage = () => {
       </header>
 
       {/* Contract Input */}
-      <div className="flex items-center justify-between bg-[#1B2330] p-3 rounded-lg mb-4">
+      <div className="flex items-center justify-between bg-background p-3 rounded-lg mb-4">
         <input
           type="text"
           placeholder="Contract Address or Token link"
-          className="bg-transparent w-full placeholder-gray-400 text-white outline-none"
+          className="bg-transparent w-full placeholder-primary text-white outline-none"
         />
         <button className="text-accent ml-3">Paste</button>
       </div>
@@ -51,7 +51,7 @@ const PositionsPage = () => {
         {positions.map((position, index) => (
           <div
             key={index}
-            className="bg-[#1B2330] p-4 rounded-lg shadow-md space-y-2"
+            className="bg-background p-4 rounded-lg shadow-md space-y-2"
           >
             {/* Position Header */}
             <div className="flex justify-between items-center">

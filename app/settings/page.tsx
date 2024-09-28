@@ -82,7 +82,7 @@ const SettingsPage = () => {
 
   return (
     <div
-      className="p-3 bg-black min-h-screen  bg-repeat-y"
+      className="p-4 bg-black min-h-screen  bg-repeat-y"
       style={{ backgroundImage: "url('/Rectangle.png')" }}
     >
       <h2 className="text-xl font-semibold text-white mb-6">
@@ -93,7 +93,7 @@ const SettingsPage = () => {
           <div
             key={id}
             onClick={onClick}
-            className="flex items-center justify-between p-4 bg-[#1a1f2b] border border-gray-600 rounded-lg hover:bg-[#252b39] transition duration-200 cursor-pointer"
+            className="flex items-center justify-between p-4 bg-background border border-gray-600 rounded-lg hover:bg-[#252b39] transition duration-200 cursor-pointer"
           >
             <div className="flex items-center space-x-4 text-white">
               {icon}

@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import { FaDownload, FaHistory, FaLock, FaWallet } from "react-icons/fa";
 import { IoLinkSharp } from "react-icons/io5";
+import { LuRefreshCcw } from "react-icons/lu";
 
 const Home = () => {
   const [balance] = useState("0.000 SOL");
@@ -24,7 +25,7 @@ const Home = () => {
 
   return (
     <div
-      className="p-3 bg-black min-h-screen  bg-repeat-y"
+      className="p-4 bg-black min-h-screen  bg-repeat-y"
       style={{ backgroundImage: "url('/Rectangle.png')" }}
     >
       {/* Balance Overview Section */}
@@ -34,7 +35,7 @@ const Home = () => {
             <p className="text-gray-400">Unrealized PNL: {unrealizedPNL}</p>
             <p className="text-lg font-semibold">$0.00</p>
           </div>
-          <FaHistory size={20} className="cursor-pointer" />
+          <LuRefreshCcw size={20} className="cursor-pointer text-accent" />
         </div>
 
         <div className="flex flex-col items-center justify-center">
@@ -107,7 +108,7 @@ const Home = () => {
         </ul>
       </section>
 
-      <div className="bg-background mt-12  rounded-xl py-[14px] px-[8px] text-sm border-accent border leading-4">
+      <div className="bg-background mt-12  rounded-xl py-[24px] px-[8px] text-sm border-accent border ">
         <div className="flex items-center  text-[#797979]">
           <IoLinkSharp className="text-2xl" />
           <input
@@ -115,7 +116,7 @@ const Home = () => {
             placeholder="Contract Address or Token Link"
             value={tokenInput}
             onChange={(e) => setTokenInput(e.target.value)}
-            className="flex-grow px-1  bg-background border-none "
+            className="flex-grow px-1 leading-4 bg-background border-none "
           />
           <button onClick={handlePaste} className="text-accent">
             Paste
