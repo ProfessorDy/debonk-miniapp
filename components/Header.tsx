@@ -15,9 +15,9 @@ const Header = () => {
       <Image src="/LOGO.png" alt="App Logo" width={105} height={40} />
 
       <div className="flex items-center space-x-4">
-        {showHistoryIcon && <FaHistory />}
-        <FaQuestionCircle />
-        <FaBell />
+        {showHistoryIcon && <FaHistory size={27} />}
+        <FaQuestionCircle size={27} />
+        <FaBell size={27} />
       </div>
     </header>
   );

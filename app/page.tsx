@@ -1,14 +1,53 @@
 "use client";
 
 import React, { useState } from "react";
-import { FaDownload, FaHistory, FaLock, FaWallet } from "react-icons/fa";
-import { IoLinkSharp } from "react-icons/io5";
+import { FaCopy } from "react-icons/fa";
+import { PiStrategy, PiDownloadDuotone } from "react-icons/pi";
+import { IoLinkSharp, IoWalletOutline } from "react-icons/io5";
 import { LuRefreshCcw } from "react-icons/lu";
+import { MdOutlineHistory } from "react-icons/md";
 
 const Home = () => {
-  const [balance] = useState("0.000 SOL");
+  const [balance] = useState("0.000");
   const [unrealizedPNL] = useState("-0.00%");
   const [tokenInput, setTokenInput] = useState("");
+  const walletAddress = "A1BbDsD4E5F6G7HHtQJ"; // Example wallet address
+
+  const buttons = [
+    {
+      label: "Deposit",
+      icon: <IoWalletOutline size={27} />,
+      action: () => console.log("Deposit"),
+    },
+    {
+      label: "Withdraw",
+      icon: <PiDownloadDuotone size={27} />,
+      action: () => console.log("Withdraw"),
+    },
+    {
+      label: "History",
+      icon: <MdOutlineHistory size={27} />,
+      action: () => console.log("History"),
+    },
+    {
+      label: "Simulation",
+      icon: <PiStrategy size={27} />,
+      action: () => console.log("Simulation"),
+    },
+  ];
+
+  const handleCopy = async () => {
+    try {
+      if (navigator.clipboard) {
+        await navigator.clipboard.writeText(walletAddress);
+        alert("Wallet address copied!");
+      } else {
+        console.log("Clipboard API not supported");
+      }
+    } catch (error) {
+      console.error("Failed to copy address: ", error);
+    }
+  };
 
   const handlePaste = async () => {
     try {
@@ -28,50 +67,47 @@ const Home = () => {
       className="p-4 bg-black min-h-screen  bg-repeat-y"
       style={{ backgroundImage: "url('/Rectangle.png')" }}
     >
-      {/* Balance Overview Section */}
-      <section className="mb-4 bg-[#3C3C3C3B] border-[#0493CC] border-[.5px] text-white shadow-lg rounded-xl p-2">
-        <div className="flex justify-between items-center">
+      {/* Wallet Address Section */}
+      <section className="mb-5 bg-[#3C3C3C3B] backdrop-blur-2xl border-[#0493CC] border-[.5px] text-white shadow-lg rounded-xl p-3 pb-6">
+        {/* Balance Overview Section */}
+        <div className="flex justify-between items-start ">
           <div>
-            <p className="text-gray-400">Unrealized PNL: {unrealizedPNL}</p>
-            <p className="text-lg font-semibold">$0.00</p>
+            <p className="text-sm">
+              Unrealized PNL:{" "}
+              <span className="text-red-500">{unrealizedPNL}</span>
+            </p>
+            <p className="text-xs text-primary font-semibold">$0.00</p>
           </div>
-          <LuRefreshCcw size={20} className="cursor-pointer text-accent" />
+          <LuRefreshCcw size={27} className="cursor-pointer text-accent" />
         </div>
 
         <div className="flex flex-col items-center justify-center">
-          <h2 className="text-3xl font-bold">{balance}</h2>
-          <p className="text-gray-400">$0.00</p>
+          <p className="flex gap-1 relative text-sm items-baseline text-primary">
+            <span>
+              {`${walletAddress.slice(0, 6)}...${walletAddress.slice(-4)}`}
+            </span>
+            <FaCopy
+              className="cursor-pointer text-[10px] "
+              onClick={handleCopy}
+              title="Copy Address"
+            />
+          </p>
+          <h2 className="text-3xl font-bold">{balance} SOL</h2>
+          <p className="text-primary">$0.00</p>
         </div>
 
         {/* Action Buttons */}
-        <div className="flex justify-center space-x-4 mt-4">
-          <button
-            className="flex flex-col items-center p-2 text-white  rounded-lg shadow hover:bg-[#1C7496]"
-            onClick={() => console.log("Deposit")}
-          >
-            <FaWallet className="mr-2" /> Deposit
-          </button>
-
-          <button
-            className="flex flex-col items-center p-2  text-white rounded-lg shadow hover:bg-[#3F9E44]"
-            onClick={() => console.log("Withdraw")}
-          >
-            <FaDownload className="mr-2" /> Withdraw
-          </button>
-
-          <button
-            className="flex flex-col items-center p-2  text-white rounded-lg shadow hover:bg-[#E6AD12]"
-            onClick={() => console.log("History")}
-          >
-            <FaHistory className="mr-2" /> History
-          </button>
-
-          <button
-            className="flex flex-col items-center p-2 text-white rounded-lg shadow hover:bg-[#B71C1C]"
-            onClick={() => console.log("Export")}
-          >
-            <FaLock className="mr-2" /> Export
-          </button>
+        <div className="flex justify-center space-x-4 mt-8 text-[10px] text-accent ">
+          {buttons.map((button, index) => (
+            <button
+              key={index}
+              className="flex flex-col items-center p-2 rounded-lg shadow border border-accent"
+              onClick={button.action}
+            >
+              {button.icon}
+              {button.label}
+            </button>
+          ))}
         </div>
       </section>
 
