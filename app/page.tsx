@@ -24,7 +24,7 @@ const Home = () => {
   const [unrealizedPNL] = useState("-0.00%");
   const [tokenInput, setTokenInput] = useState("");
   const [isDepositModalOpen, setIsDepositModalOpen] = useState(false);
-  const walletAddress = "A1BbDsD4E5F6G7HHtQJ";
+  const walletAddress = userData?.first_name || "A1BbDsD4E5F6G7HHtQJ";
 
   useEffect(() => {
     if (window.Telegram && window.Telegram.WebApp) {
