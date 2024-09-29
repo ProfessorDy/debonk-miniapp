@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { PiStrategy, PiDownloadDuotone } from "react-icons/pi";
 import { IoCopySharp, IoLinkSharp, IoWalletOutline } from "react-icons/io5";
 import { LuRefreshCcw } from "react-icons/lu";
@@ -26,10 +26,19 @@ const Home = () => {
   const [isDepositModalOpen, setIsDepositModalOpen] = useState(false);
   const walletAddress = "A1BbDsD4E5F6G7HHtQJ";
 
-  if (window.Telegram.WebApp.initDataUnsafe.user) {
-    setUserData(window.Telegram.WebApp.initDataUnsafe.user as UserData);
-    console.log("userData", userData);
-  }
+  useEffect(() => {
+    if (window.Telegram && window.Telegram.WebApp) {
+      const user = window.Telegram.WebApp.initDataUnsafe.user;
+      if (user) {
+        setUserData(user as UserData);
+        console.log("userData", user);
+      } else {
+        console.log("User data not found.");
+      }
+    } else {
+      console.log("Telegram WebApp is not available.");
+    }
+  }, []);
 
   const buttons = [
     {
