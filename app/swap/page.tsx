@@ -6,7 +6,7 @@ import { IoLinkSharp } from "react-icons/io5";
 
 const Swap = () => {
   return (
-    <div
+    <main
       className="p-4 bg-black min-h-screen  bg-repeat-y"
       style={{ backgroundImage: "url('/Rectangle.png')" }}
     >
@@ -81,7 +81,7 @@ const Swap = () => {
       <button className="bg-accent w-full p-3 text-white font-semibold rounded-lg mt-4">
         Continue
       </button>
-    </div>
+    </main>
   );
 };
 

@@ -20,7 +20,7 @@ const Navbar = () => {
   const pathname = usePathname();
 
   return (
-    <div className="fixed bottom-0 w-full bg-background shadow-lg">
+    <footer className="fixed bottom-0 w-full bg-background shadow-lg">
       <div className="flex justify-around items-center h-16">
         {tabs.map(({ id, url, Icon }) => (
           <Link key={id} href={url}>
@@ -34,7 +34,7 @@ const Navbar = () => {
           </Link>
         ))}
       </div>
-    </div>
+    </footer>
   );
 };
 

@@ -24,7 +24,7 @@ const PositionsPage = () => {
   ];
 
   return (
-    <div
+    <main
       className="p-4 bg-black min-h-screen  bg-repeat-y"
       style={{ backgroundImage: "url('/Rectangle.png')" }}
     >
@@ -81,7 +81,7 @@ const PositionsPage = () => {
           </div>
         ))}
       </div>
-    </div>
+    </main>
   );
 };
 

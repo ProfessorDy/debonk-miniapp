@@ -24,7 +24,7 @@ const Home = () => {
   };
 
   return (
-    <div
+    <main
       className="p-4 bg-black min-h-screen  bg-repeat-y"
       style={{ backgroundImage: "url('/Rectangle.png')" }}
     >
@@ -123,7 +123,7 @@ const Home = () => {
           </button>
         </div>
       </div>
-    </div>
+    </main>
   );
 };
 

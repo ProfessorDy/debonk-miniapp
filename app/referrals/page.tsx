@@ -10,11 +10,11 @@ const Referrals = () => {
   };
 
   return (
-    <div
+    <main
       className="p-4 bg-black min-h-screen  bg-repeat-y"
       style={{ backgroundImage: "url('/Rectangle.png')" }}
     >
-      <header className="text-center mb-6">
+      <div className="text-center mb-6">
         <h1 className="text-xl font-bold mb-2">Earnings</h1>
         <div className="bg-primary rounded-lg py-4 text-center">
           <h2 className="text-2xl">0.002 SOL</h2>
@@ -22,7 +22,7 @@ const Referrals = () => {
             View referral rules
           </a>
         </div>
-      </header>
+      </div>
 
       <section className="mb-6">
         <p className="text-sm text-gray-400 mb-4">
@@ -68,7 +68,7 @@ const Referrals = () => {
         </div>
       </section>
 
-      <footer className="fixed bottom-12 left-0 w-full p-4 bg-background flex flex-col gap-4">
+      <div className="fixed bottom-12 left-0 w-full p-4 bg-background flex flex-col gap-4">
         <div className="flex items-center">
           <span className="text-sm">Referral link</span>
           <input
@@ -81,8 +81,8 @@ const Referrals = () => {
         <button className="ml-4 px-4 py-2 bg-accent text-black rounded-lg">
           Invite A Friend
         </button>
-      </footer>
-    </div>
+      </div>
+    </main>
   );
 };
 
