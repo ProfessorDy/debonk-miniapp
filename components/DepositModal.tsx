@@ -1,7 +1,6 @@
 import React from "react";
 import { IoClose, IoCopySharp } from "react-icons/io5";
 import { QRCodeSVG } from "qrcode.react";
-import { FaCopy } from "react-icons/fa";
 import { copyToClipboard } from "@/utils/clipboardUtils";
 
 interface DepositModalProps {

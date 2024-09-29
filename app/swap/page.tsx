@@ -1,8 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
-import { FaDownload, FaHistory, FaLock, FaWallet } from "react-icons/fa";
-import { IoLinkSharp } from "react-icons/io5";
+import React from "react";
 
 const Swap = () => {
   return (

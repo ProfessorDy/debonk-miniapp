@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { PiStrategy, PiDownloadDuotone } from "react-icons/pi";
 import { IoCopySharp, IoLinkSharp, IoWalletOutline } from "react-icons/io5";
 import { LuRefreshCcw } from "react-icons/lu";

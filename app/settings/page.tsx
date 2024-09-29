@@ -12,7 +12,8 @@ import {
 import { MdOutlinePriceChange, MdOutlineAutoAwesome } from "react-icons/md";
 
 const SettingsPage = () => {
-  const [language, setLanguage] = useState("English");
+  const [language, setLanguage] = useState("English"); //eslint-disable-line
+  //eslint-disable-next-line
   const [autoBuy, setAutoBuy] = useState({
     status: "Disabled",
     value: "0.10 SOL",
