@@ -1,13 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { RiHome3Fill } from "react-icons/ri";
 import { FaCog } from "react-icons/fa";
 import { IoMdPeople } from "react-icons/io";
 import { TbChartCandleFilled } from "react-icons/tb";
 import { RiTokenSwapFill } from "react-icons/ri";
-
-import { useRouter } from "next/navigation";
 
 const tabs = [
   { id: 1, url: "/", Icon: RiHome3Fill },
@@ -18,27 +17,21 @@ const tabs = [
 ];
 
 const Navbar = () => {
-  const [currentTab, setCurrentTab] = useState(tabs[0].id);
-  const router = useRouter();
-
-  const handleTabClick = (id: number, url: string) => {
-    setCurrentTab(id);
-    router.push(url);
-  };
+  const pathname = usePathname();
 
   return (
     <div className="fixed bottom-0 w-full bg-background shadow-lg">
       <div className="flex justify-around items-center h-16">
         {tabs.map(({ id, url, Icon }) => (
-          <button
-            key={id}
-            onClick={() => handleTabClick(id, url)}
-            className={`flex flex-col items-center ${
-              id === currentTab ? "text-blue-500" : "text-primary"
-            }`}
-          >
-            <Icon size={24} />
-          </button>
+          <Link key={id} href={url}>
+            <a
+              className={`flex flex-col items-center ${
+                pathname === url ? "text-blue-500" : "text-primary"
+              }`}
+            >
+              <Icon size={24} />
+            </a>
+          </Link>
         ))}
       </div>
     </div>
