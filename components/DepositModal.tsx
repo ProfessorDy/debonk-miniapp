@@ -2,6 +2,7 @@ import React from "react";
 import { IoClose, IoCopySharp } from "react-icons/io5";
 import { QRCodeSVG } from "qrcode.react";
 import { FaCopy } from "react-icons/fa";
+import { copyToClipboard } from "@/utils/clipboardUtils";
 
 interface DepositModalProps {
   isOpen: boolean;
@@ -39,8 +40,10 @@ const DepositModal: React.FC<DepositModalProps> = ({
           <span>{`${walletAddress.slice(0, 6)}...${walletAddress.slice(
             -4
           )}`}</span>
-          <button className="ml-2">
-            {/* Copy functionality goes here */}
+          <button
+            className="ml-2"
+            onClick={() => copyToClipboard(walletAddress)}
+          >
             <IoCopySharp className="text-black" />
           </button>
         </div>

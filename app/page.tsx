@@ -1,11 +1,11 @@
 "use client";
 
 import React, { useState } from "react";
-import { FaCopy } from "react-icons/fa";
 import { PiStrategy, PiDownloadDuotone } from "react-icons/pi";
 import { IoCopySharp, IoLinkSharp, IoWalletOutline } from "react-icons/io5";
 import { LuRefreshCcw } from "react-icons/lu";
 import { MdOutlineHistory } from "react-icons/md";
+import { copyToClipboard, pasteFromClipboard } from "@/utils/clipboardUtils";
 import DepositModal from "@/components/DepositModal";
 
 const Home = () => {
@@ -46,29 +46,12 @@ const Home = () => {
     setIsDepositModalOpen(false);
   };
 
-  const handleCopy = async () => {
-    try {
-      if (navigator.clipboard) {
-        await navigator.clipboard.writeText(walletAddress);
-        alert("Wallet address copied!");
-      } else {
-        console.log("Clipboard API not supported");
-      }
-    } catch (error) {
-      console.error("Failed to copy address: ", error);
-    }
-  };
+  const handleCopy = () => copyToClipboard(walletAddress);
 
   const handlePaste = async () => {
-    try {
-      if (navigator.clipboard) {
-        const clipboardText = await navigator.clipboard.readText();
-        setTokenInput(clipboardText);
-      } else {
-        console.log("Clipboard API not supported");
-      }
-    } catch (error) {
-      console.error("Failed to paste content: ", error);
+    const clipboardText = await pasteFromClipboard();
+    if (clipboardText) {
+      setTokenInput(clipboardText);
     }
   };
 
