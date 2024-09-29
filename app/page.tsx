@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { PiStrategy, PiDownloadDuotone } from "react-icons/pi";
 import { IoCopySharp, IoLinkSharp, IoWalletOutline } from "react-icons/io5";
 import { LuRefreshCcw } from "react-icons/lu";
@@ -8,12 +8,28 @@ import { MdOutlineHistory } from "react-icons/md";
 import { copyToClipboard, pasteFromClipboard } from "@/utils/clipboardUtils";
 import DepositModal from "@/components/DepositModal";
 
+interface UserData {
+  id: number;
+  first_name: string;
+  last_name?: string;
+  username?: string;
+  language_code: string;
+  is_premium: boolean;
+}
+
 const Home = () => {
+  const [userData, setUserData] = useState<UserData | null>(null);
+
   const [balance] = useState("0.000");
   const [unrealizedPNL] = useState("-0.00%");
   const [tokenInput, setTokenInput] = useState("");
   const [isDepositModalOpen, setIsDepositModalOpen] = useState(false);
   const walletAddress = "A1BbDsD4E5F6G7HHtQJ";
+
+  if (WebApp.initDataUnsafe.user) {
+    setUserData(WebApp.initDataUnsafe.user as UserData);
+    console.log("userData", userData);
+  }
 
   const buttons = [
     {
