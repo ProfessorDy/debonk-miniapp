@@ -26,8 +26,8 @@ const Home = () => {
   const [isDepositModalOpen, setIsDepositModalOpen] = useState(false);
   const walletAddress = "A1BbDsD4E5F6G7HHtQJ";
 
-  if (WebApp.initDataUnsafe.user) {
-    setUserData(WebApp.initDataUnsafe.user as UserData);
+  if (window.Telegram.WebApp.initDataUnsafe.user) {
+    setUserData(window.Telegram.WebApp.initDataUnsafe.user as UserData);
     console.log("userData", userData);
   }
 
