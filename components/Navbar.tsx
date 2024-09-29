@@ -24,13 +24,13 @@ const Navbar = () => {
       <div className="flex justify-around items-center h-16">
         {tabs.map(({ id, url, Icon }) => (
           <Link key={id} href={url}>
-            <a
+            <div
               className={`flex flex-col items-center ${
                 pathname === url ? "text-blue-500" : "text-primary"
               }`}
             >
               <Icon size={24} />
-            </a>
+            </div>
           </Link>
         ))}
       </div>
