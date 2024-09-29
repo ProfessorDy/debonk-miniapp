@@ -29,7 +29,7 @@ const Navbar = () => {
                 pathname === url ? "text-blue-500" : "text-primary"
               }`}
             >
-              <Icon size={24} />
+              <Icon size={url === "swap" ? 34 : 27} />
             </div>
           </Link>
         ))}
