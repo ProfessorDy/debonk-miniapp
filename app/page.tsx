@@ -82,7 +82,7 @@ const Home = () => {
 
   return (
     <main
-      className="p-4 bg-black min-h-screen  bg-repeat-y"
+      className="p-4 pb-16 bg-black min-h-screen  bg-repeat-y"
       style={{ backgroundImage: "url('/Rectangle.png')" }}
     >
       <DepositModal

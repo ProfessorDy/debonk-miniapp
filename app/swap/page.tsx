@@ -5,7 +5,7 @@ import React from "react";
 const Swap = () => {
   return (
     <main
-      className="p-3 bg-black min-h-screen  bg-repeat-y"
+      className="p-3 pb-16 bg-black min-h-screen  bg-repeat-y"
       style={{ backgroundImage: "url('/Rectangle.png')" }}
     >
       <h2 className="text-2xl font-semibold text-white text-center">
