@@ -3,21 +3,23 @@
 import React, { useState } from "react";
 import { FaCopy } from "react-icons/fa";
 import { PiStrategy, PiDownloadDuotone } from "react-icons/pi";
-import { IoLinkSharp, IoWalletOutline } from "react-icons/io5";
+import { IoCopySharp, IoLinkSharp, IoWalletOutline } from "react-icons/io5";
 import { LuRefreshCcw } from "react-icons/lu";
 import { MdOutlineHistory } from "react-icons/md";
+import DepositModal from "@/components/DepositModal";
 
 const Home = () => {
   const [balance] = useState("0.000");
   const [unrealizedPNL] = useState("-0.00%");
   const [tokenInput, setTokenInput] = useState("");
-  const walletAddress = "A1BbDsD4E5F6G7HHtQJ"; // Example wallet address
+  const [isDepositModalOpen, setIsDepositModalOpen] = useState(false);
+  const walletAddress = "A1BbDsD4E5F6G7HHtQJ";
 
   const buttons = [
     {
       label: "Deposit",
       icon: <IoWalletOutline size={27} />,
-      action: () => console.log("Deposit"),
+      action: () => handleOpenModal(),
     },
     {
       label: "Withdraw",
@@ -35,6 +37,14 @@ const Home = () => {
       action: () => console.log("Simulation"),
     },
   ];
+
+  const handleOpenModal = () => {
+    setIsDepositModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsDepositModalOpen(false);
+  };
 
   const handleCopy = async () => {
     try {
@@ -67,6 +77,12 @@ const Home = () => {
       className="p-4 bg-black min-h-screen  bg-repeat-y"
       style={{ backgroundImage: "url('/Rectangle.png')" }}
     >
+      <DepositModal
+        isOpen={isDepositModalOpen}
+        onClose={handleCloseModal}
+        walletAddress={walletAddress}
+      />
+
       {/* Wallet Address Section */}
       <section className="mb-5 bg-[#3C3C3C3B] backdrop-blur-2xl border-[#0493CC] border-[.5px] text-white shadow-lg rounded-xl p-3 pb-6">
         {/* Balance Overview Section */}
@@ -86,7 +102,7 @@ const Home = () => {
             <span>
               {`${walletAddress.slice(0, 6)}...${walletAddress.slice(-4)}`}
             </span>
-            <FaCopy
+            <IoCopySharp
               className="cursor-pointer text-[10px] "
               onClick={handleCopy}
               title="Copy Address"
@@ -123,7 +139,7 @@ const Home = () => {
           ].map((position, idx) => (
             <li
               key={idx}
-              className="flex justify-between p-4 bg-background rounded-lg"
+              className="flex justify-between items-center p-4 bg-background rounded-lg"
             >
               <div>
                 <p>{position.name}</p>
@@ -133,8 +149,8 @@ const Home = () => {
                 <p className="text-sm text-gray-400">LIQ: ${position.price}</p>
               </div>
               <div
-                className={`text-lg font-bold ${
-                  position.change < 0 ? "text-red-500" : "text-green-500"
+                className={`text-[9.45px] px-7 py-[7.87px] rounded-[6.3px]   ${
+                  position.change < 0 ? "bg-red-500" : "bg-green-500"
                 }`}
               >
                 {position.change}%
