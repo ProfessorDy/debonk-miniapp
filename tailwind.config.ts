@@ -14,6 +14,9 @@ const config: Config = {
         accent: "#0493CC",
         foreground: "var(--foreground)",
       },
+      fontFamily: {
+        poppins: ['Poppins', 'sans-serif'],  
+      },
     },
   },
   plugins: [],
