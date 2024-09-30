@@ -3,7 +3,6 @@ export const copyToClipboard = async (text: string): Promise<void> => {
     try {
       if (navigator.clipboard) {
         await navigator.clipboard.writeText(text);
-        alert("Text copied!");
       } else {
         console.log("Clipboard API not supported");
       }

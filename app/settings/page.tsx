@@ -83,7 +83,7 @@ const SettingsPage = () => {
 
   return (
     <main
-      className="p-3 pb-18 bg-black min-h-screen  bg-repeat-y"
+      className=" pt-0 p-4 pb-20 bg-black min-h-screen  bg-repeat-y"
       style={{ backgroundImage: "url('/Rectangle.png')" }}
     >
       <h2 className="text-xl font-semibold text-white mb-6">
