@@ -154,7 +154,7 @@ const Home = () => {
           ].map((position, idx) => (
             <li
               key={idx}
-              className="flex justify-between items-center p-4 bg-background rounded-lg"
+              className="flex justify-between items-center p-4 bg-background"
             >
               <div>
                 <p>{position.name}</p>
@@ -164,7 +164,7 @@ const Home = () => {
                 <p className="text-sm text-gray-400">LIQ: ${position.price}</p>
               </div>
               <div
-                className={`text-[9.45px] px-7 py-[7.87px] rounded-[6.3px]   ${
+                className={`text-[9.45px] px-7 py-[9.45px] rounded-[6.3px] w-[78px]  ${
                   position.change < 0 ? "bg-red-500" : "bg-green-500"
                 }`}
               >
@@ -183,7 +183,7 @@ const Home = () => {
             placeholder="Contract Address or Token Link"
             value={tokenInput}
             onChange={(e) => setTokenInput(e.target.value)}
-            className="flex-grow px-1 leading-4 bg-background border-none "
+            className="flex-grow px-1 leading-4 bg-background border-none focus:outline-none"
           />
           <button onClick={handlePaste} className="text-accent">
             Paste
