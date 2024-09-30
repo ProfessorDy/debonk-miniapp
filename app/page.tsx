@@ -1,11 +1,14 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { PiStrategy, PiDownloadDuotone } from "react-icons/pi";
+import { PiDownloadDuotone } from "react-icons/pi";
 import { IoCopySharp, IoLinkSharp, IoWalletOutline } from "react-icons/io5";
 import { PiTestTubeFill } from "react-icons/pi";
 import { MdOutlineHistory } from "react-icons/md";
+import { CiCircleAlert } from "react-icons/ci";
+import { SlRefresh } from "react-icons/sl";
 import { copyToClipboard, pasteFromClipboard } from "@/utils/clipboardUtils";
+import { GiPlainCircle } from "react-icons/gi";
 import DepositModal from "@/components/DepositModal";
 
 interface UserData {
@@ -43,23 +46,18 @@ const Home = () => {
   const buttons = [
     {
       label: "Deposit",
-      icon: <IoWalletOutline size={27} />,
+      icon: <IoWalletOutline className="text-[20px]" />,
       action: () => handleOpenModal(),
     },
     {
       label: "Withdraw",
-      icon: <PiDownloadDuotone size={27} />,
+      icon: <PiDownloadDuotone className="text-[20px]" />,
       action: () => console.log("Withdraw"),
     },
     {
-      label: "History",
-      icon: <MdOutlineHistory size={27} />,
+      label: "Refresh",
+      icon: <SlRefresh className="text-[20px]" />,
       action: () => console.log("History"),
-    },
-    {
-      label: "Simulation",
-      icon: <PiStrategy size={27} />,
-      action: () => console.log("Simulation"),
     },
   ];
 
@@ -92,7 +90,7 @@ const Home = () => {
       />
 
       {/* Wallet Address Section */}
-      <section className="mb-5 bg-[#3C3C3C3B] backdrop-blur-2xl border-[#0493CC] border-[.5px] text-white shadow-lg rounded-xl p-3 pb-6">
+      <section className="mb-5 bg-[#3C3C3C3B] backdrop-blur-2xl border-[#0493CC] border-[.5px] text-white shadow-lg rounded-xl p-3 ">
         {/* Balance Overview Section */}
         <div className="flex justify-between items-start ">
           <div>
@@ -102,10 +100,10 @@ const Home = () => {
             </p>
             <p className="text-xs text-primary font-light ">$0.00</p>
           </div>
-          <div className="flex gap-1 items-center text-xs text-accent rounded-xl bg-black border border-accent px-2 py-1 ">
-            <PiTestTubeFill />
+          <button className="flex gap-1 items-center text-xs text-accent rounded-xl bg-black border border-accent px-3 py-1">
+            <PiTestTubeFill className="text-sm" />
             Simulation
-          </div>
+          </button>
         </div>
 
         <div className="flex flex-col items-center justify-center">
@@ -119,16 +117,20 @@ const Home = () => {
               title="Copy Address"
             />
           </p>
-          <h2 className="text-3xl font-bold">{balance} SOL</h2>
-          <p className="text-primary">$0.00</p>
+          <h2 className="text-[34px] ">{balance} SOL</h2>
+          <p className="text-primary flex gap-[2px] items-center">
+            $0.00 <CiCircleAlert className="text-xs" />
+          </p>
         </div>
-
+        <button className="flex text-sm gap-1  pt-2 items-center mx-auto">
+          Demo <GiPlainCircle className="text-[#1DD75B] text-xs font-light" />
+        </button>
         {/* Action Buttons */}
-        <div className="flex justify-center space-x-4 mt-8 text-[10px] text-accent ">
+        <div className="flex w-3/5 mx-auto justify-between mt-4 text-[10px] text-accent font-light">
           {buttons.map((button, index) => (
             <button
               key={index}
-              className="flex flex-col items-center p-2 rounded-lg shadow border border-accent"
+              className="flex flex-col items-center gap-[3px] p-2 rounded-lg shadow border border-accent w-[60px]"
               onClick={button.action}
             >
               {button.icon}
