@@ -24,6 +24,8 @@ const Navbar = () => {
   const [tokenInput, setTokenInput] = useState("");
   const pathname = usePathname();
 
+  const showContractInput = pathname === "/" || pathname === "/positions";
+
   const handlePaste = async () => {
     const clipboardText = await pasteFromClipboard();
     if (clipboardText) {
@@ -32,24 +34,26 @@ const Navbar = () => {
   };
 
   return (
-    <footer className="fixed bottom-0 w-full shadow-lg space-y-2 ">
-      <div className="px-4">
-        <div className="bg-background  rounded-xl py-[24px] px-[8px] text-sm border-accent border  ">
-          <div className="flex items-center  text-[#797979]">
-            <IoLinkSharp className="text-2xl" />
-            <input
-              type="text"
-              placeholder="Contract Address or Token Link"
-              value={tokenInput}
-              onChange={(e) => setTokenInput(e.target.value)}
-              className="flex-grow px-1 leading-4 font-light bg-background border-none focus:outline-none"
-            />
-            <button onClick={handlePaste} className="text-accent">
-              Paste
-            </button>
+    <footer className="fixed bottom-0 w-full shadow-lg space-y-2">
+      {showContractInput && (
+        <div className="px-4">
+          <div className="bg-background rounded-xl py-[24px] px-[8px] text-sm border-accent border">
+            <div className="flex items-center text-[#797979]">
+              <IoLinkSharp className="text-2xl" />
+              <input
+                type="text"
+                placeholder="Contract Address or Token Link"
+                value={tokenInput}
+                onChange={(e) => setTokenInput(e.target.value)}
+                className="flex-grow px-1 leading-4 font-light bg-background border-none focus:outline-none"
+              />
+              <button onClick={handlePaste} className="text-accent">
+                Paste
+              </button>
+            </div>
           </div>
         </div>
-      </div>
+      )}
 
       <div className="flex justify-around items-center h-16 bg-background">
         {tabs.map(({ id, url, Icon }) => (
