@@ -122,7 +122,7 @@ const Home = () => {
             $0.00 <CiCircleAlert className="text-xs" />
           </p>
         </div>
-        <button className="flex text-sm gap-1  pt-2 items-center mx-auto">
+        <button className="flex text-sm gap-1  pt-2 items-center mx-auto font-poppins">
           Demo <GiPlainCircle className="text-[#1DD75B] text-xs font-light" />
         </button>
         {/* Action Buttons */}
@@ -142,7 +142,9 @@ const Home = () => {
 
       {/* Position Overview Section */}
       <section>
-        <h2 className="text-xl font-bold mb-4">Position Overview</h2>
+        <h2 className="text-[17px] leading-[25.5px] font-poppins mb-2">
+          Position Overview
+        </h2>
         <ul className="space-y-2">
           {/* Example Position Cells */}
           {[
