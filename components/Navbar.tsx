@@ -36,7 +36,7 @@ const Navbar = () => {
   return (
     <footer className="fixed bottom-0 w-full shadow-lg space-y-2">
       {showContractInput && (
-        <div className="px-4">
+        <div className="px-3">
           <div className="bg-background rounded-xl py-[24px] px-[8px] text-sm border-accent border">
             <div className="flex items-center text-[#797979]">
               <IoLinkSharp className="text-2xl" />
@@ -63,7 +63,9 @@ const Navbar = () => {
                 pathname === url ? "text-blue-500" : "text-primary"
               }`}
             >
-              <Icon size={url === "swap" ? 34 : 27} />
+              <Icon
+                className={url === "swap" ? "text-[34px]" : "text-[27px]"}
+              />
             </div>
           </Link>
         ))}

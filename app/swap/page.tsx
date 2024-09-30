@@ -96,21 +96,23 @@ const Swap = () => {
       </div>
 
       {/* Fee Section */}
-      <div className="mt-6 text-white text-sm">
-        <p>
-          Fee: <span className="text-accent">$0.00</span>
-        </p>
-        <p>
-          Gas Cost: <span className="text-accent">0.00 BNB</span>
-        </p>
-        <p>
-          Estimated Time For Transfer:{" "}
-          <span className="text-accent">0 Min</span>
-        </p>
+      <div className="mt-6 text-sm space-y-2 font-poppins font-light">
+        <div className="flex justify-between w-full font-normal">
+          <p>Fee</p>
+          <p>$0.00</p>
+        </div>
+        <div className="flex justify-between w-full">
+          <p>Gas Cost</p>
+          <p>0.00 BNB</p>
+        </div>
+        <div className="flex justify-between w-full">
+          <p>Estimated Time For Transfe</p>
+          <p>0 Min</p>
+        </div>
       </div>
 
       {/* Continue Button */}
-      <button className="bg-accent w-full p-4 text-white font-semibold rounded-lg mt-20">
+      <button className="bg-gradient-to-r  from-[#0A6183] to-[#108FB9] w-full p-4 text-black font-poppins rounded-lg text-lg mt-20">
         Continue
       </button>
     </main>
