@@ -60,7 +60,7 @@ const Navbar = () => {
           <Link key={id} href={url}>
             <div
               className={`flex flex-col items-center ${
-                pathname === url ? "text-blue-500" : "text-primary"
+                pathname === url ? "text-accent" : "text-primary"
               }`}
             >
               <Icon
