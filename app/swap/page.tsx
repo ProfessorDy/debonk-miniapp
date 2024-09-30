@@ -1,68 +1,102 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 
 const Swap = () => {
+  // State for the two wallet selections
+  const [payCurrency, setPayCurrency] = useState("USDT BNB");
+  const [receiveCurrency, setReceiveCurrency] = useState("USDC AVAX");
+  const [payAmount, setPayAmount] = useState("");
+  const [receiveAmount, setReceiveAmount] = useState("");
+
+  // Function to swap the wallets
+  const handleSwap = () => {
+    setPayCurrency(receiveCurrency);
+    setReceiveCurrency(payCurrency);
+    setPayAmount(receiveAmount);
+    setReceiveAmount(payAmount);
+  };
+
   return (
     <main
-      className=" pt-0 p-4 pb-20 bg-black min-h-screen  bg-repeat-y"
+      className="pt-0 p-3 pb-20 bg-black min-h-screen bg-repeat-y"
       style={{ backgroundImage: "url('/Rectangle.png')" }}
     >
+      {/* Title */}
       <h2 className="text-2xl font-semibold text-white text-center">
-        Cross Chain Bridge
+        Cross Chain Swap
       </h2>
 
-      {/* Wallet Input Section */}
-      <div className="mt-4">
-        <div className="flex justify-between text-white">
-          <p>Use Debonk wallet ?</p>
+      {/* Pay Wallet Section */}
+      <div className="mt-6">
+        <div className="flex justify-between text-white text-sm">
+          <p>Use Debonk wallet?</p>
           <p>Balance: 1,2837.47</p>
         </div>
-        <div className="flex justify-between items-center mt-2 bg-background p-2 rounded-lg">
+        <div className="flex justify-between items-center mt-3 bg-background p-3 rounded-lg">
           <input
             type="text"
-            className="bg-background w-2/3 text-white"
+            className="bg-background w-1/2 text-white text-lg outline-none"
             placeholder="0.00"
+            value={payAmount}
+            onChange={(e) => setPayAmount(e.target.value)}
           />
-          <select className="bg-background text-white">
+          <select
+            value={payCurrency}
+            onChange={(e) => setPayCurrency(e.target.value)}
+            className="bg-background text-white text-lg outline-none"
+          >
             <option>USDT BNB</option>
-            {/* Add more options here */}
+            <option>BTC BNB</option>
+            <option>ETH BNB</option>
           </select>
         </div>
       </div>
 
       {/* Divider */}
-      <div className="flex items-center justify-center my-4">
-        <span className="text-accent">⇌</span>
+      <div className="flex items-center justify-center my-6">
+        <button
+          onClick={handleSwap}
+          className="text-accent text-3xl transform rotate-90 transition-transform duration-300 ease-in-out"
+        >
+          ⇌
+        </button>
       </div>
 
-      {/* Second Wallet Input Section */}
+      {/* Receive Wallet Section */}
       <div className="mt-2">
-        <div className="flex justify-between items-center mt-2 bg-background p-2 rounded-lg">
+        <div className="flex justify-between items-center bg-background p-3 rounded-lg">
           <input
             type="text"
-            className="bg-background w-2/3 text-white"
+            className="bg-background w-1/2 text-white text-lg outline-none"
             placeholder="0.00"
+            value={receiveAmount}
+            onChange={(e) => setReceiveAmount(e.target.value)}
           />
-          <select className="bg-background text-white">
+          <select
+            value={receiveCurrency}
+            onChange={(e) => setReceiveCurrency(e.target.value)}
+            className="bg-background text-white text-lg outline-none"
+          >
             <option>USDC AVAX</option>
-            {/* Add more options here */}
+            <option>ETH AVAX</option>
+            <option>BTC AVAX</option>
           </select>
         </div>
       </div>
 
       {/* Recipient Address */}
-      <div className="mt-4">
+      <div className="mt-6">
         <input
           type="text"
-          className="bg-background w-full p-2 text-white rounded-lg"
+          className="bg-background w-full p-3 text-white rounded-lg outline-none"
           placeholder="Recipient address"
         />
         <button className="text-accent mt-2">Paste</button>
       </div>
 
       {/* Fee Section */}
-      <div className="mt-4 text-white">
+      <div className="mt-6 text-white text-sm">
         <p>
           Fee: <span className="text-accent">$0.00</span>
         </p>
@@ -76,7 +110,7 @@ const Swap = () => {
       </div>
 
       {/* Continue Button */}
-      <button className="bg-accent w-full p-3 text-white font-semibold rounded-lg mt-4">
+      <button className="bg-accent w-full p-4 text-white font-semibold rounded-lg mt-20">
         Continue
       </button>
     </main>

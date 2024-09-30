@@ -64,7 +64,7 @@ const PositionsPage = () => {
 
   return (
     <main
-      className="pt-0 p-4 pb-20 bg-black min-h-screen bg-repeat-y"
+      className="pt-0 p-3 pb-20 bg-black min-h-screen bg-repeat-y"
       style={{ backgroundImage: "url('/Rectangle.png')" }}
     >
       <h2 className="text-2xl font-semibold text-center font-poppins mb-2">
