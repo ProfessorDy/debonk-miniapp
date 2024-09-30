@@ -11,13 +11,13 @@ const Header = () => {
   const showHistoryIcon = pathname === "/swap" || pathname === "/referrals";
 
   return (
-    <header className="flex items-center justify-between bg-black p-4 shadow-md text-primary">
-      <Image src="/LOGO.png" alt="App Logo" width={105} height={40} />
+    <header className="flex items-center justify-between bg-black p-3 shadow-md text-primary">
+      <Image src="/LOGO.png" alt="App Logo" width={105.49} height={42} />
 
-      <div className="flex items-center space-x-4">
-        {showHistoryIcon && <FaHistory size={27} />}
-        <FaQuestionCircle size={27} />
-        <FaBell size={27} />
+      <div className="flex items-center space-x-4 text-[27px]">
+        {showHistoryIcon && <FaHistory />}
+        <FaQuestionCircle />
+        <FaBell />
       </div>
     </header>
   );
