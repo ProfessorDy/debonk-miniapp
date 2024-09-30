@@ -4,7 +4,6 @@ import React, { useState, useEffect } from "react";
 import { PiDownloadDuotone } from "react-icons/pi";
 import { IoCopySharp, IoLinkSharp, IoWalletOutline } from "react-icons/io5";
 import { PiTestTubeFill } from "react-icons/pi";
-import { MdOutlineHistory } from "react-icons/md";
 import { CiCircleAlert } from "react-icons/ci";
 import { SlRefresh } from "react-icons/sl";
 import { copyToClipboard, pasteFromClipboard } from "@/utils/clipboardUtils";
@@ -183,7 +182,7 @@ const Home = () => {
             placeholder="Contract Address or Token Link"
             value={tokenInput}
             onChange={(e) => setTokenInput(e.target.value)}
-            className="flex-grow px-1 leading-4 bg-background border-none focus:outline-none"
+            className="flex-grow px-1 leading-4 font-light bg-background border-none focus:outline-none"
           />
           <button onClick={handlePaste} className="text-accent">
             Paste
