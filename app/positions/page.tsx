@@ -82,42 +82,41 @@ const PositionsPage = () => {
       </h2>
 
       {/* Positions Table */}
-      <div className="overflow-x-auto">
-        <table className="table-auto w-full text-left text-sm">
-          <thead>
-            <tr className="text-[#a1a1a1] border-b border-[#2e2e2e]">
-              <th className="p-2">Name</th>
-              <th className="p-2">MC</th>
-              <th className="p-2">Liq</th>
-              <th className="p-2">Capital</th>
-              <th className="p-2">Value</th>
-              <th className="p-2">PNL</th>
-              <th className="p-2 text-right">Action</th>
-            </tr>
-          </thead>
-          <tbody>
-            {positions.map((position, index) => (
-              <tr
-                key={index}
-                className="bg-[#1c1c1c] border-b border-[#2e2e2e]"
-              >
-                <td className="p-2 font-semibold">{position.name}</td>
-                <td className="p-2">{position.mc}</td>
-                <td className="p-2">{position.liq}</td>
-                <td className="p-2">{position.capital}</td>
-                <td className="p-2">{position.value}</td>
-                <td className={`p-2 font-bold ${position.pnlColor}`}>
-                  {position.pnl}{" "}
-                  <span className="text-xs">({position.pnlSol})</span>{" "}
-                  <span className="text-xs">{position.pnlPercentage}</span>
-                </td>
-                <td className="p-2 text-right">
-                  <button className="text-[#3B82F6]">Descreener</button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+      <div className="space-y-4">
+        {positions.map((position, index) => (
+          <div
+            key={index}
+            className="bg-background p-4 rounded-lg shadow-md space-y-2"
+          >
+            {/* Flex for positioning */}
+            <div className="flex justify-between">
+              {/* Left side - Name, MC, Liq */}
+              <div>
+                <div className="flex items-center">
+                  <div className="text-lg font-semibold">{position.name}</div>
+                  <FaExternalLinkAlt className="text-accent ml-2" />
+                </div>
+                <p className="text-sm">MC {position.mc}</p>
+                <p className="text-sm">Liq {position.liq}</p>
+              </div>
+
+              {/* Right side - Capital, Value, PNL */}
+              <div className="flex items-center space-x-6">
+                <div className="text-sm">
+                  <p>Capital</p>
+                  <p className="text-white font-medium">{position.capital}</p>
+                </div>
+                <div className="text-sm">
+                  <p>Value</p>
+                  <p className="text-white font-medium">{position.value}</p>
+                </div>
+                <div className={`text-sm font-bold ${position.pnlColor}`}>
+                  PNL: {position.pnl}
+                </div>
+              </div>
+            </div>
+          </div>
+        ))}
       </div>
 
       {/* Contract Input */}
