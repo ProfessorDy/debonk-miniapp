@@ -82,7 +82,7 @@ const Home = () => {
 
   return (
     <main
-      className="p-4 pb-18 bg-black min-h-screen  bg-repeat-y"
+      className="p-4 pb-20 bg-black min-h-screen  bg-repeat-y"
       style={{ backgroundImage: "url('/Rectangle.png')" }}
     >
       <DepositModal
@@ -168,7 +168,7 @@ const Home = () => {
         </ul>
       </section>
 
-      <div className="bg-background mt-12 sticky bottom-16 rounded-xl py-[24px] px-[8px] text-sm border-accent border ">
+      <div className="bg-background mt-12 sticky bottom-20 rounded-xl py-[24px] px-[8px] text-sm border-accent border ">
         <div className="flex items-center  text-[#797979]">
           <IoLinkSharp className="text-2xl" />
           <input
