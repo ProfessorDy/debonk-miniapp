@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from "react";
 import { PiStrategy, PiDownloadDuotone } from "react-icons/pi";
 import { IoCopySharp, IoLinkSharp, IoWalletOutline } from "react-icons/io5";
-import { LuRefreshCcw } from "react-icons/lu";
+import { PiTestTubeFill } from "react-icons/pi";
 import { MdOutlineHistory } from "react-icons/md";
 import { copyToClipboard, pasteFromClipboard } from "@/utils/clipboardUtils";
 import DepositModal from "@/components/DepositModal";
@@ -96,13 +96,16 @@ const Home = () => {
         {/* Balance Overview Section */}
         <div className="flex justify-between items-start ">
           <div>
-            <p className="text-sm">
+            <p className="text-sm font-light">
               Unrealized PNL:{" "}
               <span className="text-red-500">{unrealizedPNL}</span>
             </p>
-            <p className="text-xs text-primary font-semibold">$0.00</p>
+            <p className="text-xs text-primary font-light ">$0.00</p>
           </div>
-          <LuRefreshCcw size={27} className="cursor-pointer text-accent" />
+          <div className="flex gap-1 items-center text-xs text-accent rounded-xl bg-black border border-accent px-2 py-1 ">
+            <PiTestTubeFill />
+            Simulation
+          </div>
         </div>
 
         <div className="flex flex-col items-center justify-center">
