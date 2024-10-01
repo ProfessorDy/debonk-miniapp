@@ -1,9 +1,11 @@
 "use client";
 
 import React, { useState } from "react";
+import Link from "next/link";
 
 const Referrals = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [earnings] = useState(0.006);
 
   const toggleDropdown = () => {
     setIsDropdownOpen(!isDropdownOpen);
@@ -14,14 +16,12 @@ const Referrals = () => {
       className=" pt-0 p-3 pb-20 bg-black min-h-screen  bg-repeat-y"
       style={{ backgroundImage: "url('/Rectangle.png')" }}
     >
-      <div className="text-center mb-6">
-        <h1 className="text-xl font-bold mb-2">Earnings</h1>
-        <div className="bg-primary rounded-lg py-4 text-center">
-          <h2 className="text-2xl">0.002 SOL</h2>
-          <a href="#" className="text-sm text-accent">
-            View referral rules
-          </a>
-        </div>
+      <div className="mb-5 bg-[#3C3C3C3B] backdrop-blur-2xl border-[#0493CC] border-[.5px] text-primary shadow-lg rounded-xl p-3 text-center font-poppins font-light space-y-2 py-5">
+        <h2 className="text-xs  ">Earnings</h2>
+        <h3 className="text-3xl font-semibold text-white">{earnings} SOL</h3>
+        <Link href="#" className="text-sm  ">
+          View referral rules
+        </Link>
       </div>
 
       <section className="mb-6">
