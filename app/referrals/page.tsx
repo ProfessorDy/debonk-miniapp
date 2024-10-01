@@ -53,7 +53,11 @@ const Referrals = () => {
               onClick={toggleDropdown}
               className="text-accent focus:outline-none"
             >
-              {isDropdownOpen ? "Hide Referrals" : "View Referrals"}
+              <RiArrowDropDownLine
+                className={`text-3xl transition-transform duration-300 ${
+                  isDropdownOpen ? "rotate-180" : ""
+                }`}
+              />
             </button>
           </div>
 
