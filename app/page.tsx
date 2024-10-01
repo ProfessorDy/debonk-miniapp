@@ -10,6 +10,8 @@ import { copyToClipboard } from "@/utils/clipboardUtils";
 import { GiPlainCircle } from "react-icons/gi";
 import DepositModal from "@/components/DepositModal";
 
+import { getAddressFromTelegramId } from "./actions/utils";
+
 interface UserData {
   id: number;
   first_name: string;
@@ -21,11 +23,11 @@ interface UserData {
 
 const Home = () => {
   const [userData, setUserData] = useState<UserData | null>(null);
+  const [walletAddress, setWalletAddress] = useState("A1BbDsD4E5F6G7HHtQJ");
 
   const [balance] = useState("0.000");
   const [unrealizedPNL] = useState("-0.00%");
   const [isDepositModalOpen, setIsDepositModalOpen] = useState(false);
-  const walletAddress = userData?.first_name || "A1BbDsD4E5F6G7HHtQJ";
 
   useEffect(() => {
     if (window.Telegram && window.Telegram.WebApp) {
@@ -33,6 +35,18 @@ const Home = () => {
       if (user) {
         setUserData(user as UserData);
         console.log("userData", user);
+
+        // Fetch the wallet address from the Telegram ID
+        const fetchWalletAddress = async () => {
+          try {
+            const address = await getAddressFromTelegramId(user.id);
+            setWalletAddress(address);
+          } catch (error) {
+            console.error("Failed to fetch wallet address:", error);
+          }
+        };
+
+        fetchWalletAddress();
       } else {
         console.log("User data not found.");
       }
