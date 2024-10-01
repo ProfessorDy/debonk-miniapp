@@ -10,7 +10,10 @@ import { copyToClipboard } from "@/utils/clipboardUtils";
 import { GiPlainCircle } from "react-icons/gi";
 import DepositModal from "@/components/DepositModal";
 
-import { getAddressFromTelegramId } from "./actions/utils";
+import {
+  verifyTelegramWebAppData,
+  getAddressFromTelegramId,
+} from "./actions/utils";
 
 interface UserData {
   id: number;
@@ -22,38 +25,59 @@ interface UserData {
 }
 
 const Home = () => {
-  const [userData, setUserData] = useState<UserData | null>(null);
+  const [telegramId, setTelegramId] = useState<number | null>(null);
   const [walletAddress, setWalletAddress] = useState("A1BbDsD4E5F6G7HHtQJ");
+  const [error, setError] = useState<string | null>(null);
 
   const [balance] = useState("0.000");
   const [unrealizedPNL] = useState("-0.00%");
   const [isDepositModalOpen, setIsDepositModalOpen] = useState(false);
 
+  const telegramInitData = new URLSearchParams(window.location.search).get(
+    "initData"
+  );
+
   useEffect(() => {
-    if (window.Telegram && window.Telegram.WebApp) {
-      const user = window.Telegram.WebApp.initDataUnsafe.user;
-      if (user) {
-        setUserData(user as UserData);
-        console.log("userData", user);
-
-        // Fetch the wallet address from the Telegram ID
-        const fetchWalletAddress = async () => {
-          try {
-            const address = await getAddressFromTelegramId(user.id);
-            setWalletAddress(address);
-          } catch (error) {
-            console.error("Failed to fetch wallet address:", error);
-          }
-        };
-
-        fetchWalletAddress();
-      } else {
-        console.log("User data not found.");
+    const verifyAndFetchAddress = async () => {
+      if (!telegramInitData) {
+        setError("No initialization data provided.");
+        return;
       }
-    } else {
-      console.log("Telegram WebApp is not available.");
-    }
-  }, []);
+
+      // Verify the Telegram WebApp initialization data
+      const isValid = verifyTelegramWebAppData(telegramInitData);
+
+      if (!isValid) {
+        setError("Invalid Telegram WebApp data.");
+        return;
+      }
+
+      try {
+        // Parse the Telegram ID from initData (assumed to be part of the query params)
+        const params = new URLSearchParams(telegramInitData);
+        const userId = params.get("user")
+          ? JSON.parse(params.get("user")!)?.id
+          : null;
+
+        if (!userId) {
+          setError("Failed to retrieve Telegram ID.");
+          return;
+        }
+
+        // Save the Telegram ID in state
+        setTelegramId(userId);
+
+        // Get the Solana address using the Telegram ID
+        const solanaAddress = getAddressFromTelegramId(userId);
+        setWalletAddress(solanaAddress);
+      } catch (err) {
+        console.error("Error fetching address:", err);
+        setError("Failed to fetch Solana address.");
+      }
+    };
+
+    verifyAndFetchAddress();
+  }, [telegramInitData]);
 
   const buttons = [
     {
