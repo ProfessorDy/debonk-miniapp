@@ -1,5 +1,7 @@
 //import crypto
 import crypto from "node:crypto";
+import { MasterSolSmartWalletClass } from "./solana-provider";
+import { createHash } from "crypto";
 
 const botToken = "REPLACE_WITH_THE_BOT_TOKEN";
 
@@ -30,3 +32,50 @@ export const verifyTelegramWebAppData = (telegramInitData: string) => {
   // Complex data types are represented as JSON-serialized objects.
   return _hash === hash;
 };
+
+export const wait = (time: number) =>
+  new Promise((resolve) => setTimeout(resolve, time));
+
+export const getAddressFromTelegramId = (telegramId: string) => {
+  console.log("telegramId: ", telegramId);
+  const walletClass = new MasterSolSmartWalletClass();
+  const index = deriveUserIndex(telegramId.toString());
+  const address = walletClass.solAddressFromSeed(index);
+  return address;
+};
+
+export function deriveUserIndex(userId: string): number {
+  const hashedId = hashUserId(userId);
+  const largeInt = hexToInt(hashedId);
+  return reduceToIndexRange(largeInt, MAX_INDEX);
+}
+// Define the range for non-hardened indices (0 to 2^31 - 1)
+const MAX_INDEX = BigInt(2 ** 31);
+
+/**
+ * Hashes the user ID using SHA-256 and returns the resulting hash as a hex string.
+ * @param userId - The user's unique identifier (e.g., Telegram ID).
+ * @returns The SHA-256 hash of the user ID as a hexadecimal string.
+ */
+function hashUserId(userId: string): string {
+  return createHash("sha256").update(userId.toString()).digest("hex");
+}
+
+/**
+ * Converts a hexadecimal string to a large integer.
+ * @param hexString - The hexadecimal string to convert.
+ * @returns The integer representation of the hexadecimal string.
+ */
+function hexToInt(hexString: string): bigint {
+  return BigInt("0x" + hexString);
+}
+
+/**
+ * Reduces the large integer to fit within the allowed range for the derivation path index.
+ * @param largeInt - The large integer to reduce.
+ * @param modulo - The upper limit for the index range (2^31 in this case).
+ * @returns The reduced index within the range of 0 to 2^31 - 1.
+ */
+function reduceToIndexRange(largeInt: bigint, modulo: bigint): number {
+  return Number(largeInt % modulo);
+}
