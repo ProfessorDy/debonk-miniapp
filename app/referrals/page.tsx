@@ -3,10 +3,12 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import { FaExternalLinkAlt } from "react-icons/fa";
+import { RiArrowDropDownLine } from "react-icons/ri";
 
 const Referrals = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [earnings] = useState(0.006);
+  const [referrals] = useState(3);
 
   const toggleDropdown = () => {
     setIsDropdownOpen(!isDropdownOpen);
@@ -14,10 +16,10 @@ const Referrals = () => {
 
   return (
     <main
-      className=" pt-0 p-3 pb-20 bg-black min-h-screen  bg-repeat-y"
+      className=" pt-0 p-3 pb-20 bg-black min-h-screen  bg-repeat-y font-poppins"
       style={{ backgroundImage: "url('/Rectangle.png')" }}
     >
-      <section className="mb-5 bg-[#3C3C3C3B] backdrop-blur-2xl border-[#0493CC] border-[.5px] text-primary shadow-lg rounded-x text-center font-poppins font-light space-y-2 py-5">
+      <section className="mb-5 bg-[#3C3C3C3B] backdrop-blur-2xl border-[#0493CC] border-[.5px] text-primary shadow-lg rounded-x text-center font-light space-y-2 py-5 rounded-lg px-3  ">
         <h2 className="text-xs  ">Earnings</h2>
         <h3 className="text-3xl font-semibold text-white">{earnings} SOL</h3>
         <Link
@@ -29,22 +31,24 @@ const Referrals = () => {
         </Link>
       </section>
 
-      <section className="mb-6">
-        <p className="text-sm text-gray-400 mb-4">
+      <section className="mb-6 text-sm font-light">
+        <p className="mb-4">
           Earn 50% fees through Debonk’s Multi-Level Referral System:
         </p>
-        <ul className="text-sm mb-4">
+        <ul className=" mb-4 space-y-1">
           <li>• 35% for Direct Referrals,</li>
           <li>• 10% for Second-Generation Referrals,</li>
           <li>• 5% for Third-Generation Referrals.</li>
         </ul>
       </section>
 
-      <section className="mb-6">
-        <h3 className="text-lg font-bold mb-2">My Direct Referrals</h3>
-        <div className="bg-background rounded-lg p-4">
+      <section className="mb-5 bg-[#3C3C3C3B] backdrop-blur-2xl border-[#0493CC] border-[.5px] text-primary shadow-lg rounded-x text-center font-light space-y-2 py-5 rounded-lg px-3 ">
+        <h3 className="font-semibold text-white flex justify-between w-full mb-3">
+          My Direct Referrals <span>{referrals}</span>
+        </h3>
+        <div className="bg-black rounded-lg p-4">
           <div className="flex justify-between items-center">
-            <p className="text-sm">3 Direct Referrals</p>
+            <p className="text-sm">View Referrals</p>
             <button
               onClick={toggleDropdown}
               className="text-accent focus:outline-none"
