@@ -4,6 +4,7 @@ import { useState } from "react";
 import {
   FaLanguage,
   FaToggleOn,
+  FaToggleOff,
   FaCog,
   FaMoneyBillAlt,
   FaChartLine,
@@ -14,12 +15,28 @@ import { MdOutlinePriceChange, MdOutlineAutoAwesome } from "react-icons/md";
 const SettingsPage = () => {
   const [language, setLanguage] = useState("English"); // eslint-disable-line
   const [autoBuy, setAutoBuy] = useState({
-    status: "Disabled",
+    status: "Enabled",
     value: "0.10 SOL",
   });
+  const [isAutoBuyEnabled, setIsAutoBuyEnabled] = useState(true);
+  const [isChartPreviewEnabled, setIsChartPreviewEnabled] = useState(false);
 
   // Common icon styles
   const iconStyles = "text-xl text-accent";
+
+  // Toggle Auto Buy
+  const toggleAutoBuy = () => {
+    setIsAutoBuyEnabled(!isAutoBuyEnabled);
+    setAutoBuy((prev) => ({
+      ...prev,
+      status: isAutoBuyEnabled ? "Disabled" : "Enabled",
+    }));
+  };
+
+  // Toggle Chart Preview
+  const toggleChartPreview = () => {
+    setIsChartPreviewEnabled(!isChartPreviewEnabled);
+  };
 
   // Settings data array
   const settings = [
@@ -27,7 +44,6 @@ const SettingsPage = () => {
       id: 1,
       icon: <MdOutlineAutoAwesome className={iconStyles} />,
       description: "Anti Rug",
-      after: <FaToggleOn className="text-green-400 text-xl" />,
       onClick: () => console.log("Anti Rug clicked"),
     },
     {
@@ -40,9 +56,20 @@ const SettingsPage = () => {
     {
       id: 3,
       icon: <FaMoneyBillAlt className={iconStyles} />,
-      description: "Auto Buy",
-      after: <FaToggleOn className="text-green-400 text-xl" />,
-      onClick: () => console.log("Auto Buy clicked"),
+      description: (
+        <div>
+          <p>Auto Buy</p>
+          <p className="text-sm text-gray-400">
+            {autoBuy.status} - {autoBuy.value}
+          </p>
+        </div>
+      ),
+      after: isAutoBuyEnabled ? (
+        <FaToggleOn className="text-green-400 text-xl" />
+      ) : (
+        <FaToggleOff className="text-gray-400 text-xl" />
+      ),
+      onClick: toggleAutoBuy,
     },
     {
       id: 4,
@@ -72,7 +99,12 @@ const SettingsPage = () => {
       id: 8,
       icon: <FaChartPie className={iconStyles} />,
       description: "Chart Preview",
-      onClick: () => console.log("Chart Preview clicked"),
+      after: isChartPreviewEnabled ? (
+        <FaToggleOn className="text-green-400 text-xl" />
+      ) : (
+        <FaToggleOff className="text-gray-400 text-xl" />
+      ),
+      onClick: toggleChartPreview,
     },
   ];
 
@@ -81,10 +113,10 @@ const SettingsPage = () => {
       className="pt-0 p-3 pb-20 bg-black min-h-screen bg-repeat-y font-poppins font-light text-primary"
       style={{ backgroundImage: "url('/Rectangle.png')" }}
     >
-      <h2 className="text-2xl  text-center font-semibold text-white mb-4">
+      <h2 className="text-2xl text-center font-semibold text-white mb-4">
         General Settings
       </h2>
-      <div className="space-y-2 bg-[#3C3C3C3B] backdrop-blur-2xl  text-white shadow-lg rounded-xl px-2 py-4">
+      <div className="space-y-2 bg-[#3C3C3C3B] backdrop-blur-2xl text-white shadow-lg rounded-xl px-2 py-4">
         {settings.map(({ id, icon, description, after, onClick }) => (
           <div
             key={id}
@@ -95,7 +127,7 @@ const SettingsPage = () => {
               {icon}
               <div>{description}</div>
             </div>
-            <div className="text-gray-400">{after}</div>
+            <div>{after}</div>
           </div>
         ))}
       </div>
