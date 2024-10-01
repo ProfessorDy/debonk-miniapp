@@ -64,18 +64,10 @@ const Referrals = () => {
           {/* Dropdown List */}
           {isDropdownOpen && (
             <div className="mt-4 transition-all duration-300 ease-in-out">
-              <button className="w-full text-left bg-black py-2 px-4 mb-2 border border-gray-700 rounded-lg">
+              <div className="w-full flex justify-between items-center bg-black py-2 px-4 mb-2 border border-gray-700 rounded-lg">
                 <span className="mr-2">Sam Kerr</span>
                 <span className="text-accent">+0.002 SOL</span>
-              </button>
-              <button className="w-full text-left bg-black py-2 px-4 mb-2 border border-gray-700 rounded-lg">
-                <span className="mr-2">Sam Kerr</span>
-                <span className="text-accent">+0.002 SOL</span>
-              </button>
-              <button className="w-full text-left bg-black py-2 px-4 mb-2 border border-gray-700 rounded-lg">
-                <span className="mr-2">Sam Kerr</span>
-                <span className="text-accent">+0.002 SOL</span>
-              </button>
+              </div>
             </div>
           )}
         </div>
