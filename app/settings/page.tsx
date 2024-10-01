@@ -1,6 +1,8 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
+import Image from "next/image";
 import {
   FaLanguage,
   FaToggleOn,
@@ -10,6 +12,7 @@ import {
   FaChartLine,
   FaChartPie,
 } from "react-icons/fa";
+import { FaTwitter, FaTelegram } from "react-icons/fa";
 import { MdOutlinePriceChange, MdOutlineAutoAwesome } from "react-icons/md";
 
 const SettingsPage = () => {
@@ -131,6 +134,61 @@ const SettingsPage = () => {
           </div>
         ))}
       </div>
+      <section className="bg-[#020106] text-white font-light p-4 text-sm">
+        <Image width={72} height={28.67} src="/LOGO.png" alt="debonk logo" />
+        <div className="mt-3 mb-4">
+          <p>
+            <Link href="https://delabz.com" className="hover:underline">
+              Delabz Website
+            </Link>{" "}
+            |
+            <Link href="https://decurious.com" className="hover:underline">
+              DeCurious
+            </Link>{" "}
+            |
+            <Link href="https://demixer.com" className="hover:underline">
+              Demixer
+            </Link>{" "}
+            |
+            <Link href="https://denonymous.com" className="hover:underline">
+              Denonymous
+            </Link>
+          </p>
+          <p>
+            Contact:{" "}
+            <Link href="mailto:demitchyl@gmail.com" className="hover:underline">
+              demitchyl@gmail.com
+            </Link>
+          </p>
+        </div>
+        <div className="flex  space-x-6 mb-4">
+          <Link
+            href="https://x.com/debonkBot/"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <FaTwitter className="text-2xl text-blue-500 hover:text-white" />
+          </Link>
+          <Link
+            href="https://t.me/debonk_community"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <FaTelegram className="text-2xl text-blue-400 hover:text-white" />
+          </Link>
+        </div>
+        <div className="text-center">
+          <p>
+            © 2024 debonk. Built by{" "}
+            <Link
+              href="https://x.com/delabz_"
+              className="underline text-accent"
+            >
+              Delabz Agency
+            </Link>
+          </p>
+        </div>
+      </section>
     </main>
   );
 };
