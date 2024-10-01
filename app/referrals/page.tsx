@@ -23,7 +23,7 @@ const Referrals = () => {
 
   return (
     <main
-      className="pt-0 p-3 pb-20 bg-black min-h-screen bg-repeat-y font-poppins"
+      className="pt-0 p-3 pb-20 bg-black min-h-screen bg-repeat-y font-poppins relative"
       style={{ backgroundImage: "url('/Rectangle.png')" }}
     >
       <section className="mb-5 bg-[#3C3C3C3B] backdrop-blur-2xl border-[#0493CC] border-[.5px] text-primary shadow-lg rounded-x text-center font-light space-y-2 py-5 rounded-lg px-3">
@@ -86,21 +86,6 @@ const Referrals = () => {
           )}
         </div>
       </section>
-
-      <div className="fixed bottom-12 left-0 w-full p-4 bg-background flex flex-col gap-4">
-        <div className="flex items-center">
-          <span className="text-sm">Referral link</span>
-          <input
-            type="text"
-            value="t.me/Debonk_bot?start=8947749837"
-            className="ml-4 w-full text-sm bg-black p-2 rounded-lg"
-            readOnly
-          />
-        </div>
-        <button className="ml-4 px-4 py-2 bg-accent text-black rounded-lg">
-          Invite A Friend
-        </button>
-      </div>
     </main>
   );
 };

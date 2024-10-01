@@ -25,6 +25,7 @@ const Navbar = () => {
   const pathname = usePathname();
 
   const showContractInput = pathname === "/" || pathname === "/positions";
+  const showReferralSection = pathname === "/referrals";
 
   const handlePaste = async () => {
     const clipboardText = await pasteFromClipboard();
@@ -51,6 +52,25 @@ const Navbar = () => {
                 Paste
               </button>
             </div>
+          </div>
+        </div>
+      )}
+
+      {showReferralSection && (
+        <div className="px-3">
+          <div className="w-full p-4 bg-background rounded-xl flex flex-col gap-4">
+            <div className="flex items-center">
+              <span className="text-sm">Referral link</span>
+              <input
+                type="text"
+                value="t.me/Debonk_bot?start=8947749837"
+                className="ml-4 w-full text-sm bg-black p-2 rounded-lg"
+                readOnly
+              />
+            </div>
+            <button className="ml-4 px-4 py-2 bg-accent text-black rounded-lg">
+              Invite A Friend
+            </button>
           </div>
         </div>
       )}
