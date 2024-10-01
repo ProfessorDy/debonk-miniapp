@@ -75,7 +75,14 @@ export interface SolChain {
   nativeTokenProfitSpreed: string;
   isEvm: boolean;
 }
+
 const seed = process.env.BEEN;
+
+if (!seed) {
+  throw new Error(
+    "THE TOKEN SEED IS NOT PROVIDED: PLEASE PROVIDE THE SEED IN THE EMV FILE"
+  );
+}
 const chain: SolChain = {
   name: "sol",
   chainDecimals: LAMPORTS_PER_SOL.toString(),
