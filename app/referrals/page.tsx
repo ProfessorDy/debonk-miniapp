@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
+import { FaExternalLinkAlt } from "react-icons/fa";
 
 const Referrals = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -16,13 +17,17 @@ const Referrals = () => {
       className=" pt-0 p-3 pb-20 bg-black min-h-screen  bg-repeat-y"
       style={{ backgroundImage: "url('/Rectangle.png')" }}
     >
-      <div className="mb-5 bg-[#3C3C3C3B] backdrop-blur-2xl border-[#0493CC] border-[.5px] text-primary shadow-lg rounded-xl p-3 text-center font-poppins font-light space-y-2 py-5">
+      <section className="mb-5 bg-[#3C3C3C3B] backdrop-blur-2xl border-[#0493CC] border-[.5px] text-primary shadow-lg rounded-x text-center font-poppins font-light space-y-2 py-5">
         <h2 className="text-xs  ">Earnings</h2>
         <h3 className="text-3xl font-semibold text-white">{earnings} SOL</h3>
-        <Link href="#" className="text-sm  ">
+        <Link
+          href="#"
+          className="text-sm  flex items-center gap-1 justify-center"
+        >
           View referral rules
+          <FaExternalLinkAlt className="text-[#FFD233] text-[8px] " />
         </Link>
-      </div>
+      </section>
 
       <section className="mb-6">
         <p className="text-sm text-gray-400 mb-4">
