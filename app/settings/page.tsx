@@ -40,14 +40,7 @@ const SettingsPage = () => {
     {
       id: 3,
       icon: <FaMoneyBillAlt className={iconStyles} />,
-      description: (
-        <div>
-          <p>Auto Buy</p>
-          <p className="text-sm text-gray-400">
-            {autoBuy.status} - {autoBuy.value}
-          </p>
-        </div>
-      ),
+      description: "Auto Buy",
       after: <FaToggleOn className="text-green-400 text-xl" />,
       onClick: () => console.log("Auto Buy clicked"),
     },
@@ -85,18 +78,18 @@ const SettingsPage = () => {
 
   return (
     <main
-      className="pt-0 p-3 pb-20 bg-black min-h-screen bg-repeat-y"
+      className="pt-0 p-3 pb-20 bg-black min-h-screen bg-repeat-y font-poppins font-light text-primary"
       style={{ backgroundImage: "url('/Rectangle.png')" }}
     >
-      <h2 className="text-xl font-semibold text-white mb-6">
+      <h2 className="text-2xl  text-center font-semibold text-white mb-4">
         General Settings
       </h2>
-      <div className="space-y-2">
+      <div className="space-y-2 bg-[#3C3C3C3B] backdrop-blur-2xl  text-white shadow-lg rounded-xl px-2 py-4">
         {settings.map(({ id, icon, description, after, onClick }) => (
           <div
             key={id}
             onClick={onClick}
-            className="flex items-center justify-between p-4 bg-background border border-accent rounded-lg cursor-pointer"
+            className="flex items-center justify-between p-4 bg-black border border-accent rounded-lg cursor-pointer"
           >
             <div className="flex items-center space-x-4 text-white">
               {icon}
