@@ -49,7 +49,7 @@ class TransactionNotConfirmedError extends Error {
   }
 }
 
-const getSwapError = (error: any) => {
+const getSwapError = (error: unknown) => {
   if (error) {
     if (
       typeof error === "string" &&

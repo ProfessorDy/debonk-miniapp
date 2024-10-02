@@ -3,7 +3,7 @@
 import * as bip39 from "bip39";
 import BIP32Factory from "bip32";
 import * as ecc from "tiny-secp256k1";
-import fs from "fs";
+
 import {
   Keypair,
   LAMPORTS_PER_SOL,
@@ -610,12 +610,7 @@ export class MasterSolSmartWalletClass {
       console.log("View tx on explorer:", `https://solscan.io/tx/${signature}`);
     }
   }
-  solLoadAddresses(): IAddress[] {
-    const addresses: IAddress[] = JSON.parse(
-      fs.readFileSync(`Addresses-${this.solAddressFromSeed(0)}.json`, "utf8")
-    );
-    return addresses;
-  }
+
   solGetMasterAddress(): string {
     return this.solAddressFromSeed(0);
   }
@@ -626,14 +621,6 @@ export class MasterSolSmartWalletClass {
     });
 
     return privateKeys;
-  }
-  solCreateAddressAndAddToFIle(start: number, end: number) {
-    const result = this.solAddressFromSeedMultiple(start, end);
-    console.log("getMultiplePublicKeyFromSeed", result);
-    fs.writeFileSync(
-      `Addresses-${this.solAddressFromSeed(0)}.json`,
-      JSON.stringify(result)
-    );
   }
 
   //HELPERS

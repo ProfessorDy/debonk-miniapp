@@ -1,4 +1,4 @@
-import { getWebApp } from "@/utils/getWebApp";
+// import { getWebApp } from "@/utils/getWebApp";
 import {
   getAddressFromTelegramId,
   getPrivateKeyFromTelegramId,
@@ -47,4 +47,5 @@ export const withdrawSOl = async (data: WithdrawalInput): Promise<string> => {
   );
   return res;
 };
+
 //WITHDRWAL

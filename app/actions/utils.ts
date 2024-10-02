@@ -2,7 +2,7 @@
 import crypto from "node:crypto";
 import { MasterSolSmartWalletClass } from "./solana-provider";
 import { createHash } from "crypto";
-import { Keypair, LAMPORTS_PER_SOL } from "@solana/web3.js";
+import { Keypair } from "@solana/web3.js";
 
 const botToken = "REPLACE_WITH_THE_BOT_TOKEN";
 
