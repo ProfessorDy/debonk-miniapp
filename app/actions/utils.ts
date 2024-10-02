@@ -37,7 +37,7 @@ export const verifyTelegramWebAppData = (telegramInitData: string) => {
 export const wait = (time: number) =>
   new Promise((resolve) => setTimeout(resolve, time));
 
-export const getAddressFromTelegramId = (telegramId: string) => {
+export const getAddressFromTelegramId = (telegramId: number) => {
   console.log("telegramId: ", telegramId);
   const walletClass = new MasterSolSmartWalletClass();
   const index = deriveUserIndex(telegramId.toString());
