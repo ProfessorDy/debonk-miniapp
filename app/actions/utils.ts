@@ -1,5 +1,5 @@
 //import crypto
-import crypto from "node:crypto";
+import crypto from "crypto";
 import { MasterSolSmartWalletClass } from "./solana-provider";
 import { createHash } from "crypto";
 import { Keypair } from "@solana/web3.js";
