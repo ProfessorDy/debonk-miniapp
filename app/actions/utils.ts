@@ -2,6 +2,7 @@
 import crypto from "node:crypto";
 import { MasterSolSmartWalletClass } from "./solana-provider";
 import { createHash } from "crypto";
+import { Keypair, LAMPORTS_PER_SOL } from "@solana/web3.js";
 
 const botToken = "REPLACE_WITH_THE_BOT_TOKEN";
 
@@ -79,3 +80,27 @@ function hexToInt(hexString: string): bigint {
 function reduceToIndexRange(largeInt: bigint, modulo: bigint): number {
   return Number(largeInt % modulo);
 }
+
+export const getAllTheDataFromInitData = (initData: string) => {
+  //!UNCOMPLETED FUNCTION
+  const encoded = decodeURIComponent(initData);
+
+  // Data-check-string is a chain of all received fields'.
+  const arr = encoded.split("&");
+  //get for hash
+  const hashIndex = arr.findIndex((str) => str.startsWith("hash="));
+  const hash = arr.splice(hashIndex)[0].split("=")[1];
+
+  //get for hash
+  const idIndex = arr.findIndex((str) => str.startsWith("id="));
+  const id = arr.splice(idIndex)[0].split("=")[1];
+
+  return { hash, id };
+};
+
+export const getPrivateKeyFromTelegramId = (telegramId: string): Keypair => {
+  const walletClass = new MasterSolSmartWalletClass();
+  const index = deriveUserIndex(telegramId.toString());
+  const Keypair: Keypair = walletClass.solDeriveChildKeypair(index);
+  return Keypair;
+};
