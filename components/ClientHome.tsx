@@ -28,7 +28,20 @@ const ClientHome = () => {
       // Fetch Solana address for the user
       console.log("Fetching Solana wallet address for Telegram ID:", userId);
       fetch(`/api/solana?telegramId=${userId}`)
-        .then((response) => response.json())
+        .then(async (response) => {
+          const contentType = response.headers.get("content-type");
+
+          if (!response.ok) {
+            const errorText = await response.text(); // Get HTML error page if any
+            throw new Error(`Error ${response.status}: ${errorText}`);
+          }
+
+          if (contentType && contentType.includes("application/json")) {
+            return response.json();
+          } else {
+            throw new Error("Invalid response format. Expected JSON.");
+          }
+        })
         .then((data) => {
           if (data.address) {
             setWalletAddress(data.address);
