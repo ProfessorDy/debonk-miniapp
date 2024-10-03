@@ -10,64 +10,44 @@ import { copyToClipboard } from "@/utils/clipboardUtils";
 import DepositModal from "@/components/DepositModal";
 
 const ClientHome = () => {
-  const [telegramId, setTelegramId] = useState<number | null>(null); //eslint-disable-line
+  const [telegramId, setTelegramId] = useState<number | null>(null);
   const [walletAddress, setWalletAddress] = useState("A1BbDsD4E5F6G7HHtQJ");
-  const [error, setError] = useState<string | null>(null); //eslint-disable-line
+  const [error, setError] = useState<string | null>(null);
   const [balance] = useState("0.000");
   const [unrealizedPNL] = useState("-0.00%");
   const [isDepositModalOpen, setIsDepositModalOpen] = useState(false);
 
   useEffect(() => {
-    console.log("Component mounted. Checking for initialization data...");
-    const telegramInitData = new URLSearchParams(window.location.search).get(
-      "initData"
-    );
-    console.log("Initialization data found:", telegramInitData);
+    console.log("Component mounted. Checking Telegram WebApp user data...");
 
-    const verifyAndFetchAddress = async () => {
-      if (!telegramInitData) {
-        setError("No initialization data provided.");
-        console.log("No initData provided");
-        return;
-      }
+    if (window.Telegram?.WebApp?.initDataUnsafe?.user) {
+      const user = window.Telegram.WebApp.initDataUnsafe.user;
+      console.log("Telegram user data found:", user);
 
-      try {
-        // Simulate verifying Telegram WebApp data here if needed.
-        console.log("Verifying and fetching Telegram ID...");
+      const userId = user.id;
+      setTelegramId(userId);
 
-        const params = new URLSearchParams(telegramInitData);
-        const userId = params.get("user")
-          ? JSON.parse(params.get("user")!).id
-          : null;
-
-        if (!userId) {
-          setError("Failed to retrieve Telegram ID.");
-          console.log("Failed to retrieve Telegram ID.");
-          return;
-        }
-
-        console.log("Telegram ID retrieved:", userId);
-        setTelegramId(userId);
-
-        // Call the API to get the Solana address
-        console.log("Fetching Solana wallet address for Telegram ID:", userId);
-        const response = await fetch(`/api/solana?telegramId=${userId}`);
-        const data = await response.json();
-        console.log("Response from API:", response);
-        if (response.ok) {
-          setWalletAddress(data.address);
-          console.log("Wallet address set:", data.address);
-        } else {
-          setError(data.error || "Failed to fetch Solana address.");
-          console.log("Error fetching Solana address:", data.error);
-        }
-      } catch (err) {
-        console.error("Error fetching address:", err);
-        setError("Failed to fetch Solana address.");
-      }
-    };
-
-    verifyAndFetchAddress();
+      // Call the API to get the Solana address
+      console.log("Fetching Solana wallet address for Telegram ID:", userId);
+      fetch(`/api/solana?telegramId=${userId}`)
+        .then((response) => response.json())
+        .then((data) => {
+          if (data.address) {
+            setWalletAddress(data.address);
+            console.log("Wallet address set:", data.address);
+          } else {
+            setError(data.error || "Failed to fetch Solana address.");
+            console.log("Error fetching Solana address:", data.error);
+          }
+        })
+        .catch((err) => {
+          console.error("Error fetching address:", err);
+          setError("Failed to fetch Solana address.");
+        });
+    } else {
+      setError("Telegram user data is not available.");
+      console.log("No Telegram user data available.");
+    }
   }, []);
 
   const handleOpenModal = () => setIsDepositModalOpen(true);
