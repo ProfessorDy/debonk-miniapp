@@ -18,47 +18,59 @@ const ClientHome = () => {
   const [isDepositModalOpen, setIsDepositModalOpen] = useState(false);
 
   useEffect(() => {
-    console.log("Component mounted. Checking Telegram WebApp user data...");
+    console.log("Component mounted. Checking for initialization data...");
 
-    const telegram = window.Telegram?.WebApp;
-    if (telegram?.initDataUnsafe?.user) {
-      const { id: userId } = telegram.initDataUnsafe.user;
-      setTelegramId(userId);
+    const telegramInitData = new URLSearchParams(window.location.search).get(
+      "initData"
+    );
+    console.log("Initialization data found:", telegramInitData);
 
-      // Fetch Solana address for the user
-      console.log("Fetching Solana wallet address for Telegram ID:", userId);
-      fetch(`/api/solana?telegramId=${userId}`)
-        .then(async (response) => {
-          const contentType = response.headers.get("content-type");
+    const verifyAndFetchAddress = async () => {
+      if (!telegramInitData) {
+        setError("No initialization data provided.");
+        console.log("No initData provided");
+        return;
+      }
 
-          if (!response.ok) {
-            const errorText = await response.text(); // Get HTML error page if any
-            throw new Error(`Error ${response.status}: ${errorText}`);
-          }
+      try {
+        // Simulate verifying Telegram WebApp data here if needed.
+        console.log("Verifying and fetching Telegram ID...");
 
-          if (contentType && contentType.includes("application/json")) {
-            return response.json();
-          } else {
-            throw new Error("Invalid response format. Expected JSON.");
-          }
-        })
-        .then((data) => {
-          if (data.address) {
-            setWalletAddress(data.address);
-            console.log("Wallet address set:", data.address);
-          } else {
-            setError(data.error || "Failed to fetch Solana address.");
-            console.log("Error fetching Solana address:", data.error);
-          }
-        })
-        .catch((err) => {
-          console.error("Error fetching address:", err);
-          setError("Failed to fetch Solana address.");
-        });
-    } else {
-      setError("Telegram user data is not available.");
-      console.log("No Telegram user data available.");
-    }
+        const params = new URLSearchParams(telegramInitData);
+        const userId = params.get("user")
+          ? JSON.parse(params.get("user")!).id
+          : null;
+
+        if (!userId) {
+          setError("Failed to retrieve Telegram ID.");
+          console.log("Failed to retrieve Telegram ID.");
+          return;
+        }
+
+        console.log("Telegram ID retrieved:", userId);
+        setTelegramId(userId);
+
+        // Use dynamic URL for the API request
+        const apiUrl = `${window.location.origin}/api/solana?telegramId=${userId}`;
+        console.log("Fetching Solana wallet address for Telegram ID:", apiUrl);
+        const response = await fetch(apiUrl);
+        const data = await response.json();
+        console.log("Response from API:", response);
+
+        if (response.ok) {
+          setWalletAddress(data.address);
+          console.log("Wallet address set:", data.address);
+        } else {
+          setError(data.error || "Failed to fetch Solana address.");
+          console.log("Error fetching Solana address:", data.error);
+        }
+      } catch (err) {
+        console.error("Error fetching address:", err);
+        setError("Failed to fetch Solana address.");
+      }
+    };
+
+    verifyAndFetchAddress();
   }, []);
 
   const handleOpenModal = () => setIsDepositModalOpen(true);
