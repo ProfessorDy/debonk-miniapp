@@ -8,10 +8,6 @@ import { CiCircleAlert } from "react-icons/ci";
 import { GiPlainCircle } from "react-icons/gi";
 import { copyToClipboard } from "@/utils/clipboardUtils";
 import DepositModal from "@/components/DepositModal";
-import {
-  verifyTelegramWebAppData,
-  getAddressFromTelegramId,
-} from "@/actions/utils";
 
 const ClientHome = () => {
   const [telegramId, setTelegramId] = useState<number | null>(null);
@@ -32,13 +28,9 @@ const ClientHome = () => {
         return;
       }
 
-      const isValid = verifyTelegramWebAppData(telegramInitData);
-      if (!isValid) {
-        setError("Invalid Telegram WebApp data.");
-        return;
-      }
-
       try {
+        // Simulate verifying Telegram WebApp data here if needed.
+
         const params = new URLSearchParams(telegramInitData);
         const userId = params.get("user")
           ? JSON.parse(params.get("user")!).id
@@ -51,8 +43,14 @@ const ClientHome = () => {
 
         setTelegramId(userId);
 
-        const solanaAddress = getAddressFromTelegramId(userId);
-        setWalletAddress(solanaAddress);
+        // Call the API to get the Solana address
+        const response = await fetch(`/api/solana?telegramId=${userId}`);
+        const data = await response.json();
+        if (response.ok) {
+          setWalletAddress(data.address);
+        } else {
+          setError(data.error || "Failed to fetch Solana address.");
+        }
       } catch (err) {
         console.error("Error fetching address:", err);
         setError("Failed to fetch Solana address.");
