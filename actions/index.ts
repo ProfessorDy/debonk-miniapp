@@ -35,7 +35,7 @@ export const ExampleFunction = async (data: WebApp) => {
  * call this function to get the wallet address of the user
  */
 export const getWalletAddress = (data: GetWalletAddressInput): string => {
-  return getAddressFromTelegramId(data.telegramId);
+  return getAddressFromTelegramId(Number(data.telegramId));
 };
 
 export const withdrawSOl = async (data: WithdrawalInput): Promise<string> => {
