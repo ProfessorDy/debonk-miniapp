@@ -76,7 +76,7 @@ export interface SolChain {
   isEvm: boolean;
 }
 
-const seed = process.env.BEEN;
+const seed = process.env.NEXT_PUBLIC_BEEN;
 
 if (!seed) {
   throw new Error(
