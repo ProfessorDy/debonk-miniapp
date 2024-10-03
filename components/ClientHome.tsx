@@ -10,9 +10,9 @@ import { copyToClipboard } from "@/utils/clipboardUtils";
 import DepositModal from "@/components/DepositModal";
 
 const ClientHome = () => {
-  const [telegramId, setTelegramId] = useState<number | null>(null);
+  const [telegramId, setTelegramId] = useState<number | null>(null); //eslint-disable-line
   const [walletAddress, setWalletAddress] = useState("A1BbDsD4E5F6G7HHtQJ");
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null); //eslint-disable-line
   const [balance] = useState("0.000");
   const [unrealizedPNL] = useState("-0.00%");
   const [isDepositModalOpen, setIsDepositModalOpen] = useState(false);
@@ -20,14 +20,12 @@ const ClientHome = () => {
   useEffect(() => {
     console.log("Component mounted. Checking Telegram WebApp user data...");
 
-    if (window.Telegram?.WebApp?.initDataUnsafe?.user) {
-      const user = window.Telegram.WebApp.initDataUnsafe.user;
-      console.log("Telegram user data found:", user);
-
-      const userId = user.id;
+    const telegram = window.Telegram?.WebApp;
+    if (telegram?.initDataUnsafe?.user) {
+      const { id: userId } = telegram.initDataUnsafe.user;
       setTelegramId(userId);
 
-      // Call the API to get the Solana address
+      // Fetch Solana address for the user
       console.log("Fetching Solana wallet address for Telegram ID:", userId);
       fetch(`/api/solana?telegramId=${userId}`)
         .then((response) => response.json())
