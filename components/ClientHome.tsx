@@ -10,9 +10,9 @@ import { copyToClipboard } from "@/utils/clipboardUtils";
 import DepositModal from "@/components/DepositModal";
 
 const ClientHome = () => {
-  const [telegramId, setTelegramId] = useState<number | null>(null);
+  const [telegramId, setTelegramId] = useState<number | null>(null); //eslint-disable-line
   const [walletAddress, setWalletAddress] = useState("A1BbDsD4E5F6G7HHtQJ");
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null); //eslint-disable-line
   const [balance] = useState("0.000");
   const [unrealizedPNL] = useState("-0.00%");
   const [isDepositModalOpen, setIsDepositModalOpen] = useState(false);
