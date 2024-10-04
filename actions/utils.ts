@@ -37,13 +37,24 @@ export const verifyTelegramWebAppData = (telegramInitData: string) => {
 export const wait = (time: number) =>
   new Promise((resolve) => setTimeout(resolve, time));
 
-export const getAddressFromTelegramId = (telegramId: number) => {
-  console.log("telegramId: ", telegramId);
-  const walletClass = new MasterSolSmartWalletClass();
-  const index = deriveUserIndex(telegramId.toString());
-  const address = walletClass.solAddressFromSeed(index);
-  return address;
+export const getAddressFromTelegramId = (telegramId: number): string | null => {
+  try {
+    console.log("Starting getAddressFromTelegramId with telegramId: ", telegramId);
+    
+    const walletClass = new MasterSolSmartWalletClass();
+    const index = deriveUserIndex(telegramId.toString());
+    console.log("Derived user index: ", index);
+    
+    const address = walletClass.solAddressFromSeed(index);
+    console.log("Generated address: ", address);
+    
+    return address;
+  } catch (error) {
+    console.error("Error in getAddressFromTelegramId: ", error);
+    return null;
+  }
 };
+
 
 export function deriveUserIndex(userId: string): number {
   const hashedId = hashUserId(userId);
