@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-require-imports */
 import * as bip39 from "bip39";
-import BIP32Factory from "bip32";
-import * as ecc from "tiny-secp256k1";
+
+// const ecc = dynamic(() => import("tiny-secp256k1"), { ssr: true });
 
 import {
   Keypair,
@@ -23,7 +23,7 @@ import {
 import bs58 from "bs58";
 import { Buffer } from "buffer";
 import * as ed25519 from "ed25519-hd-key";
-import { Wallet } from "@project-serum/anchor";
+// import { Wallet } from "@project-serum/anchor";
 import {
   APPLICATION_ERROR,
   DEV_SOL_WALLET,
@@ -46,7 +46,6 @@ import {
   isSellTokenInSolParams,
 } from "./types";
 import * as jup from "@jup-ag/api";
-const bip32 = BIP32Factory(ecc);
 
 import { createJupiterApiClient, QuoteResponse } from "@jup-ag/api";
 import { transactionSenderAndConfirmationWaiter } from "./transactionSender";
@@ -814,8 +813,7 @@ export class UserSolSmartWalletClass {
       throw new Error(APPLICATION_ERROR.JUPITER_SWAP_ERROR);
     }
 
-    const wallet = new Wallet(this.keyPair);
-    const quoteResponse = await this.getSwapObj(wallet, quote);
+    const quoteResponse = await this.getSwapObj(this.keyPair.publicKey, quote);
 
     console.log(
       "quoteResponse.swapTransaction: ",
@@ -847,11 +845,15 @@ export class UserSolSmartWalletClass {
     }
     return explorerUrl;
   };
-  getSwapObj = async (wallet: Wallet, quote: QuoteResponse, token?: string) => {
+  getSwapObj = async (
+    publicKey: PublicKey,
+    quote: QuoteResponse,
+    token?: string
+  ) => {
     const swapObj = await jupiterQuoteApi.swapPost({
       swapRequest: {
         quoteResponse: quote,
-        userPublicKey: wallet.publicKey.toBase58(),
+        userPublicKey: publicKey.toBase58(),
         dynamicComputeUnitLimit: true,
         prioritizationFeeLamports: "auto",
         feeAccount: FEE_TOKEN_ACCOUNT_FOR_WSOL,
