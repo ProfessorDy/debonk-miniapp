@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import { CgArrowsExchangeV } from "react-icons/cg";
 import { pasteFromClipboard } from "@/utils/clipboardUtils";
+import { getAddressFromTelegramId } from "@/actions/utils";
 
 const Swap = () => {
   const [recipientAddress, setRecipientAddress] = useState("");
@@ -26,6 +27,9 @@ const Swap = () => {
       setRecipientAddress(clipboardText);
     }
   };
+
+  const res = getAddressFromTelegramId(12345667);
+  console.log("res: ", res);
   return (
     <main
       className="pt-0 p-3 pb-20 bg-black min-h-screen bg-repeat-y"

@@ -1,6 +1,4 @@
 /* eslint-disable @typescript-eslint/no-require-imports */
-// add dotenv
-require("dotenv").config();
 
 export const CHAINSTACK_RPC =
   "https://solana-mainnet.core.chainstack.com/2c30818c32edc444fcfc56cbbded3b48";
