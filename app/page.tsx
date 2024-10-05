@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { IoCopySharp, IoWalletOutline } from "react-icons/io5";
 import { PiDownloadDuotone, PiTestTubeFill } from "react-icons/pi";
 import { SlRefresh } from "react-icons/sl";
@@ -16,6 +17,8 @@ const Home = () => {
   const [balance] = useState("0.000");
   const [unrealizedPNL] = useState("-0.00%");
   const [isDepositModalOpen, setIsDepositModalOpen] = useState(false);
+
+  const router = useRouter();
 
   useEffect(() => {
     console.log("Component mounted. Checking Telegram WebApp user data...");
@@ -68,6 +71,7 @@ const Home = () => {
   const handleOpenModal = () => setIsDepositModalOpen(true);
   const handleCloseModal = () => setIsDepositModalOpen(false);
   const handleCopy = () => copyToClipboard(walletAddress);
+  const handleRefresh = () => router.refresh();
 
   const buttons = [
     {
@@ -83,7 +87,7 @@ const Home = () => {
     {
       label: "Refresh",
       icon: <SlRefresh className="text-[20px]" />,
-      action: () => console.log("History"),
+      action: handleRefresh,
     },
   ];
 
