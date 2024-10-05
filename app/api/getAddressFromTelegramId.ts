@@ -1,18 +1,26 @@
-import type { NextApiRequest, NextApiResponse } from "next";
-import { getAddressFromTelegramId } from "@/actions/utils";
+"use server"
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-  const { telegramId } = req.query;
+import { NextResponse } from 'next/server';
+import { getAddressFromTelegramId } from '@/actions/utils';
+
+export async function GET(req: Request) {
+  const { searchParams } = new URL(req.url);
+  const telegramId = searchParams.get('telegramId');
 
   if (!telegramId) {
-    return res.status(400).json({ error: "Telegram ID is required" });
+    return NextResponse.json({ error: 'Telegram ID is required' }, { status: 400 });
   }
 
   try {
     const address = await getAddressFromTelegramId(Number(telegramId));
-    res.status(200).json({ address });
+
+    if (!address) {
+      return NextResponse.json({ error: 'Address generation failed' }, { status: 500 });
+    }
+
+    return NextResponse.json({ address });
   } catch (error) {
-    console.log("error: ", error);
-    res.status(500).json({ error: "Failed to fetch address" });
+    console.error("API error: ", error); // Log the error for debugging
+    return NextResponse.json({ error: 'Failed to fetch address', details: error.message }, { status: 500 });
   }
 }
