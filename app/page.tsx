@@ -12,14 +12,15 @@ import DepositModal from "@/components/DepositModal";
 import WithdrawModal from "@/components/WithdrawModal";
 
 // Helper function to fetch SOL price from the API
-async function fetchSolPrice() {
-  const res = await fetch("/api/solPrice");
-  if (!res.ok) {
-    throw new Error("Failed to fetch SOL price");
+const fetchSolPrice = async () => {
+  const response = await fetch("/api/solPrice");
+  const data = await response.json();
+  if (response.ok) {
+    return data.solUsdPrice; // Use the solUsdPrice as needed
+  } else {
+    console.error(data.error);
   }
-  const data = await res.json();
-  return data.solUsdPrice;
-}
+};
 
 // Helper function to fetch the user's wallet balance
 async function fetchWalletBalance(telegramId: string, tokenAddress: string) {

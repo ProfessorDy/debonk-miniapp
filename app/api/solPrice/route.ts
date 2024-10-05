@@ -1,12 +1,12 @@
-import type { NextApiRequest, NextApiResponse } from "next";
+import { NextResponse } from "next/server";
 import { UserSolSmartWalletClass } from "@/actions/solana-provider";
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+export async function GET() {
   try {
     const { solUsdPrice } = await UserSolSmartWalletClass.getSolPrice();
-    res.status(200).json({ solUsdPrice });
+    return NextResponse.json({ solUsdPrice });
   } catch (error) {
-    console.log("error: ", error);
-    res.status(500).json({ error: "Failed to fetch SOL price" });
+    console.error("Error fetching SOL price:", error);
+    return NextResponse.json({ error: "Failed to fetch SOL price" }, { status: 500 });
   }
 }
