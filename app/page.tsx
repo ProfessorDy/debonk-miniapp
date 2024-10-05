@@ -11,16 +11,64 @@ import { copyToClipboard } from "@/utils/clipboardUtils";
 import DepositModal from "@/components/DepositModal";
 import WithdrawModal from "@/components/WithdrawModal";
 
+// Helper function to fetch SOL price from the API
+const fetchSolPrice = async () => {
+  const response = await fetch("/api/solPrice");
+  const data = await response.json();
+  if (response.ok) {
+    return data.solUsdPrice; // Use the solUsdPrice as needed
+  } else {
+    console.error(data.error);
+  }
+};
+
+// Helper function to fetch the user's wallet balance
+async function fetchWalletBalance(telegramId: string, tokenAddress: string) {
+  const res = await fetch(
+    `/api/getWalletBalance?telegramId=${telegramId}&tokenAddress=${tokenAddress}`
+  );
+  const data = await res.json();
+  return data.balance; // assuming the balance is returned as a number
+}
+
 const Home = () => {
   const [telegramId, setTelegramId] = useState<number | null>(null); //eslint-disable-line
   const [walletAddress, setWalletAddress] = useState("A1BbDsD4E5F6G7HHtQJ");
   const [error, setError] = useState<string | null>(null); //eslint-disable-line
-  const [balance] = useState("0.000");
   const [unrealizedPNL] = useState("-0.00%");
   const [isDepositModalOpen, setIsDepositModalOpen] = useState(false);
   const [isWithdrawModalOpen, setIsWithdrawModalOpen] = useState(false);
 
   const router = useRouter();
+
+  const [solPrice, setSolPrice] = useState<number | null>(null); //eslint-disable-line
+  const [walletBalance, setWalletBalance] = useState<number>(0);
+  const [totalValueInUsd, setTotalValueInUsd] = useState<number | null>(null);
+
+  useEffect(() => {
+    // Fetch SOL price and wallet balance on component mount
+    const getSolData = async () => {
+      try {
+        const price = await fetchSolPrice();
+        setSolPrice(price);
+
+        // Assuming you already know the user's Telegram ID and token address
+        const balance = await fetchWalletBalance(
+          telegramId.toString(),
+          "SOL_TOKEN_ADDRESS"
+        );
+        setWalletBalance(balance);
+
+        // Calculate total value in USD (wallet balance * SOL price)
+        const totalValue = balance * price;
+        setTotalValueInUsd(totalValue);
+      } catch (error) {
+        console.error("Error fetching SOL price or balance", error);
+      }
+    };
+
+    getSolData();
+  }, [telegramId]);
 
   useEffect(() => {
     console.log("Component mounted. Checking Telegram WebApp user data...");
@@ -71,7 +119,7 @@ const Home = () => {
       setError("Telegram user data is not available.");
       console.log("No Telegram user data available.");
     }
-  }, []);
+  }, [telegramId]);
 
   const handleOpenDepositModal = () => setIsDepositModalOpen(true);
   const handleOpenWithdrawModal = () => setIsWithdrawModalOpen(true);
@@ -129,9 +177,12 @@ const Home = () => {
               title="Copy Address"
             />
           </p>
-          <h2 className="text-[34px] ">{balance} SOL</h2>
+          <h2 className="text-[34px] ">{walletBalance} SOL</h2>
           <p className="text-primary flex gap-[2px] items-center">
-            $0.00 <CiCircleAlert className="text-xs" />
+            {totalValueInUsd !== null
+              ? `$${totalValueInUsd.toFixed(2)}`
+              : "$0.00"}{" "}
+            <CiCircleAlert className="text-xs" />
           </p>
         </div>
 

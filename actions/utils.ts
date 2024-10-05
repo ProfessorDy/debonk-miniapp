@@ -1,6 +1,9 @@
 //import crypto
 import crypto from "crypto";
-import { MasterSolSmartWalletClass } from "./solana-provider";
+import {
+  MasterSolSmartWalletClass,
+  UserSolSmartWalletClass,
+} from "./solana-provider";
 import { createHash } from "crypto";
 import { Keypair } from "@solana/web3.js";
 import { TokenDetails } from "./types";
@@ -8,6 +11,11 @@ import {
   getTokenDetails_DEXSCREENER,
   getTokenDetails_DEXTOOLS,
 } from "./dataService";
+import { BOT_USERNAME } from "./constants";
+
+import numeral from "numeral";
+import { calculateProfitLoss, getUserFromTelegramId } from "./prisma";
+import { Wallet } from "@prisma/client";
 
 const botToken = "REPLACE_WITH_THE_BOT_TOKEN";
 
@@ -168,3 +176,158 @@ export function calculatePercentageChange(
   }
   return Number(percentChange.toFixed(2));
 }
+
+export const getPositionText = async (telegramId: string) => {
+  const user = await getUserFromTelegramId(telegramId);
+  const positions = user.positions.filter(
+    (position) => position.isSimulation == false
+  );
+  const wallet = user.wallet.filter((wallet: Wallet) => wallet.isPrimary)[0];
+  let text = "Active Positions:";
+
+  const solPrice = await getSolPrice();
+  if (positions.length < 1) {
+    text += "\nNo active positions";
+  }
+
+  try {
+    const tokenListPosition: { tokenName: string; address: string }[] = [];
+    for (const position of positions) {
+      const tokenDetails = await getTokenDetails(position.tokenAddress);
+      tokenListPosition.push({
+        tokenName: tokenDetails.name,
+        address: position.tokenAddress,
+      });
+      const PNL_usd = await calculateProfitLoss(
+        user.id,
+        wallet.id,
+        position.tokenAddress,
+        tokenDetails.priceUsd.toString()
+      );
+      const PNL_sol = PNL_usd / solPrice;
+      const PNL_Sol_percent = (
+        (PNL_sol /
+          (parseInt(position.amountHeld) * parseFloat(position.avgBuyPrice))) *
+        solPrice *
+        100
+      ).toFixed(2);
+
+      const balance = await getUserTokenBalance(
+        position.tokenAddress,
+        telegramId
+      );
+      formatter({
+        decimal: 5,
+      }).format(balance);
+
+      const currentPrice = formatter({
+        decimal: 8,
+      }).format(Number(tokenDetails.priceUsd.toString()));
+
+      const ch = `${formatCurrencyWithoutDollarSign(
+        balance * Number(tokenDetails.priceNative)
+      )} SOL (${formatCurrency(balance * tokenDetails.priceUsd)})`;
+
+      const PNL_usd_percent = (
+        (PNL_usd /
+          (parseInt(position.amountHeld) * parseFloat(position.avgBuyPrice))) *
+        100
+      ).toFixed(2);
+      const nameWithLink = `[${position.tokenTicker}](https://t.me/${BOT_USERNAME}?start=token_${position.tokenAddress})`;
+      text += `\n- ${nameWithLink} |  ${ch}\n`;
+      text += `CA: \`${position.tokenAddress}\`\n`;
+      text += ` 💎\n`;
+      text += `  |-Current Price : $${currentPrice}\n`;
+      text += `  |-MC: $${tokenDetails.mc}\n`;
+      text += `  |-Capital: ${(
+        (parseFloat(position.avgBuyPrice) * parseFloat(position.amountHeld)) /
+        solPrice
+      ).toFixed(2)} Sol ($${(
+        parseFloat(position.avgBuyPrice) * parseFloat(position.amountHeld)
+      ).toFixed(2)})\n`;
+      text += `  |-Current value: ${ch}\n`;
+      text += `  |-PNL USD: ${PNL_usd_percent}% ($${PNL_usd.toFixed()}) ${
+        PNL_usd > 0 ? "🟩" : "🟥"
+      }\n`;
+      text += `  |-PNL SOL: ${PNL_Sol_percent}% (${PNL_sol.toFixed(2)} SOL) ${
+        PNL_sol > 0 ? "🟩" : "🟥"
+      }\n`;
+    }
+
+    text += `\n\n_Last refresh time : ${getCurrentDate()} UTC_`;
+
+    return { text, tokenListPosition };
+  } catch (error) {
+    console.log("error: ", error);
+    return { text: `could not get token Details`, tokenListPosition: [] };
+  }
+};
+
+export function getCurrentDate(): string {
+  const currentDate = new Date();
+
+  // Option 1: Using toLocaleDateString for a simple format (e.g., MM/DD/YYYY or DD/MM/YYYY based on locale)
+  const formattedDate = currentDate.toLocaleDateString("en-US", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+    hour: "numeric",
+    minute: "numeric",
+    second: "numeric",
+  });
+
+  return formattedDate;
+}
+
+export const formatCurrencyWithoutDollarSign = (number: number) => {
+  try {
+    const string = numeral(number).format("(0.00 a)");
+    return string;
+  } catch (error) {
+    console.log("error: ", error);
+  }
+};
+
+export const formatCurrency = (number: number) => {
+  try {
+    const string = numeral(number).format("($0.00a)");
+    return string;
+  } catch (error) {
+    console.log("error: ", error);
+  }
+};
+
+const getSolPrice = async (): Promise<number> => {
+  const res = await UserSolSmartWalletClass.getSolPrice();
+  return res.solUsdPrice;
+};
+
+export const getUserTokenBalance = async (
+  token: string,
+  telegramId: string
+) => {
+  const key = getPrivateKeyFromTelegramId(telegramId);
+  const userWalletClass = new UserSolSmartWalletClass(key);
+  const balance = await userWalletClass.getTokenBalance(token);
+  console.log("balance: ", balance);
+  return balance;
+};
+
+export const formatter = ({
+  decimal = 2,
+  style = "decimal",
+  currency = undefined,
+}: {
+  decimal?: number;
+  style?: string;
+  currency?: string | undefined;
+}) => {
+  return new Intl.NumberFormat(undefined, {
+    //@ts-expect-error: String is key of Number format
+    style: style,
+    currency: currency,
+    maximumFractionDigits: decimal,
+    minimumFractionDigits: decimal,
+    useGrouping: true,
+  });
+};
