@@ -15,7 +15,6 @@ import { BOT_USERNAME } from "./constants";
 
 import numeral from "numeral";
 import { calculateProfitLoss, getUserFromTelegramId } from "./prisma";
-import { Wallet } from "@prisma/client";
 
 const botToken = "REPLACE_WITH_THE_BOT_TOKEN";
 
@@ -182,7 +181,7 @@ export const getPositionText = async (telegramId: string) => {
   const positions = user.positions.filter(
     (position) => position.isSimulation == false
   );
-  const wallet = user.wallet.filter((wallet: Wallet) => wallet.isPrimary)[0];
+  const wallet = user.wallet.filter((wallet) => wallet.isPrimary)[0];
   let text = "Active Positions:";
 
   const solPrice = await getSolPrice();
