@@ -40,7 +40,7 @@ const Home = () => {
 
   const router = useRouter();
 
-  const [solPrice, setSolPrice] = useState<number | null>(null);
+  const [solPrice, setSolPrice] = useState<number | null>(null); //eslint-disable-line
   const [walletBalance, setWalletBalance] = useState<number>(0);
   const [totalValueInUsd, setTotalValueInUsd] = useState<number | null>(null);
 
@@ -118,7 +118,7 @@ const Home = () => {
       setError("Telegram user data is not available.");
       console.log("No Telegram user data available.");
     }
-  }, []);
+  }, [telegramId]);
 
   const handleOpenDepositModal = () => setIsDepositModalOpen(true);
   const handleOpenWithdrawModal = () => setIsWithdrawModalOpen(true);
