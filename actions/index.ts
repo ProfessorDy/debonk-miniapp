@@ -33,7 +33,7 @@ export interface BuyTokenInput extends WebApp {
   telegramId: string;
 }
 
-interface SellTokenInput extends WebApp {
+export interface SellTokenInput extends WebApp {
   telegramId: string;
   tokenAddress: string;
   amountInSol: number;
@@ -112,7 +112,7 @@ export const sellToken = async (data: SellTokenInput) => {
       if (error instanceof SLippageExceedingError) {
         // handle slippage error
         // return a message to the user to increase their sell price or reduce their buy price
-        return "Slippage exceeded. Please increase your sell price or reduce your buy price.";
+        return { status: false, result: null };
       }
     }
   }
@@ -129,7 +129,7 @@ export const sellToken = async (data: SellTokenInput) => {
       if (error instanceof SLippageExceedingError) {
         // handle slippage error
         // return a message to the user to increase their sell price or reduce their buy price
-        return "Slippage exceeded. Please increase your sell price or reduce your buy price.";
+        return { status: false, result: null };
       }
     }
   }
