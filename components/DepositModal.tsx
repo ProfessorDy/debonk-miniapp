@@ -21,7 +21,7 @@ const DepositModal: React.FC<DepositModalProps> = ({
       try {
         await navigator.share({
           title: "Share Wallet Address",
-          text: `Here is my Solana wallet address: ${walletAddress}`,
+          text: walletAddress,
         });
         console.log("Address shared successfully");
       } catch (error) {
