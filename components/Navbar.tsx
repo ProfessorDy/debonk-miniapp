@@ -35,7 +35,7 @@ const Navbar = () => {
   };
 
   return (
-    <footer className="fixed bottom-0 w-full shadow-lg space-y-2">
+    <footer className="fixed bottom-0 w-full shadow-lg space-y-2 z-50">
       {showContractInput && (
         <div className="px-3">
           <div className="bg-background rounded-xl py-[24px] px-[8px] text-sm border-accent border">

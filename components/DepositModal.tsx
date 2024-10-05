@@ -17,25 +17,36 @@ const DepositModal: React.FC<DepositModalProps> = ({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-black h-full w-full p-6 text-center  shadow-lg">
-        <button onClick={onClose} className="absolute top-2 left-2 text-accent">
+    <div className="fixed inset-0 bg-black flex items-center justify-center z-40 pb-16">
+      <div className="bg-black h-[90%] w-full max-w-md p-6 text-center shadow-lg relative rounded-lg flex flex-col justify-center">
+        {/* Close button */}
+        <button onClick={onClose} className="absolute top-4 left-4 text-accent">
           <IoClose size={24} />
         </button>
-        <h2 className="text-xl font-bold text-white mb-4">Deposit</h2>
-        <div className="flex justify-center mb-4">
+
+        <div className="fixed bottom-0"></div>
+
+        {/* Title */}
+        <h2 className="text-xl font-bold text-white mb-6">Deposit</h2>
+
+        {/* QR Code */}
+        <div className="flex justify-center mb-6">
           <QRCodeSVG
             value={walletAddress}
-            size={128}
-            fgColor="#000000"
-            bgColor="#0493CC"
+            size={160}
+            fgColor="#0493CC"
+            bgColor="#000000"
           />
         </div>
-        <p className="text-white mb-4">
+
+        {/* Address Info */}
+        <p className="text-white text-sm mb-4">
           Your Debonk Solana Address <br />
           Receive tokens using this address as your deposit address
         </p>
-        <div className="bg-accent rounded-lg p-2 mb-4 flex justify-center items-center text-black">
+
+        {/* Address with Copy Button */}
+        <div className="bg-[#0493CC] rounded-lg p-3 mb-6 flex justify-center items-center text-black">
           <span>{`${walletAddress.slice(0, 6)}...${walletAddress.slice(
             -4
           )}`}</span>
@@ -46,7 +57,9 @@ const DepositModal: React.FC<DepositModalProps> = ({
             <IoCopySharp className="text-black" />
           </button>
         </div>
-        <button className="border-accent border w-full text-white py-2 px-6 rounded-lg">
+
+        {/* Share Button */}
+        <button className="bg-transparent border border-accent w-full text-white py-2 px-6 rounded-lg">
           Share
         </button>
       </div>

@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useState, useEffect } from "react";
 import { IoCopySharp, IoWalletOutline } from "react-icons/io5";
 import { PiDownloadDuotone, PiTestTubeFill } from "react-icons/pi";
