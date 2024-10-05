@@ -1,6 +1,9 @@
 //import crypto
 import crypto from "crypto";
-import { MasterSolSmartWalletClass } from "./solana-provider";
+import {
+  MasterSolSmartWalletClass,
+  UserSolSmartWalletClass,
+} from "./solana-provider";
 import { createHash } from "crypto";
 import { Keypair } from "@solana/web3.js";
 import { TokenDetails } from "./types";
@@ -8,6 +11,11 @@ import {
   getTokenDetails_DEXSCREENER,
   getTokenDetails_DEXTOOLS,
 } from "./dataService";
+import { BOT_USERNAME } from "./constants";
+
+import numeral from "numeral";
+import { calculateProfitLoss, getUserFromTelegramId } from "./prisma";
+import { Wallet } from "@prisma/client";
 
 const botToken = "REPLACE_WITH_THE_BOT_TOKEN";
 
@@ -169,7 +177,7 @@ export function calculatePercentageChange(
   return Number(percentChange.toFixed(2));
 }
 
-const getPositionText = async (telegramId: string) => {
+export const getPositionText = async (telegramId: string) => {
   const user = await getUserFromTelegramId(telegramId);
   const positions = user.positions.filter(
     (position) => position.isSimulation == false
@@ -208,7 +216,7 @@ const getPositionText = async (telegramId: string) => {
         position.tokenAddress,
         telegramId
       );
-      const _balance = formatter({
+      formatter({
         decimal: 5,
       }).format(balance);
 
@@ -250,6 +258,76 @@ const getPositionText = async (telegramId: string) => {
 
     return { text, tokenListPosition };
   } catch (error) {
+    console.log("error: ", error);
     return { text: `could not get token Details`, tokenListPosition: [] };
   }
+};
+
+export function getCurrentDate(): string {
+  const currentDate = new Date();
+
+  // Option 1: Using toLocaleDateString for a simple format (e.g., MM/DD/YYYY or DD/MM/YYYY based on locale)
+  const formattedDate = currentDate.toLocaleDateString("en-US", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+    hour: "numeric",
+    minute: "numeric",
+    second: "numeric",
+  });
+
+  return formattedDate;
+}
+
+export const formatCurrencyWithoutDollarSign = (number: number) => {
+  try {
+    const string = numeral(number).format("(0.00 a)");
+    return string;
+  } catch (error) {
+    console.log("error: ", error);
+  }
+};
+
+export const formatCurrency = (number: number) => {
+  try {
+    const string = numeral(number).format("($0.00a)");
+    return string;
+  } catch (error) {
+    console.log("error: ", error);
+  }
+};
+
+const getSolPrice = async (): Promise<number> => {
+  const res = await UserSolSmartWalletClass.getSolPrice();
+  return res.solUsdPrice;
+};
+
+export const getUserTokenBalance = async (
+  token: string,
+  telegramId: string
+) => {
+  const key = getPrivateKeyFromTelegramId(telegramId);
+  const userWalletClass = new UserSolSmartWalletClass(key);
+  const balance = await userWalletClass.getTokenBalance(token);
+  console.log("balance: ", balance);
+  return balance;
+};
+
+export const formatter = ({
+  decimal = 2,
+  style = "decimal",
+  currency = undefined,
+}: {
+  decimal?: number;
+  style?: string;
+  currency?: string | undefined;
+}) => {
+  return new Intl.NumberFormat(undefined, {
+    //@ts-expect-error: String is key of Number format
+    style: style,
+    currency: currency,
+    maximumFractionDigits: decimal,
+    minimumFractionDigits: decimal,
+    useGrouping: true,
+  });
 };
