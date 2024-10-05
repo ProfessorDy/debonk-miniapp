@@ -11,16 +11,63 @@ import { copyToClipboard } from "@/utils/clipboardUtils";
 import DepositModal from "@/components/DepositModal";
 import WithdrawModal from "@/components/WithdrawModal";
 
+// Helper function to fetch SOL price from the API
+async function fetchSolPrice() {
+  const res = await fetch("/api/solPrice");
+  if (!res.ok) {
+    throw new Error("Failed to fetch SOL price");
+  }
+  const data = await res.json();
+  return data.solUsdPrice;
+}
+
+// Helper function to fetch the user's wallet balance
+async function fetchWalletBalance(telegramId: string, tokenAddress: string) {
+  const res = await fetch(
+    `/api/getWalletBalance?telegramId=${telegramId}&tokenAddress=${tokenAddress}`
+  );
+  const data = await res.json();
+  return data.balance; // assuming the balance is returned as a number
+}
+
 const Home = () => {
   const [telegramId, setTelegramId] = useState<number | null>(null); //eslint-disable-line
   const [walletAddress, setWalletAddress] = useState("A1BbDsD4E5F6G7HHtQJ");
   const [error, setError] = useState<string | null>(null); //eslint-disable-line
-  const [balance] = useState("0.000");
   const [unrealizedPNL] = useState("-0.00%");
   const [isDepositModalOpen, setIsDepositModalOpen] = useState(false);
   const [isWithdrawModalOpen, setIsWithdrawModalOpen] = useState(false);
 
   const router = useRouter();
+
+  const [solPrice, setSolPrice] = useState<number | null>(null);
+  const [walletBalance, setWalletBalance] = useState<number>(0);
+  const [totalValueInUsd, setTotalValueInUsd] = useState<number | null>(null);
+
+  useEffect(() => {
+    // Fetch SOL price and wallet balance on component mount
+    const getSolData = async () => {
+      try {
+        const price = await fetchSolPrice();
+        setSolPrice(price);
+
+        // Assuming you already know the user's Telegram ID and token address
+        const balance = await fetchWalletBalance(
+          telegramId.toString(),
+          "SOL_TOKEN_ADDRESS"
+        );
+        setWalletBalance(balance);
+
+        // Calculate total value in USD (wallet balance * SOL price)
+        const totalValue = balance * price;
+        setTotalValueInUsd(totalValue);
+      } catch (error) {
+        console.error("Error fetching SOL price or balance", error);
+      }
+    };
+
+    getSolData();
+  }, [telegramId]);
 
   useEffect(() => {
     console.log("Component mounted. Checking Telegram WebApp user data...");
@@ -129,9 +176,12 @@ const Home = () => {
               title="Copy Address"
             />
           </p>
-          <h2 className="text-[34px] ">{balance} SOL</h2>
+          <h2 className="text-[34px] ">{walletBalance} SOL</h2>
           <p className="text-primary flex gap-[2px] items-center">
-            $0.00 <CiCircleAlert className="text-xs" />
+            {totalValueInUsd !== null
+              ? `$${totalValueInUsd.toFixed(2)}`
+              : "$0.00"}{" "}
+            <CiCircleAlert className="text-xs" />
           </p>
         </div>
 
