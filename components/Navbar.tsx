@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { RiHome3Fill } from "react-icons/ri";
@@ -44,9 +44,14 @@ const Navbar = () => {
     const clipboardText = await pasteFromClipboard();
     if (clipboardText) {
       setTokenInput(clipboardText);
-      setIsPasteModalOpen(true);
     }
   };
+
+  useEffect(() => {
+    if (tokenInput) {
+      setIsPasteModalOpen(true);
+    }
+  }, [tokenInput]);
 
   return (
     <footer className="fixed bottom-0 w-full shadow-lg space-y-2 z-50">
