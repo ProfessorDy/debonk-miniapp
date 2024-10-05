@@ -1,5 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from "next";
-import { getAddressFromTelegramId } from "@/actions/utils";
+import { getAddressFromTelegramId, getTokenDetails } from "@/actions/utils";
+import { UserSolSmartWalletClass } from "@/actions/solana-provider";
 export async function getWalletAddress(
   req: NextApiRequest,
   res: NextApiResponse
@@ -30,6 +31,37 @@ export async function withdrawSOl(req: NextApiRequest, res: NextApiResponse) {
   try {
   } catch (error) {
     console.log("error: ", error);
+    //eslint-disable-line
+    res.status(500).json({ error: "Failed to fetch address" });
+  }
+}
+
+export async function getSOlPrice(req: NextApiRequest, res: NextApiResponse) {
+  try {
+    const { solUsdPrice } = await UserSolSmartWalletClass.getSolPrice();
+    res.status(200).json({ solUsdPrice });
+  } catch (error) {
+    console.log("error: ", error);
+    //eslint-disable-line
+    res.status(500).json({ error: "Failed to fetch address" });
+  }
+}
+
+export async function getTokenDetailsApi(
+  req: NextApiRequest,
+  res: NextApiResponse,
+  tokenAddress: string
+) {
+  try {
+    const tokenDetails = await getTokenDetails(tokenAddress);
+    if (tokenDetails) {
+      res.status(200).json({ tokenDetails });
+    }
+  } catch (error) {
+    console.log("error: ", error);
+    if (error.message === "invalid_address") {
+      res.status(400).json({ error: "Invalid token address" });
+    }
     //eslint-disable-line
     res.status(500).json({ error: "Failed to fetch address" });
   }
