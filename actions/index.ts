@@ -135,4 +135,15 @@ export const sellToken = async (data: SellTokenInput) => {
   }
 };
 
+export const getWalletGetUserWalletBalance = async (
+  data: GetWalletAddressInput
+) => {
+  const userAddress = getAddressFromTelegramId(Number(data.telegramId));
+
+  const balance = await UserSolSmartWalletClass.getSolBalance(userAddress);
+  console.log("balance: ", balance);
+
+  return balance;
+};
+
 //WITHDRWAL
