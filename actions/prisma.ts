@@ -1,8 +1,4 @@
-import { PrismaClient } from "@prisma/client";
-
-const prisma = new PrismaClient();
-
-export { prisma };
+import prisma from "@/prisma";
 
 export const getUserFromTelegramId = async (telegramId: string) => {
   try {
