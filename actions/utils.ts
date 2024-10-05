@@ -3,6 +3,11 @@ import crypto from "crypto";
 import { MasterSolSmartWalletClass } from "./solana-provider";
 import { createHash } from "crypto";
 import { Keypair } from "@solana/web3.js";
+import { TokenDetails } from "./types";
+import {
+  getTokenDetails_DEXSCREENER,
+  getTokenDetails_DEXTOOLS,
+} from "./dataService";
 
 const botToken = "REPLACE_WITH_THE_BOT_TOKEN";
 
@@ -39,22 +44,24 @@ export const wait = (time: number) =>
 
 export const getAddressFromTelegramId = (telegramId: number): string | null => {
   try {
-    console.log("Starting getAddressFromTelegramId with telegramId: ", telegramId);
-    
+    console.log(
+      "Starting getAddressFromTelegramId with telegramId: ",
+      telegramId
+    );
+
     const walletClass = new MasterSolSmartWalletClass();
     const index = deriveUserIndex(telegramId.toString());
     console.log("Derived user index: ", index);
-    
+
     const address = walletClass.solAddressFromSeed(index);
     console.log("Generated address: ", address);
-    
+
     return address;
   } catch (error) {
     console.error("Error in getAddressFromTelegramId: ", error);
     return null;
   }
 };
-
 
 export function deriveUserIndex(userId: string): number {
   const hashedId = hashUserId(userId);
@@ -115,3 +122,49 @@ export const getPrivateKeyFromTelegramId = (telegramId: string): Keypair => {
   const Keypair: Keypair = walletClass.solDeriveChildKeypair(index);
   return Keypair;
 };
+
+export const getTokenDetails = async (token: string): Promise<TokenDetails> => {
+  const isAddress = MasterSolSmartWalletClass.validateSolAddress(token);
+  if (!isAddress) {
+    if (!token || !(token.length === 44)) {
+      throw new Error("invalid_address");
+    }
+  }
+
+  let data: TokenDetails;
+  try {
+    data = await getTokenDetails_DEXSCREENER(token);
+    if (!data) {
+      data = await getTokenDetails_DEXTOOLS(token);
+      // console.log("data: ", data);
+      data.source = "PUMPFUN";
+      if (!data) {
+        return null;
+      }
+    }
+  } catch (error) {
+    console.log("error: ", error);
+    if (!data) {
+      data = await getTokenDetails_DEXTOOLS(token);
+      // console.log("data: ", data);
+      data.source = "PUMPFUN";
+      if (!data) {
+        return null;
+      }
+    }
+  }
+
+  return data;
+};
+
+export function calculatePercentageChange(
+  oldPrice: number,
+  currentPrice: number
+): number {
+  const percentChange = ((currentPrice - oldPrice) / oldPrice) * 100;
+
+  if (percentChange === Infinity) {
+    return 0;
+  }
+  return Number(percentChange.toFixed(2));
+}
