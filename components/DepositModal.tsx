@@ -16,6 +16,22 @@ const DepositModal: React.FC<DepositModalProps> = ({
 }) => {
   if (!isOpen) return null;
 
+  const handleShare = async () => {
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: "Share Wallet Address",
+          text: `Here is my Solana wallet address: ${walletAddress}`,
+        });
+        console.log("Address shared successfully");
+      } catch (error) {
+        console.error("Error sharing address:", error);
+      }
+    } else {
+      alert("Sharing is not supported in your browser.");
+    }
+  };
+
   return (
     <div className="fixed inset-0 bg-black flex items-center justify-center z-40 pb-16">
       <div className="bg-black h-[90%] w-full max-w-md p-6 text-center shadow-lg relative rounded-lg flex flex-col justify-center">
@@ -59,7 +75,10 @@ const DepositModal: React.FC<DepositModalProps> = ({
         </div>
 
         {/* Share Button */}
-        <button className="bg-transparent border border-accent w-full text-white py-2 px-6 rounded-lg">
+        <button
+          className="bg-transparent border border-accent w-full text-white py-2 px-6 rounded-lg p-3 mb-6"
+          onClick={handleShare}
+        >
           Share
         </button>
       </div>
