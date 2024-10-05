@@ -6,7 +6,8 @@
     "dev": "npx prisma migrate dev && next dev ",
     "build": "npx prisma migrate deploy && next build",
     "start": "npx prisma migrate deploy && next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "postinstall": "prisma generate"
   },
   "dependencies": {
     "@jup-ag/api": "^6.0.29",
