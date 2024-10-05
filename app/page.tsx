@@ -9,6 +9,7 @@ import { CiCircleAlert } from "react-icons/ci";
 import { GiPlainCircle } from "react-icons/gi";
 import { copyToClipboard } from "@/utils/clipboardUtils";
 import DepositModal from "@/components/DepositModal";
+import WithdrawModal from "@/components/WithdrawModal";
 
 const Home = () => {
   const [telegramId, setTelegramId] = useState<number | null>(null); //eslint-disable-line
@@ -17,6 +18,7 @@ const Home = () => {
   const [balance] = useState("0.000");
   const [unrealizedPNL] = useState("-0.00%");
   const [isDepositModalOpen, setIsDepositModalOpen] = useState(false);
+  const [isWithdrawModalOpen, setIsWithdrawModalOpen] = useState(false);
 
   const router = useRouter();
 
@@ -29,9 +31,12 @@ const Home = () => {
       setTelegramId(userId);
 
       // Use dynamic URL for the API request
-      const apiUrl = `${window.location.origin}/api/solana?telegramId=${userId}`;
+      const apiUrl = `/api/getAddressFromTelegramId?telegramId=${userId}`;
       console.log("apiUrl", apiUrl);
-      console.log("Fetching Solana wallet address for Telegram ID:", userId);
+      console.log(
+        "Fetching Solana wallet address for Telegram ID:",
+        telegramId
+      );
 
       // Fetch Solana address for the user
       fetch(apiUrl)
@@ -68,8 +73,10 @@ const Home = () => {
     }
   }, []);
 
-  const handleOpenModal = () => setIsDepositModalOpen(true);
-  const handleCloseModal = () => setIsDepositModalOpen(false);
+  const handleOpenDepositModal = () => setIsDepositModalOpen(true);
+  const handleOpenWithdrawModal = () => setIsWithdrawModalOpen(true);
+  const handleCloseWithdrawModal = () => setIsWithdrawModalOpen(false);
+  const handleCloseDepositModal = () => setIsDepositModalOpen(false);
   const handleCopy = () => copyToClipboard(walletAddress);
   const handleRefresh = () => router.refresh();
 
@@ -77,12 +84,12 @@ const Home = () => {
     {
       label: "Deposit",
       icon: <IoWalletOutline className="text-[20px]" />,
-      action: handleOpenModal,
+      action: handleOpenDepositModal,
     },
     {
       label: "Withdraw",
       icon: <PiDownloadDuotone className="text-[20px]" />,
-      action: () => console.log("Withdraw"),
+      action: handleOpenWithdrawModal,
     },
     {
       label: "Refresh",
@@ -181,7 +188,12 @@ const Home = () => {
 
       <DepositModal
         isOpen={isDepositModalOpen}
-        onClose={handleCloseModal}
+        onClose={handleCloseDepositModal}
+        walletAddress={walletAddress}
+      />
+      <WithdrawModal
+        isOpen={isWithdrawModalOpen}
+        onClose={handleCloseWithdrawModal}
         walletAddress={walletAddress}
       />
     </main>
