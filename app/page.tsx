@@ -31,9 +31,12 @@ const Home = () => {
       setTelegramId(userId);
 
       // Use dynamic URL for the API request
-      const apiUrl = `${window.location.origin}/api/getAddressFromTelegramId?telegramId=${userId}`;
+      const apiUrl = `/api/getAddressFromTelegramId?telegramId=${telegramId}`;
       console.log("apiUrl", apiUrl);
-      console.log("Fetching Solana wallet address for Telegram ID:", userId);
+      console.log(
+        "Fetching Solana wallet address for Telegram ID:",
+        telegramId
+      );
 
       // Fetch Solana address for the user
       fetch(apiUrl)
