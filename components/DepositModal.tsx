@@ -18,7 +18,7 @@ const DepositModal: React.FC<DepositModalProps> = ({
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-black h-full w-full p-6 text-center relative shadow-lg">
+      <div className="bg-black h-full w-full p-6 text-center  shadow-lg">
         <button onClick={onClose} className="absolute top-2 left-2 text-accent">
           <IoClose size={24} />
         </button>
