@@ -12,6 +12,18 @@ import { RiTokenSwapFill } from "react-icons/ri";
 
 import { pasteFromClipboard } from "@/utils/clipboardUtils";
 
+import PasteModal from "./PasteModal";
+
+const tokenInfo = {
+  name: "Hexacat",
+  liquidity: "$316.5K",
+  marketCap: "$36.5M",
+  volume: "$3165",
+  holders: "3.15K",
+  price: "$0.0065",
+  totalMarketCap: "$80.5M",
+};
+
 const tabs = [
   { id: 1, url: "/", Icon: RiHome3Fill },
   { id: 2, url: "/positions", Icon: TbChartCandleFilled },
@@ -21,6 +33,7 @@ const tabs = [
 ];
 
 const Navbar = () => {
+  const [isPasteModalOpen, setIsPasteModalOpen] = useState(false);
   const [tokenInput, setTokenInput] = useState("");
   const pathname = usePathname();
 
@@ -31,6 +44,7 @@ const Navbar = () => {
     const clipboardText = await pasteFromClipboard();
     if (clipboardText) {
       setTokenInput(clipboardText);
+      setIsPasteModalOpen(true);
     }
   };
 
@@ -90,6 +104,12 @@ const Navbar = () => {
           </Link>
         ))}
       </div>
+
+      <PasteModal
+        isOpen={isPasteModalOpen}
+        onClose={() => setIsPasteModalOpen(false)}
+        tokenInfo={tokenInfo}
+      />
     </footer>
   );
 };
