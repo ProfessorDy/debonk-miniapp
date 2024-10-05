@@ -1,6 +1,5 @@
 import React from "react";
 import { IoClose } from "react-icons/io5";
-import { QRCodeSVG } from "qrcode.react";
 
 interface WithdrawModalProps {
   isOpen: boolean;
@@ -25,6 +24,8 @@ const WithdrawModal: React.FC<WithdrawModalProps> = ({
 
         {/* Title */}
         <h2 className="text-2xl font-semibold text-white mb-6">Amount</h2>
+
+        <p>{walletAddress}</p>
 
         {/* Amount Display */}
         <div className="flex flex-col items-center mb-6">
