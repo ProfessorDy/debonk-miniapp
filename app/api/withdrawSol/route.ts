@@ -1,17 +1,26 @@
-import type { NextApiRequest, NextApiResponse } from "next";
+import { NextResponse } from "next/server";
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-  const { webApp } = req.query;
-
-  if (!webApp) {
-    return res.status(400).json({ error: "WebApp is required" });
-  }
-
+export async function POST(req: Request) {
   try {
-    // Withdrawal logic here
-    res.status(200).json({ message: "Withdrawal successful" });
+    const body = await req.json();
+    const { webApp } = body;
+
+    // Check if webApp data exists
+    if (!webApp) {
+      return NextResponse.json({ error: "WebApp data is required" }, { status: 400 });
+    }
+
+    // You can extract specific fields from the webApp object here
+    const { userId, firstName, lastName, balance } = webApp; // Example fields
+
+    // Perform your withdrawal logic using the webApp data
+    console.log(`Processing withdrawal for user: ${firstName} ${lastName} with ID: ${userId} and balance: ${balance}`);
+
+    // Return a success response
+    return NextResponse.json({ message: "Withdrawal successful", balance }, { status: 200 });
+
   } catch (error) {
-    console.log("error: ", error);
-    res.status(500).json({ error: "Failed to process withdrawal" });
+    console.error("Error processing withdrawal:", error);
+    return NextResponse.json({ error: "Failed to process withdrawal" }, { status: 500 });
   }
 }
