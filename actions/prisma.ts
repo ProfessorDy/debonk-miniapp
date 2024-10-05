@@ -1,4 +1,4 @@
-import { Prisma, PrismaClient, Swap } from "@prisma/client";
+import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
@@ -553,7 +553,7 @@ export const getSwapDataDb = async (messageId: string, chatId: string) => {
     if (!res) {
       return null;
     }
-    return res as Swap;
+    return res ;
   } catch (error) {
     console.log("error: ", error);
   }
