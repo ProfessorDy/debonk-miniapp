@@ -27,7 +27,7 @@ interface GetUserPositionsInput extends WebApp {
   telegramId: string;
 }
 
-interface BuyTokenInput extends WebApp {
+export interface BuyTokenInput extends WebApp {
   tokenAddress: string;
   amountInSol: number;
   telegramId: string;
