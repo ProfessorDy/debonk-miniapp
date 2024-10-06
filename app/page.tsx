@@ -93,7 +93,7 @@ const Home = () => {
     } else {
       console.log("No user data available in Telegram WebApp");
     }
-  }, [setWalletBalance, fetchSolPrice, fetchWalletBalance, fetchUserPositions]);
+  }, [setWalletBalance]);
 
   useEffect(() => {
     console.log("Component mounted. Checking Telegram WebApp user data...");
