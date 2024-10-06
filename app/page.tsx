@@ -11,6 +11,13 @@ import { copyToClipboard } from "@/utils/clipboardUtils";
 import DepositModal from "@/components/DepositModal";
 import WithdrawModal from "@/components/WithdrawModal";
 
+type Position = {
+  name: string;
+  value: number;
+  price: number;
+  change: number;
+};
+
 // Helper function to fetch SOL price from the API
 const fetchSolPrice = async () => {
   const response = await fetch("/api/solPrice");
@@ -29,6 +36,15 @@ async function fetchWalletBalance(telegramId: string) {
   return data.balance; // assuming the balance is returned as a number
 }
 
+// Helper function to fetch the user's active positions
+async function fetchUserPositions(telegramId: string) {
+  const res = await fetch(
+    `/api/getUserActivePositions?telegramId=${telegramId}`
+  );
+  const data = await res.json();
+  return data.positions; // assuming positions are returned in an array
+}
+
 const Home = () => {
   const [walletAddress, setWalletAddress] = useState("A1BbDsD4E5F6G7HHtQJ");
   const [error, setError] = useState<string | null>(null); //eslint-disable-line
@@ -41,6 +57,7 @@ const Home = () => {
   const [solPrice, setSolPrice] = useState<number | null>(null); //eslint-disable-line
   const [walletBalance, setWalletBalance] = useState<number>(0);
   const [totalValueInUsd, setTotalValueInUsd] = useState<number | null>(null);
+  const [positions, setPositions] = useState<Position[]>([]);
 
   useEffect(() => {
     const telegram = window.Telegram?.WebApp;
@@ -66,8 +83,16 @@ const Home = () => {
           const totalValue = balance * price;
           console.log("Calculated Total Value in USD:", totalValue); // Log the calculated total value
           setTotalValueInUsd(totalValue);
+
+          // Fetch active positions
+          const userPositions = await fetchUserPositions(userId.toString());
+          console.log("Fetched User Positions:", userPositions);
+          setPositions(userPositions);
         } catch (error) {
-          console.error("Error fetching SOL price or balance", error);
+          console.error(
+            "Error fetching SOL price, balance, or positions",
+            error
+          );
         }
       };
 
@@ -75,7 +100,7 @@ const Home = () => {
     } else {
       console.log("No user data available in Telegram WebApp");
     }
-  }, [setWalletBalance, fetchSolPrice, fetchWalletBalance]);
+  }, [setWalletBalance]);
 
   useEffect(() => {
     console.log("Component mounted. Checking Telegram WebApp user data...");
@@ -212,11 +237,7 @@ const Home = () => {
           Position Overview
         </h2>
         <ul className="space-y-2">
-          {[
-            { name: "Hexacat", value: 0.5, price: 72.46, change: -98 },
-            { name: "Hexacat", value: 0.5, price: 72.46, change: +88 },
-            { name: "Hexacat", value: 0.5, price: 72.46, change: -98 },
-          ].map((position, idx) => (
+          {positions.map((position, idx) => (
             <li
               key={idx}
               className="flex justify-between items-center p-4 bg-background"
