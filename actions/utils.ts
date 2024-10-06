@@ -5,7 +5,7 @@ import {
   UserSolSmartWalletClass,
 } from "./solana-provider";
 import { createHash } from "crypto";
-import { Keypair } from "@solana/web3.js";
+import { Keypair, LAMPORTS_PER_SOL } from "@solana/web3.js";
 import { TokenDetails } from "./types";
 import {
   getTokenDetails_DEXSCREENER,
@@ -317,7 +317,7 @@ export const getUserSolBalance = async (telegramId: string) => {
   const userWalletClass = new UserSolSmartWalletClass(key);
   const balance = await userWalletClass.getUserSolBalance();
   console.log("balance: ", balance);
-  return balance;
+  return balance / LAMPORTS_PER_SOL;
 };
 
 export const formatter = ({
