@@ -46,12 +46,17 @@ const Home = () => {
 
   useEffect(() => {
     const telegram = window.Telegram?.WebApp;
+
     if (telegram?.initDataUnsafe?.user) {
       const { id: userId } = telegram.initDataUnsafe.user;
 
+      console.log("User ID:", userId); // Log the user ID
+
       const getSolData = async () => {
         try {
+          // Fetch SOL price
           const price = await fetchSolPrice();
+          console.log("Fetched SOL Price:", price); // Log the fetched SOL price
           setSolPrice(price);
 
           // Fetch the wallet balance only when telegramId is available
@@ -59,10 +64,12 @@ const Home = () => {
             userId.toString(),
             "SOL_TOKEN_ADDRESS"
           );
+          console.log("Fetched Wallet Balance:", balance); // Log the fetched wallet balance
           setWalletBalance(parseFloat(balance));
 
           // Calculate total value in USD (wallet balance * SOL price)
           const totalValue = balance * price;
+          console.log("Calculated Total Value in USD:", totalValue); // Log the calculated total value
           setTotalValueInUsd(totalValue);
         } catch (error) {
           console.error("Error fetching SOL price or balance", error);
@@ -70,6 +77,8 @@ const Home = () => {
       };
 
       getSolData();
+    } else {
+      console.log("No user data available in Telegram WebApp");
     }
   }, [setWalletBalance, fetchSolPrice, fetchWalletBalance]);
 
