@@ -1,7 +1,6 @@
 "use server";
 
 import { NextResponse } from "next/server";
-import { getAddressFromTelegramId } from "@/actions/utils";
 import { buyToken, BuyTokenInput } from "@/actions";
 import { getWebApp } from "@/utils/getWebApp";
 
