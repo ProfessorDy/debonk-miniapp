@@ -351,9 +351,9 @@ export const getUserActivePositions = async (telegramId: string) => {
         decimal: 8,
       }).format(Number(tokenDetails.priceUsd.toString()));
 
-      const currentHolding = `${formatCurrencyWithoutDollarSign(
+      const currentHolding = formatCurrencyWithoutDollarSign(
         balance * Number(tokenDetails.priceNative)
-      )} SOL (${formatCurrency(balance * tokenDetails.priceUsd)})`;
+      );
 
       const PNL_usd_percent = (
         (PNL_usd /
