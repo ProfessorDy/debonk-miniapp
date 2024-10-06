@@ -23,10 +23,8 @@ const fetchSolPrice = async () => {
 };
 
 // Helper function to fetch the user's wallet balance
-async function fetchWalletBalance(telegramId: string, tokenAddress: string) {
-  const res = await fetch(
-    `/api/getWalletBalance?telegramId=${telegramId}&tokenAddress=${tokenAddress}`
-  );
+async function fetchWalletBalance(telegramId: string) {
+  const res = await fetch(`/api/getUserSolanaBalance?telegramId=${telegramId}`);
   const data = await res.json();
   return data.balance; // assuming the balance is returned as a number
 }
@@ -60,10 +58,7 @@ const Home = () => {
           setSolPrice(price);
 
           // Fetch the wallet balance only when telegramId is available
-          const balance = await fetchWalletBalance(
-            userId.toString(),
-            "SOL_TOKEN_ADDRESS"
-          );
+          const balance = await fetchWalletBalance(userId.toString());
           console.log("Fetched Wallet Balance:", balance); // Log the fetched wallet balance
           setWalletBalance(parseFloat(balance));
 
