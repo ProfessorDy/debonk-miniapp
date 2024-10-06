@@ -55,7 +55,7 @@ const Home = () => {
   const [solPrice, setSolPrice] = useState<number | null>(null); //eslint-disable-line
   const [walletBalance, setWalletBalance] = useState<number>(0);
   const [totalValueInUsd, setTotalValueInUsd] = useState<number | null>(null);
-  const [positions, setPositions] = useState<Position[]>([]);
+  const [positions, setPositions] = useState<Position[]>([]); //eslint-disable-line
 
   useEffect(() => {
     const telegram = window.Telegram?.WebApp;
