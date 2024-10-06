@@ -1,14 +1,19 @@
 // import { getWebApp } from "@/utils/getWebApp";
 import {
+  formatCurrency,
+  formatCurrencyWithoutDollarSign,
+  formatter,
   getAddressFromTelegramId,
   getPrivateKeyFromTelegramId,
   getTokenDetails,
+  getUserTokenBalance,
   verifyTelegramWebAppData,
 } from "./utils";
 import { UserSolSmartWalletClass } from "./solana-provider";
 import { PercentRange, SellTokenInSolParams, SellTokenParams } from "./types";
 import { SLippageExceedingError } from "./solanaError";
 import {
+  calculateProfitLoss,
   decrementUserSimulationBalance,
   getBuyTransaction,
   getUserFromTelegramId,
@@ -300,6 +305,87 @@ const validateAmountGetTokenAndSellSimulation = async (
   );
   console.log("res: ", result);
   console.log("tokenAddress: ", tokenAddress);
+};
+
+export const getUserActivePositions = async (telegramId: string) => {
+  const user = await getUserFromTelegramId(telegramId);
+  const positions = user.positions.filter(
+    (position) => position.isSimulation == false
+  );
+  const wallet = user.wallet.filter((wallet: Wallet) => wallet.isPrimary)[0];
+  const userPositions = [];
+
+  const solPrice = (await UserSolSmartWalletClass.getSolPrice()).solUsdPrice;
+
+  try {
+    const tokenListPosition: { tokenName: string; address: string }[] = [];
+    for (const position of positions) {
+      const tokenDetails = await getTokenDetails(position.tokenAddress);
+      tokenListPosition.push({
+        tokenName: tokenDetails.name,
+        address: position.tokenAddress,
+      });
+      const PNL_usd = await calculateProfitLoss(
+        user.id,
+        wallet.id,
+        position.tokenAddress,
+        tokenDetails.priceUsd.toString()
+      );
+      const PNL_sol = PNL_usd / solPrice;
+      const PNL_Sol_percent = (
+        (PNL_sol /
+          (parseInt(position.amountHeld) * parseFloat(position.avgBuyPrice))) *
+        solPrice *
+        100
+      ).toFixed(2);
+
+      const balance = await getUserTokenBalance(
+        position.tokenAddress,
+        telegramId
+      );
+      const _balance = formatter({
+        decimal: 5,
+      }).format(balance);
+
+      const currentPrice = formatter({
+        decimal: 8,
+      }).format(Number(tokenDetails.priceUsd.toString()));
+
+      const currentHolding = `${formatCurrencyWithoutDollarSign(
+        balance * Number(tokenDetails.priceNative)
+      )} SOL (${formatCurrency(balance * tokenDetails.priceUsd)})`;
+
+      const PNL_usd_percent = (
+        (PNL_usd /
+          (parseInt(position.amountHeld) * parseFloat(position.avgBuyPrice))) *
+        100
+      ).toFixed(2);
+
+      const data = {
+        tokenTicker: position.tokenTicker,
+        capital: (
+          (parseFloat(position.avgBuyPrice) * parseFloat(position.amountHeld)) /
+          solPrice
+        ).toFixed(2),
+        balance: _balance,
+        currentPrice,
+        mc: tokenDetails.mc,
+        PNL_Sol_percent,
+        PNL_usd_percent,
+        PNL_usd,
+        PNL_sol,
+        currentHolding,
+        tokenAddress: position.tokenAddress,
+        token: tokenDetails,
+      };
+      userPositions.push(data);
+    }
+
+    return userPositions;
+  } catch (error) {
+    console.log("error: ", error);
+    return [];
+  }
 };
 
 //WITHDRWAL
