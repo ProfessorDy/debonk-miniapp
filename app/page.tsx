@@ -32,7 +32,6 @@ async function fetchWalletBalance(telegramId: string, tokenAddress: string) {
 }
 
 const Home = () => {
-  const [telegramId, setTelegramId] = useState<number | null>(null); //eslint-disable-line
   const [walletAddress, setWalletAddress] = useState("A1BbDsD4E5F6G7HHtQJ");
   const [error, setError] = useState<string | null>(null); //eslint-disable-line
   const [unrealizedPNL] = useState("-0.00%");
@@ -46,8 +45,10 @@ const Home = () => {
   const [totalValueInUsd, setTotalValueInUsd] = useState<number | null>(null);
 
   useEffect(() => {
-    if (telegramId) {
-      // Fetch SOL price and wallet balance only after telegramId is set
+    const telegram = window.Telegram?.WebApp;
+    if (telegram?.initDataUnsafe?.user) {
+      const { id: userId } = telegram.initDataUnsafe.user;
+
       const getSolData = async () => {
         try {
           const price = await fetchSolPrice();
@@ -55,7 +56,7 @@ const Home = () => {
 
           // Fetch the wallet balance only when telegramId is available
           const balance = await fetchWalletBalance(
-            telegramId.toString(),
+            userId.toString(),
             "SOL_TOKEN_ADDRESS"
           );
           setWalletBalance(parseFloat(balance));
@@ -70,7 +71,7 @@ const Home = () => {
 
       getSolData();
     }
-  }, [telegramId]);
+  }, [setWalletBalance, fetchSolPrice, fetchWalletBalance]);
 
   useEffect(() => {
     console.log("Component mounted. Checking Telegram WebApp user data...");
@@ -78,15 +79,11 @@ const Home = () => {
     const telegram = window.Telegram?.WebApp;
     if (telegram?.initDataUnsafe?.user) {
       const { id: userId } = telegram.initDataUnsafe.user;
-      setTelegramId(userId);
 
       // Use dynamic URL for the API request
       const apiUrl = `/api/getAddressFromTelegramId?telegramId=${userId}`;
       console.log("apiUrl", apiUrl);
-      console.log(
-        "Fetching Solana wallet address for Telegram ID:",
-        telegramId
-      );
+      console.log("Fetching Solana wallet address for Telegram ID:", userId);
 
       // Fetch Solana address for the user
       fetch(apiUrl)
@@ -121,7 +118,7 @@ const Home = () => {
       setError("Telegram user data is not available.");
       console.log("No Telegram user data available.");
     }
-  }, [telegramId, setTelegramId]);
+  }, [setWalletAddress]);
 
   const handleOpenDepositModal = () => setIsDepositModalOpen(true);
   const handleOpenWithdrawModal = () => setIsWithdrawModalOpen(true);
