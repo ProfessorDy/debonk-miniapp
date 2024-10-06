@@ -312,6 +312,14 @@ export const getUserTokenBalance = async (
   return balance;
 };
 
+export const getUserSolBalance = async (telegramId: string) => {
+  const key = getPrivateKeyFromTelegramId(telegramId);
+  const userWalletClass = new UserSolSmartWalletClass(key);
+  const balance = await userWalletClass.getUserSolBalance();
+  console.log("balance: ", balance);
+  return balance;
+};
+
 export const formatter = ({
   decimal = 2,
   style = "decimal",
