@@ -11,6 +11,13 @@ import { copyToClipboard } from "@/utils/clipboardUtils";
 import DepositModal from "@/components/DepositModal";
 import WithdrawModal from "@/components/WithdrawModal";
 
+type Position = {
+  name: string;
+  value: number;
+  price: number;
+  change: number;
+};
+
 // Helper function to fetch SOL price from the API
 const fetchSolPrice = async () => {
   const response = await fetch("/api/solPrice");
@@ -50,7 +57,7 @@ const Home = () => {
   const [solPrice, setSolPrice] = useState<number | null>(null); //eslint-disable-line
   const [walletBalance, setWalletBalance] = useState<number>(0);
   const [totalValueInUsd, setTotalValueInUsd] = useState<number | null>(null);
-  const [positions, setPositions] = useState<any[]>([]);
+  const [positions, setPositions] = useState<Position[]>([]);
 
   useEffect(() => {
     const telegram = window.Telegram?.WebApp;
