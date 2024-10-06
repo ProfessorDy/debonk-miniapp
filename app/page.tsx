@@ -46,28 +46,30 @@ const Home = () => {
   const [totalValueInUsd, setTotalValueInUsd] = useState<number | null>(null);
 
   useEffect(() => {
-    // Fetch SOL price and wallet balance on component mount
-    const getSolData = async () => {
-      try {
-        const price = await fetchSolPrice();
-        setSolPrice(price);
+    if (telegramId) {
+      // Fetch SOL price and wallet balance only after telegramId is set
+      const getSolData = async () => {
+        try {
+          const price = await fetchSolPrice();
+          setSolPrice(price);
 
-        // Assuming you already know the user's Telegram ID and token address
-        const balance = await fetchWalletBalance(
-          telegramId.toString(),
-          "SOL_TOKEN_ADDRESS"
-        );
-        setWalletBalance(balance);
+          // Fetch the wallet balance only when telegramId is available
+          const balance = await fetchWalletBalance(
+            telegramId.toString(),
+            "SOL_TOKEN_ADDRESS"
+          );
+          setWalletBalance(parseFloat(balance));
 
-        // Calculate total value in USD (wallet balance * SOL price)
-        const totalValue = balance * price;
-        setTotalValueInUsd(totalValue);
-      } catch (error) {
-        console.error("Error fetching SOL price or balance", error);
-      }
-    };
+          // Calculate total value in USD (wallet balance * SOL price)
+          const totalValue = balance * price;
+          setTotalValueInUsd(totalValue);
+        } catch (error) {
+          console.error("Error fetching SOL price or balance", error);
+        }
+      };
 
-    getSolData();
+      getSolData();
+    }
   }, [telegramId]);
 
   useEffect(() => {
@@ -119,7 +121,7 @@ const Home = () => {
       setError("Telegram user data is not available.");
       console.log("No Telegram user data available.");
     }
-  }, [telegramId]);
+  }, [telegramId, setTelegramId]);
 
   const handleOpenDepositModal = () => setIsDepositModalOpen(true);
   const handleOpenWithdrawModal = () => setIsWithdrawModalOpen(true);

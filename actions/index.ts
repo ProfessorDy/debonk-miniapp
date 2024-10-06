@@ -2,11 +2,23 @@
 import {
   getAddressFromTelegramId,
   getPrivateKeyFromTelegramId,
+  getTokenDetails,
   verifyTelegramWebAppData,
 } from "./utils";
 import { UserSolSmartWalletClass } from "./solana-provider";
 import { PercentRange, SellTokenInSolParams, SellTokenParams } from "./types";
 import { SLippageExceedingError } from "./solanaError";
+import {
+  decrementUserSimulationBalance,
+  getBuyTransaction,
+  getUserFromTelegramId,
+  getUserSImulationBalance,
+  incrementUserSimulationBalance,
+  updatePositionOnBuySimulation,
+  updatePositionOnSell,
+} from "./prisma";
+import { Wallet } from "@prisma/client";
+import prisma from "@/prisma";
 interface WebApp {
   /**
    * this is the initData form the telegram WebApp object , i am using it to verify the validity of the passed data, make sure you pass it.
@@ -27,13 +39,13 @@ interface GetUserPositionsInput extends WebApp {
   telegramId: string;
 }
 
-interface BuyTokenInput extends WebApp {
+export interface BuyTokenInput extends WebApp {
   tokenAddress: string;
   amountInSol: number;
   telegramId: string;
 }
 
-interface SellTokenInput extends WebApp {
+export interface SellTokenInput extends WebApp {
   telegramId: string;
   tokenAddress: string;
   amountInSol: number;
@@ -112,7 +124,7 @@ export const sellToken = async (data: SellTokenInput) => {
       if (error instanceof SLippageExceedingError) {
         // handle slippage error
         // return a message to the user to increase their sell price or reduce their buy price
-        return "Slippage exceeded. Please increase your sell price or reduce your buy price.";
+        return { status: false, result: null };
       }
     }
   }
@@ -129,7 +141,7 @@ export const sellToken = async (data: SellTokenInput) => {
       if (error instanceof SLippageExceedingError) {
         // handle slippage error
         // return a message to the user to increase their sell price or reduce their buy price
-        return "Slippage exceeded. Please increase your sell price or reduce your buy price.";
+        return { status: false, result: null };
       }
     }
   }
@@ -144,6 +156,150 @@ export const getWalletGetUserWalletBalance = async (
   console.log("balance: ", balance);
 
   return balance;
+};
+
+export const simulationBuy = async (params: BuyTokenInput) => {
+  const userBalance = await getUserSImulationBalance(params.telegramId);
+  console.log("userBalance: ", userBalance);
+
+  if (Number(userBalance) < params.amountInSol) {
+    return { status: false, message: "Not Enough SImulation Balance" };
+  }
+
+  await completeBuyActionSimulation(
+    params.telegramId,
+    params.tokenAddress,
+    params.amountInSol
+  );
+};
+
+export const completeBuyActionSimulation = async (
+  telegramId: string,
+  tokenAddress: string,
+  amount: number
+) => {
+  try {
+    //updating user simulationBalance
+    await decrementUserSimulationBalance(telegramId, amount);
+    const user = await getUserFromTelegramId(telegramId);
+    const tokenDetails = await getTokenDetails(tokenAddress);
+    const amountInToken = amount / Number(tokenDetails.priceNative);
+    console.log("amountInToken: ", amountInToken);
+    const wallet = user.wallet.filter((wallet: Wallet) => wallet.isPrimary)[0];
+    if (!user.wallet) {
+      const address = getAddressFromTelegramId(Number(telegramId));
+
+      await prisma.wallet.upsert({
+        where: { address: address },
+        update: {},
+        create: { userId: user.id, address: address, isPrimary: true },
+      });
+    }
+
+    await prisma.transaction.create({
+      data: {
+        amountBought: amountInToken.toString(),
+        tokenAddress: tokenAddress,
+        status: "bought",
+        buyHash: "simulation",
+        tokenTicker: tokenDetails.name,
+        walletId: wallet.id,
+        userId: user.id,
+        buyPrice: tokenDetails.priceUsd.toString(),
+      },
+    });
+    await updatePositionOnBuySimulation(
+      user.id,
+      wallet.id,
+      tokenAddress,
+      tokenDetails.name,
+      amountInToken.toString(),
+      tokenDetails.priceUsd.toString(),
+      true
+    );
+  } catch (error) {
+    console.log("error: ", error);
+  }
+};
+
+export const simulationSellToken = async (params: SellTokenInput) => {
+  await validateAmountGetTokenAndSellSimulation(
+    params.telegramId,
+    params.tokenAddress,
+    params.type,
+    params.amountInSol
+  );
+};
+
+const validateAmountGetTokenAndSellSimulation = async (
+  telegramId: string,
+  tokenAddress: string,
+  type: "PERCENT" | "AMOUNT",
+  amount?: number,
+  percentToSell?: PercentRange
+) => {
+  if (!(type === "PERCENT")) {
+    console.error("Invalid type provided");
+    return;
+  }
+  //validate that the field percentToSell is present
+  if (!percentToSell) {
+    return { status: false, message: "Please provide a percentage to sell" };
+  }
+  //SIMULATION THE SELL
+
+  const user = await getUserFromTelegramId(telegramId);
+  const position = user.positions.find(
+    (position) =>
+      position.isSimulation == true && position.tokenAddress === tokenAddress
+  );
+  const amountHeld = Number(position.amountHeld);
+  const percentSold = amountHeld * (percentToSell / 100);
+  const amountToSell = percentSold;
+  const tokenDetails = await getTokenDetails(tokenAddress);
+  const tokenSolPrice = Number(tokenDetails.priceNative);
+  console.log("tokenSolPrice: ", tokenSolPrice);
+  const amountInSol = tokenSolPrice * amountToSell;
+  console.log("amountInSol: ", amountInSol);
+
+  await incrementUserSimulationBalance(telegramId, amountInSol);
+
+  console.log("amountInToken: ", amountToSell);
+  amount = amountToSell;
+
+  const wallet = user.wallet.filter((wallet: Wallet) => wallet.isPrimary)[0];
+  //if wallet does not exist, create it
+  if (!user.wallet) {
+    const address = getAddressFromTelegramId(Number(telegramId));
+
+    await prisma.wallet.upsert({
+      where: { address: address },
+      update: {},
+      create: { userId: user.id, address: address, isPrimary: true },
+    });
+  }
+
+  const buySol = await getBuyTransaction(user.id, wallet.id, tokenAddress);
+  await prisma.transaction.update({
+    where: {
+      id: buySol.id,
+    },
+    data: {
+      amountSold: amount.toString(),
+      status: "sold",
+      sellHash: "simulation",
+      sellPrice: tokenDetails.priceUsd.toString(),
+    },
+  });
+  const result = await updatePositionOnSell(
+    user.id,
+    wallet.id,
+    tokenAddress,
+    amount.toString(),
+    tokenDetails.priceUsd.toString()
+  );
+  console.log("res: ", result);
+  console.log("tokenAddress: ", tokenAddress);
 };
 
 //WITHDRWAL
