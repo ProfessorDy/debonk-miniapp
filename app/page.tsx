@@ -76,8 +76,16 @@ const Home = () => {
           const totalValue = balance * price;
           console.log("Calculated Total Value in USD:", totalValue); // Log the calculated total value
           setTotalValueInUsd(totalValue);
+
+          // Fetch active positions
+          const userPositions = await fetchUserPositions(userId.toString());
+          console.log("Fetched User Positions:", userPositions);
+          setPositions(userPositions);
         } catch (error) {
-          console.error("Error fetching SOL price or balance", error);
+          console.error(
+            "Error fetching SOL price, balance, or positions",
+            error
+          );
         }
       };
 
@@ -85,7 +93,7 @@ const Home = () => {
     } else {
       console.log("No user data available in Telegram WebApp");
     }
-  }, [setWalletBalance, fetchSolPrice, fetchWalletBalance]);
+  }, [setWalletBalance, fetchSolPrice, fetchWalletBalance, fetchUserPositions]);
 
   useEffect(() => {
     console.log("Component mounted. Checking Telegram WebApp user data...");
