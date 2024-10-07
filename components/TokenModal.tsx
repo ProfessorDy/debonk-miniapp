@@ -62,14 +62,36 @@ const TokenModal: React.FC<TokenModalProps> = ({
 
   if (!isOpen) return null;
 
-  const handleBuy = (amount: number) => {
-    console.log(`Buying ${amount} SOL`);
-    // Implement buy logic here
+  const handleBuy = async (amount: number) => {
+    try {
+      const response = await fetch(
+        `/api/simulationBuy?telegramId=YOUR_TELEGRAM_ID&tokenAddress=${tokenAddress}&amountInSol=${amount}&amountPercent=100&type=AMOUNT`
+      );
+      const result = await response.json();
+      if (result.status) {
+        console.log("Buy transaction successful", result);
+      } else {
+        console.error("Buy transaction failed", result.error);
+      }
+    } catch (error) {
+      console.error("API error during buy:", error);
+    }
   };
 
-  const handleSell = (amount: number) => {
-    console.log(`Selling ${amount} SOL`);
-    // Implement sell logic here
+  const handleSell = async (amount: number) => {
+    try {
+      const response = await fetch(
+        `/api/sellToken?telegramId=YOUR_TELEGRAM_ID&tokenAddress=${tokenAddress}&amountInSol=${amount}&amountPercent=100&type=AMOUNT`
+      );
+      const result = await response.json();
+      if (result.status) {
+        console.log("Sell transaction successful", result);
+      } else {
+        console.error("Sell transaction failed", result.error);
+      }
+    } catch (error) {
+      console.error("API error during sell:", error);
+    }
   };
 
   return (
@@ -154,11 +176,6 @@ const TokenModal: React.FC<TokenModalProps> = ({
                 onClick={() => handleBuy(1)}
                 type="buy"
               />
-              <InvestmentButton
-                label="X SOL"
-                onClick={() => handleBuy(1)}
-                type="buy"
-              />
             </div>
             <div className="flex justify-between">
               <InvestmentButton
@@ -174,11 +191,6 @@ const TokenModal: React.FC<TokenModalProps> = ({
               <InvestmentButton
                 label="10 SOL"
                 onClick={() => handleSell(10)}
-                type="sell"
-              />
-              <InvestmentButton
-                label="X SOL"
-                onClick={() => handleSell(5)}
                 type="sell"
               />
             </div>
