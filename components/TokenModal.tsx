@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { IoClose } from "react-icons/io5";
+import InvestmentButton from "./InvestmentButton";
 
 interface TokenInfo {
   name: string;
@@ -60,6 +61,38 @@ const TokenModal: React.FC<TokenModalProps> = ({
   }, [isOpen, tokenAddress]);
 
   if (!isOpen) return null;
+
+  const handleBuy = async (amount: number) => {
+    try {
+      const response = await fetch(
+        `/api/simulationBuy?telegramId=YOUR_TELEGRAM_ID&tokenAddress=${tokenAddress}&amountInSol=${amount}&amountPercent=100&type=AMOUNT`
+      );
+      const result = await response.json();
+      if (result.status) {
+        console.log("Buy transaction successful", result);
+      } else {
+        console.error("Buy transaction failed", result.error);
+      }
+    } catch (error) {
+      console.error("API error during buy:", error);
+    }
+  };
+
+  const handleSell = async (amount: number) => {
+    try {
+      const response = await fetch(
+        `/api/sellToken?telegramId=YOUR_TELEGRAM_ID&tokenAddress=${tokenAddress}&amountInSol=${amount}&amountPercent=100&type=AMOUNT`
+      );
+      const result = await response.json();
+      if (result.status) {
+        console.log("Sell transaction successful", result);
+      } else {
+        console.error("Sell transaction failed", result.error);
+      }
+    } catch (error) {
+      console.error("API error during sell:", error);
+    }
+  };
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-40 pb-16">
@@ -125,25 +158,41 @@ const TokenModal: React.FC<TokenModalProps> = ({
               </div>
             </div>
 
-            {/* Investment Buttons */}
-            <div className="flex justify-around mb-4">
-              <button className="bg-green-600 text-white px-4 py-2 rounded-lg">
-                0.1 SOL
-              </button>
-              <button className="bg-green-600 text-white px-4 py-2 rounded-lg">
-                0.5 SOL
-              </button>
-              <button className="bg-green-600 text-white px-4 py-2 rounded-lg">
-                1 SOL
-              </button>
+            {/* Buy and Sell Buttons */}
+            <div className="flex justify-between mb-4">
+              <InvestmentButton
+                label="0.1 SOL"
+                onClick={() => handleBuy(0.1)}
+                type="buy"
+              />
+              <InvestmentButton
+                label="0.5 SOL"
+                onClick={() => handleBuy(0.5)}
+                type="buy"
+              />
+
+              <InvestmentButton
+                label="10 SOL"
+                onClick={() => handleBuy(1)}
+                type="buy"
+              />
             </div>
-            <div className="flex justify-around">
-              <button className="bg-red-600 text-white px-4 py-2 rounded-lg">
-                10 SOL
-              </button>
-              <button className="bg-red-600 text-white px-4 py-2 rounded-lg">
-                X SOL
-              </button>
+            <div className="flex justify-between">
+              <InvestmentButton
+                label="0.1 SOL"
+                onClick={() => handleSell(0.1)}
+                type="sell"
+              />
+              <InvestmentButton
+                label="0.5 SOL"
+                onClick={() => handleSell(0.5)}
+                type="sell"
+              />
+              <InvestmentButton
+                label="10 SOL"
+                onClick={() => handleSell(10)}
+                type="sell"
+              />
             </div>
           </>
         ) : (
