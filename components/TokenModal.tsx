@@ -10,7 +10,6 @@ interface TokenInfo {
   volume: {
     h24: number;
   };
-  holders: number;
   priceNative: number;
   change: {
     m5: number;
@@ -83,8 +82,9 @@ const TokenModal: React.FC<TokenModalProps> = ({
 
             {/* Price Change Overview */}
             <div className="text-sm text-green-500 mb-2">
-              5m: {tokenInfo.change.m5}% | 1hr: {tokenInfo.change.h1}% | 24hrs:{" "}
-              {tokenInfo.change.h24}%
+              5m: {tokenInfo.change?.m5 ?? 0}% | 1hr:{" "}
+              {tokenInfo.change?.h1 ?? 0}% | 24hrs: {tokenInfo.change?.h24 ?? 0}
+              %
             </div>
 
             {/* Token Information Grid */}
@@ -92,32 +92,36 @@ const TokenModal: React.FC<TokenModalProps> = ({
               <div>
                 <p className="text-gray-400">Liquidity</p>
                 <p className="text-white">
-                  ${tokenInfo.liquidityInUsd.toLocaleString()}
+                  ${tokenInfo.liquidityInUsd?.toLocaleString() ?? "N/A"}
                 </p>
               </div>
               <div>
                 <p className="text-gray-400">Market Cap</p>
-                <p className="text-white">${tokenInfo.mc.toLocaleString()}</p>
+                <p className="text-white">
+                  ${tokenInfo.mc?.toLocaleString() ?? "N/A"}
+                </p>
               </div>
               <div>
                 <p className="text-gray-400">Volume (24h)</p>
                 <p className="text-white">
-                  ${tokenInfo.volume.h24.toLocaleString()}
+                  ${tokenInfo.volume?.h24?.toLocaleString() ?? "N/A"}
                 </p>
               </div>
               <div>
                 <p className="text-gray-400">Holders</p>
-                <p className="text-white">
-                  {tokenInfo.holders.toLocaleString()}
-                </p>
+                <p className="text-white">N/A</p> {/* Hardcoded "N/A" */}
               </div>
               <div>
                 <p className="text-gray-400">Price (USD)</p>
-                <p className="text-white">${tokenInfo.priceUsd.toFixed(6)}</p>
+                <p className="text-white">
+                  ${tokenInfo.priceUsd?.toFixed(6) ?? "N/A"}
+                </p>
               </div>
               <div>
                 <p className="text-gray-400">Total Market Cap</p>
-                <p className="text-white">${tokenInfo.mc.toLocaleString()}</p>
+                <p className="text-white">
+                  ${tokenInfo.mc?.toLocaleString() ?? "N/A"}
+                </p>
               </div>
             </div>
 
@@ -143,7 +147,7 @@ const TokenModal: React.FC<TokenModalProps> = ({
             </div>
           </>
         ) : (
-          <p className="text-white">Failed to load token details</p>
+          <div className="text-white">Failed to load token information</div>
         )}
       </div>
     </div>
