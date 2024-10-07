@@ -11,13 +11,13 @@ interface TokenInfo {
   totalMarketCap: string;
 }
 
-interface PasteModalProps {
+interface TokenModalProps {
   isOpen: boolean;
   onClose: () => void;
-  tokenAddress: string; // Pass token address as prop
+  tokenAddress: string;
 }
 
-const PasteModal: React.FC<PasteModalProps> = ({
+const TokenModal: React.FC<TokenModalProps> = ({
   isOpen,
   onClose,
   tokenAddress,
@@ -135,4 +135,4 @@ const PasteModal: React.FC<PasteModalProps> = ({
   );
 };
 
-export default PasteModal;
+export default TokenModal;

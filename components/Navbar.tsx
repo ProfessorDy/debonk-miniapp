@@ -12,7 +12,7 @@ import { RiTokenSwapFill } from "react-icons/ri";
 
 import { pasteFromClipboard } from "@/utils/clipboardUtils";
 
-import PasteModal from "./PasteModal";
+import TokenModal from "./TokenModal";
 
 const tabs = [
   { id: 1, url: "/", Icon: RiHome3Fill },
@@ -100,7 +100,7 @@ const Navbar = () => {
         ))}
       </div>
 
-      <PasteModal
+      <TokenModal
         isOpen={isPasteModalOpen}
         onClose={() => setIsPasteModalOpen(false)}
         tokenAddress={tokenInput}
