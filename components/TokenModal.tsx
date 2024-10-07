@@ -3,21 +3,34 @@ import { IoClose } from "react-icons/io5";
 
 interface TokenInfo {
   name: string;
-  liquidity: string;
-  marketCap: string;
-  volume: string;
-  holders: string;
-  price: string;
-  totalMarketCap: string;
+  symbol: string;
+  address: string;
+  priceUsd: number;
+  priceNative: number;
+  mc: number;
+  liquidityInUsd: number;
+  telegramUrl: string;
+  twitterUrl: string;
+  websiteUrl: string;
+  volume: {
+    m5: number;
+    h1: number;
+    h24: number;
+  };
+  change: {
+    m5: number;
+    h1: number;
+    h24: number;
+  };
 }
 
-interface TokenModalProps {
+interface PasteModalProps {
   isOpen: boolean;
   onClose: () => void;
   tokenAddress: string;
 }
 
-const TokenModal: React.FC<TokenModalProps> = ({
+const TokenModal: React.FC<PasteModalProps> = ({
   isOpen,
   onClose,
   tokenAddress,
@@ -34,7 +47,7 @@ const TokenModal: React.FC<TokenModalProps> = ({
             `/api/getTokenDetails?tokenAddress=${tokenAddress}`
           );
           const data = await response.json();
-          console.log("Fetched Token Details:", data); // Log the data type
+          console.log("Fetched Token Details:", data);
 
           if (response.ok) {
             setTokenInfo(data.tokenDetails);
@@ -64,7 +77,6 @@ const TokenModal: React.FC<TokenModalProps> = ({
 
         {loading ? (
           <div className="flex items-center justify-center">
-            {/* Simple loading spinner */}
             <div className="loader ease-linear rounded-full border-8 border-t-8 border-gray-200 h-32 w-32"></div>
           </div>
         ) : tokenInfo ? (
@@ -76,55 +88,77 @@ const TokenModal: React.FC<TokenModalProps> = ({
 
             {/* Token Information */}
             <div className="mb-4">
-              <p className="text-gray-400">Liquidity</p>
-              <p className="text-white">{tokenInfo.liquidity}</p>
+              <p className="text-gray-400">Symbol</p>
+              <p className="text-white">{tokenInfo.symbol}</p>
             </div>
 
             <div className="mb-4">
-              <p className="text-gray-400">Market Cap</p>
-              <p className="text-white">{tokenInfo.marketCap}</p>
+              <p className="text-gray-400">Address</p>
+              <p className="text-white">{tokenInfo.address}</p>
             </div>
 
             <div className="mb-4">
-              <p className="text-gray-400">Volume</p>
-              <p className="text-white">{tokenInfo.volume}</p>
+              <p className="text-gray-400">Price (USD)</p>
+              <p className="text-white">${tokenInfo.priceUsd.toFixed(6)}</p>
             </div>
 
             <div className="mb-4">
-              <p className="text-gray-400">Holders</p>
-              <p className="text-white">{tokenInfo.holders}</p>
+              <p className="text-gray-400">Liquidity (USD)</p>
+              <p className="text-white">
+                ${tokenInfo.liquidityInUsd.toLocaleString()}
+              </p>
             </div>
 
             <div className="mb-4">
-              <p className="text-gray-400">Price</p>
-              <p className="text-white">{tokenInfo.price}</p>
+              <p className="text-gray-400">Market Cap (USD)</p>
+              <p className="text-white">${tokenInfo.mc.toLocaleString()}</p>
+            </div>
+
+            <div className="mb-4">
+              <p className="text-gray-400">24h Volume (USD)</p>
+              <p className="text-white">${tokenInfo.volume.h24}</p>
+            </div>
+
+            <div className="mb-4">
+              <p className="text-gray-400">24h Change (%)</p>
+              <p className="text-white">{tokenInfo.change.h24}%</p>
+            </div>
+
+            {/* Social Links */}
+            <div className="mb-4">
+              <p className="text-gray-400">Telegram</p>
+              <a
+                href={tokenInfo.telegramUrl}
+                className="text-blue-500"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                {tokenInfo.telegramUrl}
+              </a>
+            </div>
+
+            <div className="mb-4">
+              <p className="text-gray-400">Twitter</p>
+              <a
+                href={tokenInfo.twitterUrl}
+                className="text-blue-500"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                {tokenInfo.twitterUrl}
+              </a>
             </div>
 
             <div className="mb-6">
-              <p className="text-gray-400">Total Market Cap</p>
-              <p className="text-white">{tokenInfo.totalMarketCap}</p>
-            </div>
-
-            {/* Buttons */}
-            <div className="flex justify-around">
-              <button className="bg-green-600 text-white px-4 py-2 rounded-lg">
-                0.1 SOL
-              </button>
-              <button className="bg-green-600 text-white px-4 py-2 rounded-lg">
-                0.5 SOL
-              </button>
-              <button className="bg-green-600 text-white px-4 py-2 rounded-lg">
-                1 SOL
-              </button>
-            </div>
-
-            <div className="flex justify-around mt-4">
-              <button className="bg-red-600 text-white px-4 py-2 rounded-lg">
-                10 SOL
-              </button>
-              <button className="bg-red-600 text-white px-4 py-2 rounded-lg">
-                X SOL
-              </button>
+              <p className="text-gray-400">Website</p>
+              <a
+                href={tokenInfo.websiteUrl}
+                className="text-blue-500"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                {tokenInfo.websiteUrl}
+              </a>
             </div>
           </>
         ) : (
