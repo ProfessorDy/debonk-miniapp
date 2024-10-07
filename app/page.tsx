@@ -230,33 +230,43 @@ const Home = () => {
           ))}
         </div>
       </section>
+
       <section>
         <h2 className="text-[17px] leading-[25.5px] font-poppins mb-2">
           Position Overview
         </h2>
-        <ul className="space-y-2">
-          {positions.map((position, idx) => (
-            <li
-              key={idx}
-              className="flex justify-between items-center p-4 bg-background"
-            >
-              <div>
-                <p>{position.name}</p>
-                <p className="text-sm text-gray-400">
-                  MC: {position.value} sol
-                </p>
-                <p className="text-sm text-gray-400">LIQ: ${position.price}</p>
-              </div>
-              <div
-                className={`text-[9.45px] px-7 py-[9.45px] rounded-[6.3px] w-[78px] ${
-                  position.change < 0 ? "bg-red-500" : "bg-green-500"
-                }`}
+        {positions.length > 0 ? (
+          <ul className="space-y-2">
+            {positions.map((position, idx) => (
+              <li
+                key={idx}
+                className="flex justify-between items-center p-4 bg-background"
               >
-                {position.change}%
-              </div>
-            </li>
-          ))}
-        </ul>
+                <div>
+                  <p>{position.name}</p>
+                  <p className="text-sm text-gray-400">
+                    MC: {position.value} sol
+                  </p>
+                  <p className="text-sm text-gray-400">
+                    LIQ: ${position.price}
+                  </p>
+                </div>
+                <div
+                  className={`text-[9.45px] px-7 py-[9.45px] rounded-[6.3px] w-[78px] ${
+                    position.change < 0 ? "bg-red-500" : "bg-green-500"
+                  }`}
+                >
+                  {position.change}%
+                </div>
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <p className="text-center text-gray-500 text-sm">
+            You have no current active positions. Paste a contract address or
+            token link.
+          </p>
+        )}
       </section>
 
       <DepositModal
