@@ -4,19 +4,14 @@ import { IoClose } from "react-icons/io5";
 interface TokenInfo {
   name: string;
   symbol: string;
-  address: string;
   priceUsd: number;
-  priceNative: number;
-  mc: number;
   liquidityInUsd: number;
-  telegramUrl: string;
-  twitterUrl: string;
-  websiteUrl: string;
+  mc: number;
   volume: {
-    m5: number;
-    h1: number;
     h24: number;
   };
+  holders: number;
+  priceNative: number;
   change: {
     m5: number;
     h1: number;
@@ -24,13 +19,13 @@ interface TokenInfo {
   };
 }
 
-interface PasteModalProps {
+interface TokenModalProps {
   isOpen: boolean;
   onClose: () => void;
   tokenAddress: string;
 }
 
-const TokenModal: React.FC<PasteModalProps> = ({
+const TokenModal: React.FC<TokenModalProps> = ({
   isOpen,
   onClose,
   tokenAddress,
@@ -86,79 +81,65 @@ const TokenModal: React.FC<PasteModalProps> = ({
               {tokenInfo.name}
             </h2>
 
-            {/* Token Information */}
-            <div className="mb-4">
-              <p className="text-gray-400">Symbol</p>
-              <p className="text-white">{tokenInfo.symbol}</p>
+            {/* Price Change Overview */}
+            <div className="text-sm text-green-500 mb-2">
+              5m: {tokenInfo.change.m5}% | 1hr: {tokenInfo.change.h1}% | 24hrs:{" "}
+              {tokenInfo.change.h24}%
             </div>
 
-            <div className="mb-4">
-              <p className="text-gray-400">Address</p>
-              <p className="text-white">{tokenInfo.address}</p>
+            {/* Token Information Grid */}
+            <div className="grid grid-cols-2 gap-4 mb-6">
+              <div>
+                <p className="text-gray-400">Liquidity</p>
+                <p className="text-white">
+                  ${tokenInfo.liquidityInUsd.toLocaleString()}
+                </p>
+              </div>
+              <div>
+                <p className="text-gray-400">Market Cap</p>
+                <p className="text-white">${tokenInfo.mc.toLocaleString()}</p>
+              </div>
+              <div>
+                <p className="text-gray-400">Volume (24h)</p>
+                <p className="text-white">
+                  ${tokenInfo.volume.h24.toLocaleString()}
+                </p>
+              </div>
+              <div>
+                <p className="text-gray-400">Holders</p>
+                <p className="text-white">
+                  {tokenInfo.holders.toLocaleString()}
+                </p>
+              </div>
+              <div>
+                <p className="text-gray-400">Price (USD)</p>
+                <p className="text-white">${tokenInfo.priceUsd.toFixed(6)}</p>
+              </div>
+              <div>
+                <p className="text-gray-400">Total Market Cap</p>
+                <p className="text-white">${tokenInfo.mc.toLocaleString()}</p>
+              </div>
             </div>
 
-            <div className="mb-4">
-              <p className="text-gray-400">Price (USD)</p>
-              <p className="text-white">${tokenInfo.priceUsd.toFixed(6)}</p>
+            {/* Investment Buttons */}
+            <div className="flex justify-around mb-4">
+              <button className="bg-green-600 text-white px-4 py-2 rounded-lg">
+                0.1 SOL
+              </button>
+              <button className="bg-green-600 text-white px-4 py-2 rounded-lg">
+                0.5 SOL
+              </button>
+              <button className="bg-green-600 text-white px-4 py-2 rounded-lg">
+                1 SOL
+              </button>
             </div>
-
-            <div className="mb-4">
-              <p className="text-gray-400">Liquidity (USD)</p>
-              <p className="text-white">
-                ${tokenInfo.liquidityInUsd.toLocaleString()}
-              </p>
-            </div>
-
-            <div className="mb-4">
-              <p className="text-gray-400">Market Cap (USD)</p>
-              <p className="text-white">${tokenInfo.mc.toLocaleString()}</p>
-            </div>
-
-            <div className="mb-4">
-              <p className="text-gray-400">24h Volume (USD)</p>
-              <p className="text-white">${tokenInfo.volume.h24}</p>
-            </div>
-
-            <div className="mb-4">
-              <p className="text-gray-400">24h Change (%)</p>
-              <p className="text-white">{tokenInfo.change.h24}%</p>
-            </div>
-
-            {/* Social Links */}
-            <div className="mb-4">
-              <p className="text-gray-400">Telegram</p>
-              <a
-                href={tokenInfo.telegramUrl}
-                className="text-blue-500"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                {tokenInfo.telegramUrl}
-              </a>
-            </div>
-
-            <div className="mb-4">
-              <p className="text-gray-400">Twitter</p>
-              <a
-                href={tokenInfo.twitterUrl}
-                className="text-blue-500"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                {tokenInfo.twitterUrl}
-              </a>
-            </div>
-
-            <div className="mb-6">
-              <p className="text-gray-400">Website</p>
-              <a
-                href={tokenInfo.websiteUrl}
-                className="text-blue-500"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                {tokenInfo.websiteUrl}
-              </a>
+            <div className="flex justify-around">
+              <button className="bg-red-600 text-white px-4 py-2 rounded-lg">
+                10 SOL
+              </button>
+              <button className="bg-red-600 text-white px-4 py-2 rounded-lg">
+                X SOL
+              </button>
             </div>
           </>
         ) : (
