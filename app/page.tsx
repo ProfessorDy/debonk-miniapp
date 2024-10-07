@@ -10,6 +10,7 @@ import { GiPlainCircle } from "react-icons/gi";
 import { copyToClipboard } from "@/utils/clipboardUtils";
 import DepositModal from "@/components/DepositModal";
 import WithdrawModal from "@/components/WithdrawModal";
+import useTelegramUserStore from "@/store/useTelegramUserStore";
 
 type Position = {
   name: string;
@@ -57,12 +58,15 @@ const Home = () => {
   const [totalValueInUsd, setTotalValueInUsd] = useState<number | null>(null);
   const [positions, setPositions] = useState<Position[]>([]); //eslint-disable-line
 
+  const setUserId = useTelegramUserStore((state) => state.setUserId);
+
   useEffect(() => {
     const telegram = window.Telegram?.WebApp;
 
     if (telegram?.initDataUnsafe?.user) {
       const { id: userId } = telegram.initDataUnsafe.user;
 
+      setUserId(userId.toString());
       console.log("User ID:", userId); // Log the user ID
 
       const getSolData = async () => {
