@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { IoClose } from "react-icons/io5";
 import InvestmentButton from "./InvestmentButton";
+import useTelegramUserStore from "@/store/useTelegramUserStore";
 
 interface TokenInfo {
   name: string;
@@ -32,6 +33,7 @@ const TokenModal: React.FC<TokenModalProps> = ({
 }) => {
   const [tokenInfo, setTokenInfo] = useState<TokenInfo | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
+  const userId = useTelegramUserStore((state) => state.userId);
 
   useEffect(() => {
     if (isOpen && tokenAddress) {
@@ -65,7 +67,7 @@ const TokenModal: React.FC<TokenModalProps> = ({
   const handleBuy = async (amount: number) => {
     try {
       const response = await fetch(
-        `/api/simulationBuyToken?telegramId=YOUR_TELEGRAM_ID&tokenAddress=${tokenAddress}&amountInSol=${amount}&amountPercent=100&type=AMOUNT`
+        `/api/simulationBuyToken?telegramId=${userId}&tokenAddress=${tokenAddress}&amountInSol=${amount}&amountPercent=100&type=AMOUNT`
       );
       const result = await response.json();
       if (result.status) {
@@ -81,7 +83,7 @@ const TokenModal: React.FC<TokenModalProps> = ({
   const handleSell = async (amount: number) => {
     try {
       const response = await fetch(
-        `/api/simulationSellToken?telegramId=YOUR_TELEGRAM_ID&tokenAddress=${tokenAddress}&amountInSol=${amount}&amountPercent=100&type=AMOUNT`
+        `/api/simulationSellToken?telegramId=${userId}&tokenAddress=${tokenAddress}&amountInSol=${amount}&amountPercent=100&type=AMOUNT`
       );
       const result = await response.json();
       if (result.status) {
