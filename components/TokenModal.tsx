@@ -65,7 +65,7 @@ const TokenModal: React.FC<TokenModalProps> = ({
   const handleBuy = async (amount: number) => {
     try {
       const response = await fetch(
-        `/api/simulationBuy?telegramId=YOUR_TELEGRAM_ID&tokenAddress=${tokenAddress}&amountInSol=${amount}&amountPercent=100&type=AMOUNT`
+        `/api/simulationBuyToken?telegramId=YOUR_TELEGRAM_ID&tokenAddress=${tokenAddress}&amountInSol=${amount}&amountPercent=100&type=AMOUNT`
       );
       const result = await response.json();
       if (result.status) {
@@ -81,7 +81,7 @@ const TokenModal: React.FC<TokenModalProps> = ({
   const handleSell = async (amount: number) => {
     try {
       const response = await fetch(
-        `/api/sellToken?telegramId=YOUR_TELEGRAM_ID&tokenAddress=${tokenAddress}&amountInSol=${amount}&amountPercent=100&type=AMOUNT`
+        `/api/simulationSellToken?telegramId=YOUR_TELEGRAM_ID&tokenAddress=${tokenAddress}&amountInSol=${amount}&amountPercent=100&type=AMOUNT`
       );
       const result = await response.json();
       if (result.status) {
