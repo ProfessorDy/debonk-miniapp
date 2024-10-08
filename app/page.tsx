@@ -178,7 +178,7 @@ const Home = () => {
   const handleCloseWithdrawModal = () => setIsWithdrawModalOpen(false);
   const handleCloseDepositModal = () => setIsDepositModalOpen(false);
   const handleCopy = () => copyToClipboard(walletAddress);
-  const handleRefresh = () => router.refresh();
+  const handleRefresh = () => window.location.reload();
 
   const buttons = [
     {
