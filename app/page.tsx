@@ -39,11 +39,11 @@ async function fetchWalletBalance(telegramId: string) {
 }
 
 // Helper function to fetch the user's active positions
-// async function fetchUserPositions(telegramId: string) {
-//   const res = await fetch(`/api/getUserPositions?telegramId=${telegramId}`);
-//   const data = await res.json();
-//   return data.positions; // assuming positions are returned in an array
-// }
+async function fetchUserPositions(telegramId: string) {
+  const res = await fetch(`/api/getUserPositions?telegramId=${telegramId}`);
+  const data = await res.json();
+  return data.positions; // assuming positions are returned in an array
+}
 
 const Home = () => {
   const [walletAddress, setWalletAddress] = useState("A1BbDsD4E5F6G7HHtQJ");
@@ -64,7 +64,6 @@ const Home = () => {
   const toggleLiveTrading = useLiveTradingStore(
     (state) => state.toggleLiveTrading
   );
-
   useEffect(() => {
     const telegram = window.Telegram?.WebApp;
 
@@ -81,24 +80,33 @@ const Home = () => {
           console.log("Fetched SOL Price:", price); // Log the fetched SOL price
           setSolPrice(price);
 
+          // Fetch wallet balance
           const { balance, simulationBalance } = await fetchWalletBalance(
             userId.toString()
           );
 
+          const parsedBalance = parseFloat(balance) || 0; // Ensure number format
+          const parsedSimulationBalance = parseFloat(simulationBalance) || 0;
+
           if (isLiveTrading) {
-            setWalletBalance(parseFloat(balance));
+            setWalletBalance(parsedBalance);
           } else {
-            setWalletBalance(parseFloat(simulationBalance));
+            setWalletBalance(parsedSimulationBalance);
           }
 
-          const totalValue =
-            (isLiveTrading ? balance : simulationBalance) * price;
-          setTotalValueInUsd(totalValue);
+          // Ensure price is not null or undefined before calculation
+          if (price !== null && price !== undefined) {
+            const totalValue =
+              (isLiveTrading ? parsedBalance : parsedSimulationBalance) * price;
+            setTotalValueInUsd(totalValue);
+          } else {
+            console.error("SOL price is not available.");
+          }
 
-          // // // Fetch active positions
-          // // const userPositions = await fetchUserPositions(userId.toString());
-          // console.log("Fetched User Positions:", userPositions);
-          // setPositions(userPositions);
+          // Fetch active positions (if necessary)
+          const userPositions = await fetchUserPositions(userId.toString());
+          console.log("Fetched User Positions:", userPositions);
+          setPositions(userPositions);
         } catch (error) {
           console.error(
             "Error fetching SOL price, balance, or positions",
