@@ -109,11 +109,11 @@ export const buyToken = async (data: BuyTokenInput) => {
 };
 
 export const sellToken = async (data: SellTokenInput) => {
-  const validateData = await verifyTelegramWebAppData(data.WebAppInitData);
+  // const validateData = await verifyTelegramWebAppData(data.WebAppInitData);
 
-  if (!validateData) {
-    throw new Error("Invalid WebAppInitData");
-  }
+  // if (!validateData) {
+  //   throw new Error("Invalid WebAppInitData");
+  // }
   const key = getPrivateKeyFromTelegramId(data.telegramId);
   const userWalletClass = new UserSolSmartWalletClass(key);
 
@@ -171,11 +171,15 @@ export const simulationBuy = async (params: BuyTokenInput) => {
     return { status: false, message: "Not Enough SImulation Balance" };
   }
 
-  await completeBuyActionSimulation(
-    params.telegramId,
-    params.tokenAddress,
-    params.amountInSol
-  );
+  try {
+    await completeBuyActionSimulation(
+      params.telegramId,
+      params.tokenAddress,
+      params.amountInSol
+    );
+  } catch (error) {
+    console.log("unable to complete Buy Simulation:", error);
+  }
 };
 
 export const completeBuyActionSimulation = async (

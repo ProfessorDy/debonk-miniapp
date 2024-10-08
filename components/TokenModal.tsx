@@ -174,7 +174,7 @@ const TokenModal: React.FC<TokenModalProps> = ({
               />
 
               <InvestmentButton
-                label="10 SOL"
+                label="1 SOL"
                 onClick={() => handleBuy(1)}
                 type="buy"
               />
@@ -191,8 +191,8 @@ const TokenModal: React.FC<TokenModalProps> = ({
                 type="sell"
               />
               <InvestmentButton
-                label="10 SOL"
-                onClick={() => handleSell(10)}
+                label="1 SOL"
+                onClick={() => handleSell(1)}
                 type="sell"
               />
             </div>

@@ -2,6 +2,7 @@
 
 import { NextResponse } from "next/server";
 import { getUserSolBalance } from "@/actions/utils";
+import { getUserSImulationBalance } from "@/actions/prisma";
 
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
@@ -13,7 +14,8 @@ export async function GET(req: Request) {
 
   try {
     const balance = await getUserSolBalance(telegramId);
-    return NextResponse.json({ balance });
+    const simulationBalance = await getUserSImulationBalance(telegramId);
+    return NextResponse.json({ balance, simulationBalance });
   } catch (error) {
     console.error("Error fetching wallet balance:", error);
     return NextResponse.json(
