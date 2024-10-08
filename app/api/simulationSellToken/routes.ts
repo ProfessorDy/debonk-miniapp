@@ -1,9 +1,7 @@
-"use server";
-
 import { NextResponse } from "next/server";
 
 import { sellToken, SellTokenInput } from "@/actions";
-import { getWebApp } from "@/utils/getWebApp";
+// import { getWebApp } from "@/utils/getWebApp";
 
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
