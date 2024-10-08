@@ -177,8 +177,10 @@ export const simulationBuy = async (params: BuyTokenInput) => {
       params.tokenAddress,
       params.amountInSol
     );
+    return { status: true, message: "succesfull buy" };
   } catch (error) {
     console.log("unable to complete Buy Simulation:", error);
+    return { status: false, message: "Buying error" };
   }
 };
 
