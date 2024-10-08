@@ -33,6 +33,11 @@ const TokenModal: React.FC<TokenModalProps> = ({
 }) => {
   const [tokenInfo, setTokenInfo] = useState<TokenInfo | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
+  const [buying, setBuying] = useState<boolean>(false);
+  const [selling, setSelling] = useState<boolean>(false);
+  const [transactionStatus, setTransactionStatus] = useState<string | null>(
+    null
+  );
   const userId = useTelegramUserStore((state) => state.userId);
 
   useEffect(() => {
@@ -65,6 +70,8 @@ const TokenModal: React.FC<TokenModalProps> = ({
   if (!isOpen) return null;
 
   const handleBuy = async (amount: number) => {
+    setBuying(true);
+    setTransactionStatus(null);
     try {
       console.log("userID", userId);
       const response = await fetch(
@@ -73,28 +80,39 @@ const TokenModal: React.FC<TokenModalProps> = ({
       const result = await response.json();
       if (result.status) {
         console.log("Buy transaction successful", result);
+        setTransactionStatus("Buy transaction successful!");
       } else {
         console.error("Buy transaction failed", result.error);
+        setTransactionStatus("Buy transaction failed.");
       }
     } catch (error) {
       console.error("API error during buy:", error);
+      setTransactionStatus("API error during buy.");
+    } finally {
+      setBuying(false);
     }
   };
 
-  const handleSell = async (amount: number) => {
+  const handleSell = async (percentage: number) => {
+    setSelling(true);
+    setTransactionStatus(null);
     try {
       const response = await fetch(
-        `/api/simulationSellToken?telegramId=${userId}&tokenAddress=${tokenAddress}&amountInSol=${amount}&amountPercent=100&type=PERCENT`
+        `/api/simulationSellToken?telegramId=${userId}&tokenAddress=${tokenAddress}&amountPercent=${percentage}&type=PERCENT`
       );
       const result = await response.json();
       if (result.status) {
         console.log("Sell transaction successful");
+        setTransactionStatus("Sell transaction successful!");
       } else {
-        console.log("Sell transaction failed");
         console.error("Sell transaction failed", result.error);
+        setTransactionStatus("Sell transaction failed.");
       }
     } catch (error) {
       console.error("API error during sell:", error);
+      setTransactionStatus("API error during sell.");
+    } finally {
+      setSelling(false);
     }
   };
 
@@ -168,36 +186,47 @@ const TokenModal: React.FC<TokenModalProps> = ({
                 label="0.1 SOL"
                 onClick={() => handleBuy(0.1)}
                 type="buy"
+                isLoading={buying}
               />
               <InvestmentButton
                 label="0.5 SOL"
                 onClick={() => handleBuy(0.5)}
                 type="buy"
+                isLoading={buying}
               />
 
               <InvestmentButton
                 label="1 SOL"
                 onClick={() => handleBuy(1)}
                 type="buy"
+                isLoading={buying}
               />
             </div>
             <div className="flex justify-between">
               <InvestmentButton
-                label="0.1 SOL"
-                onClick={() => handleSell(0.1)}
+                label="25%"
+                onClick={() => handleSell(25)}
                 type="sell"
+                isLoading={selling}
               />
               <InvestmentButton
-                label="0.5 SOL"
-                onClick={() => handleSell(0.5)}
+                label="50%"
+                onClick={() => handleSell(50)}
                 type="sell"
+                isLoading={selling}
               />
               <InvestmentButton
-                label="1 SOL"
-                onClick={() => handleSell(1)}
+                label="100%"
+                onClick={() => handleSell(100)}
                 type="sell"
+                isLoading={selling}
               />
             </div>
+
+            {/* Transaction Status */}
+            {transactionStatus && (
+              <div className="mt-4 text-white">{transactionStatus}</div>
+            )}
           </>
         ) : (
           <div className="text-white">Failed to load token information</div>
