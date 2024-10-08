@@ -329,6 +329,7 @@ const validateAmountGetTokenAndSellSimulation = async (
   );
   console.log("res: ", result);
   console.log("tokenAddress: ", tokenAddress);
+  return { status: true, message: "sell successful" };
 };
 
 export const getUserActivePositions = async (telegramId: string) => {
