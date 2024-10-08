@@ -17,6 +17,7 @@ export async function GET(req: Request) {
 
   try {
     const positions = await getUserActivePositions(telegramId);
+    console.log("positions", positions)
 
     return NextResponse.json({ positions });
   } catch (error) {
