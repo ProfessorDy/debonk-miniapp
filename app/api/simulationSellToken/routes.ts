@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 
-import { sellToken, SellTokenInput, simulationSellToken } from "@/actions";
+import { SellTokenInput, simulationSellToken } from "@/actions";
 // import { getWebApp } from "@/utils/getWebApp";
 
 export async function GET(req: Request) {
