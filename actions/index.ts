@@ -189,24 +189,24 @@ export const completeBuyActionSimulation = async (
 ) => {
   try {
     //updating user simulationBalance
-    console.log("Incrementing user balance")
+    console.log("Incrementing user balance");
     await decrementUserSimulationBalance(telegramId, amount);
-    console.log("finish incrementing user balance")
+    console.log("finish incrementing user balance");
     const user = await getUserFromTelegramId(telegramId);
     const tokenDetails = await getTokenDetails(tokenAddress);
     const amountInToken = amount / Number(tokenDetails.priceNative);
     console.log("amountInToken: ", amountInToken);
-    const wallet = user.wallet.filter((wallet: Wallet) => wallet.isPrimary)[0];
+    let wallet: Wallet;
     if (!user.wallet) {
       const address = getAddressFromTelegramId(Number(telegramId));
 
-      await prisma.wallet.upsert({
+      wallet = await prisma.wallet.upsert({
         where: { address: address },
         update: {},
         create: { userId: user.id, address: address, isPrimary: true },
       });
-    
     }
+    wallet = user.wallet.filter((wallet: Wallet) => wallet.isPrimary)[0];
 
     await prisma.transaction.create({
       data: {
@@ -220,7 +220,7 @@ export const completeBuyActionSimulation = async (
         buyPrice: tokenDetails.priceUsd.toString(),
       },
     });
-    console.log("updating user position")
+    console.log("updating user position");
     await updatePositionOnBuySimulation(
       user.id,
       wallet.id,
@@ -230,11 +230,10 @@ export const completeBuyActionSimulation = async (
       tokenDetails.priceUsd.toString(),
       true
     );
-    console.log("finished updating user positions")
+    console.log("finished updating user positions");
   } catch (error) {
     console.log("error: ", error);
   }
-  console
 };
 
 export const simulationSellToken = async (params: SellTokenInput) => {
@@ -322,7 +321,7 @@ export const getUserActivePositions = async (telegramId: string) => {
   const positions = user.positions.filter(
     (position) => position.isSimulation == false
   );
-  console.log(positions)
+  console.log(positions);
   const wallet = user.wallet.filter((wallet: Wallet) => wallet.isPrimary)[0];
   const userPositions = [];
 
