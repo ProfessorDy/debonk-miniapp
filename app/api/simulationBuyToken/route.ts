@@ -24,6 +24,8 @@ export async function GET(req: Request) {
       WebAppInitData: "",
     };
 
+    console.log("params", params)
+
     if (!telegramId) {
       return NextResponse.json(
         { error: "Telegram ID is required" },
