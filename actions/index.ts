@@ -193,6 +193,7 @@ export const completeBuyActionSimulation = async (
     await decrementUserSimulationBalance(telegramId, amount);
     console.log("finish incrementing user balance");
     const user = await getUserFromTelegramId(telegramId);
+    console.log("user: ", user);
     const tokenDetails = await getTokenDetails(tokenAddress);
     const amountInToken = amount / Number(tokenDetails.priceNative);
     console.log("amountInToken: ", amountInToken);
@@ -207,6 +208,7 @@ export const completeBuyActionSimulation = async (
       });
     }
     wallet = user.wallet.filter((wallet: Wallet) => wallet.isPrimary)[0];
+    console.log("wallet: ", wallet);
 
     await prisma.transaction.create({
       data: {
