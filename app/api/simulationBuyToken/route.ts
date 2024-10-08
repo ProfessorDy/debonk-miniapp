@@ -31,7 +31,10 @@ export async function GET(req: Request) {
     }
 
     try {
+      console.log("buying")
       const { status } = await simulationBuy(params);
+
+      console.log("status", status)
 
       if (!status) {
         return NextResponse.json(

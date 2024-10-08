@@ -171,11 +171,16 @@ export const simulationBuy = async (params: BuyTokenInput) => {
     return { status: false, message: "Not Enough SImulation Balance" };
   }
 
-  await completeBuyActionSimulation(
-    params.telegramId,
-    params.tokenAddress,
-    params.amountInSol
-  );
+  try {
+    await completeBuyActionSimulation(
+      params.telegramId,
+      params.tokenAddress,
+      params.amountInSol
+    );
+  } catch (error) {
+    console.log("unable to complete Buy Simulation:", error)
+  }
+
 };
 
 export const completeBuyActionSimulation = async (
