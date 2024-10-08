@@ -109,6 +109,7 @@ export const buyToken = async (data: BuyTokenInput) => {
 };
 
 export const sellToken = async (data: SellTokenInput) => {
+  console.log("data: ", data);
   // const validateData = await verifyTelegramWebAppData(data.WebAppInitData);
 
   // if (!validateData) {
@@ -250,7 +251,7 @@ export const completeBuyActionSimulation = async (
 };
 
 export const simulationSellToken = async (params: SellTokenInput) => {
-  await validateAmountGetTokenAndSellSimulation(
+  return await validateAmountGetTokenAndSellSimulation(
     params.telegramId,
     params.tokenAddress,
     params.type,
@@ -267,7 +268,7 @@ const validateAmountGetTokenAndSellSimulation = async (
 ) => {
   if (!(type === "PERCENT")) {
     console.error("Invalid type provided");
-    return;
+    return { status: false, message: "wrong sell type" };
   }
   //validate that the field percentToSell is present
   if (!percentToSell) {
