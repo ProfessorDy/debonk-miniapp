@@ -2,7 +2,7 @@
 
 import { NextResponse } from "next/server";
 import { SellTokenInput, simulationBuy } from "@/actions";
-import { getWebApp } from "@/utils/getWebApp";
+
 
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
