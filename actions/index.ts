@@ -355,7 +355,9 @@ export const getUserActivePositions = async (telegramId: string) => {
         position.tokenAddress,
         tokenDetails.priceUsd.toString()
       );
+      console.log("PNL_usd: ", PNL_usd);
       const PNL_sol = PNL_usd / solPrice;
+      console.log("PNL_sol: ", PNL_sol);
       const PNL_Sol_percent = (
         (PNL_sol /
           (parseInt(position.amountHeld) * parseFloat(position.avgBuyPrice))) *
@@ -370,14 +372,17 @@ export const getUserActivePositions = async (telegramId: string) => {
       const _balance = formatter({
         decimal: 5,
       }).format(balance);
+      console.log("_balance: ", _balance);
 
       const currentPrice = formatter({
         decimal: 8,
       }).format(Number(tokenDetails.priceUsd.toString()));
 
+      console.log("currentPrice: ", currentPrice);
       const currentHolding = formatCurrencyWithoutDollarSign(
         balance * Number(tokenDetails.priceNative)
       );
+      console.log("currentHolding: ", currentHolding);
 
       const PNL_usd_percent = (
         (PNL_usd /
@@ -403,11 +408,14 @@ export const getUserActivePositions = async (telegramId: string) => {
         token: tokenDetails,
       };
       userPositions.push(data);
+      console.log("data: ", data);
     }
 
+    console.log("userPositions: ", userPositions);
     return userPositions;
   } catch (error) {
     console.log("error: ", error);
+    console.log("error getting the positionss");
     return [];
   }
 };
