@@ -523,6 +523,11 @@ export const setUserTokenTrackingData = async (
 //SIMULATION
 export const getUserSImulationBalance = async (telegramId: string) => {
   const user = await getUserFromTelegramId(telegramId);
+  console.log("user.simulationBalance: ", user.simulationBalance);
+  console.log(
+    "user.simulationBalance number: ",
+    user.simulationBalance.toNumber()
+  );
   return user.simulationBalance;
 };
 
