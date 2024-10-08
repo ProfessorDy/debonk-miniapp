@@ -21,6 +21,7 @@ export async function GET(req: Request) {
     type: type as "PERCENT" | "AMOUNT",
     WebAppInitData: `webApp.initData`,
   };
+  console.log("params: ", params);
 
   if (!telegramId) {
     return NextResponse.json(
