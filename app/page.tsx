@@ -324,8 +324,8 @@ const Home = () => {
       <section className="mt-2 mb-5 bg-[#3C3C3C3B] backdrop-blur-2xl border-[#0493CC] border-[.5px] text-white shadow-lg rounded-xl p-3">
         <p className="text-xs font-light">Position Overview</p>
         <div className="flex flex-col gap-2 mt-2">
-          {isLiveTrading && positions.length > 0 ? (
-            positions.map((position, idx) => (
+          {!isLiveTrading && demoPositions.length > 0 ? (
+            demoPositions.map((position, idx) => (
               <div
                 key={idx}
                 className="bg-[#1C1C1C] border-[#2F2F2F] border-[1px] p-3 rounded-lg shadow-sm"
@@ -360,7 +360,7 @@ const Home = () => {
             ))
           ) : (
             <p className="text-sm text-center text-gray-400">
-              No positions available in simulation mode.
+              No positions available in live mode.
             </p>
           )}
         </div>
