@@ -316,6 +316,7 @@ export const getUserActivePositions = async (telegramId: string) => {
   const positions = user.positions.filter(
     (position) => position.isSimulation == false
   );
+  console.log(positions)
   const wallet = user.wallet.filter((wallet: Wallet) => wallet.isPrimary)[0];
   const userPositions = [];
 
