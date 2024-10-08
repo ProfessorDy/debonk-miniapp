@@ -198,6 +198,12 @@ const Home = () => {
     },
   ];
 
+  const demoPositions = [
+    { name: "Token A", value: 2, price: 30, change: -5 },
+    { name: "Token B", value: 5, price: 100, change: 3.5 },
+    { name: "Token C", value: 5, price: 100, change: 3.5 },
+  ];
+
   return (
     <main
       className="pt-0 p-3 pb-20 bg-black min-h-screen bg-repeat-y"
@@ -278,42 +284,33 @@ const Home = () => {
         </div>
       </section>
 
-      <section>
-        <h2 className="text-[17px] leading-[25.5px] font-poppins mb-2">
-          Position Overview
-        </h2>
-        {positions.length > 0 ? (
-          <ul className="space-y-2">
-            {positions.map((position, idx) => (
-              <li
-                key={idx}
-                className="flex justify-between items-center p-4 bg-background"
-              >
-                <div>
-                  <p>{position.name}</p>
-                  <p className="text-sm text-gray-400">
-                    MC: {position.value} sol
-                  </p>
-                  <p className="text-sm text-gray-400">
-                    LIQ: ${position.price}
-                  </p>
-                </div>
-                <div
-                  className={`text-[9.45px] px-7 py-[9.45px] rounded-[6.3px] w-[78px] ${
-                    position.change < 0 ? "bg-red-500" : "bg-green-500"
-                  }`}
-                >
-                  {position.change}%
-                </div>
-              </li>
-            ))}
-          </ul>
-        ) : (
-          <p className="text-center text-gray-500 text-sm">
-            You have no current active positions. Paste a contract address or
-            token link.
-          </p>
-        )}
+      <section className="mt-2 mb-5 bg-[#3C3C3C3B] backdrop-blur-2xl border-[#0493CC] border-[.5px] text-white shadow-lg rounded-xl p-3">
+        <div className="text-xs flex flex-col gap-2">
+          <div className="flex justify-between items-start">
+            <p className="font-light">Active Positions</p>
+            <GiPlainCircle className="text-accent text-xs" />
+          </div>
+          <hr className="border-[#D9D9D9]" />
+          <div className="flex flex-col gap-2">
+            {positions.length > 0
+              ? positions.map((position, idx) => (
+                  <div key={idx} className="flex justify-between items-center">
+                    <p className="font-medium">{position.name}</p>
+                    <p className="font-light">
+                      {position.value} @ {position.price} ({position.change}%)
+                    </p>
+                  </div>
+                ))
+              : demoPositions.map((position, idx) => (
+                  <div key={idx} className="flex justify-between items-center">
+                    <p className="font-medium">{position.name}</p>
+                    <p className="font-light">
+                      {position.value} @ {position.price} ({position.change}%)
+                    </p>
+                  </div>
+                ))}
+          </div>
+        </div>
       </section>
 
       <DepositModal
