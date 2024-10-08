@@ -255,7 +255,8 @@ export const simulationSellToken = async (params: SellTokenInput) => {
     params.telegramId,
     params.tokenAddress,
     params.type,
-    params.amountInSol
+    params.amountInSol,
+    params.amountPercent as PercentRange
   );
 };
 
@@ -266,10 +267,10 @@ const validateAmountGetTokenAndSellSimulation = async (
   amount?: number,
   percentToSell?: PercentRange
 ) => {
-  if (!(type === "PERCENT")) {
-    console.error("Invalid type provided");
-    return { status: false, message: "wrong sell type" };
-  }
+  // if (!(type === "PERCENT")) {
+  //   console.error("Invalid type provided");
+  //   return { status: false, message: "wrong sell type" };
+  // }
   //validate that the field percentToSell is present
   if (!percentToSell) {
     return { status: false, message: "Please provide a percentage to sell" };
