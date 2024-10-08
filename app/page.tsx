@@ -31,11 +31,14 @@ const fetchSolPrice = async () => {
   }
 };
 
-// Helper function to fetch the user's wallet balance
+// Helper function to fetch the user's wallet and simulation balances
 async function fetchWalletBalance(telegramId: string) {
   const res = await fetch(`/api/getUserSolanaBalance?telegramId=${telegramId}`);
   const data = await res.json();
-  return data.balance; // assuming the balance is returned as a number
+  return {
+    balance: data.balance, // Solana balance
+    simulationBalance: data.simulationBalance, // Simulation balance
+  };
 }
 
 // Helper function to fetch the user's active positions
@@ -84,6 +87,8 @@ const Home = () => {
           const { balance, simulationBalance } = await fetchWalletBalance(
             userId.toString()
           );
+          console.log(balance);
+          console.log(simulationBalance);
 
           const parsedBalance = parseFloat(balance) || 0; // Ensure number format
           const parsedSimulationBalance = parseFloat(simulationBalance) || 0;
