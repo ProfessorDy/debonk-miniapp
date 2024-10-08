@@ -208,36 +208,36 @@ const Home = () => {
       change: -98, // Red
     },
     {
-      name: "Solana",
-      mc: "$20.45",
-      liq: "$5000",
-      value: "1.50",
-      valueInUsd: 30.68,
-      change: 50, // Green
+      name: "Bonk",
+      mc: "$0.0000012",
+      liq: "$850,000",
+      value: "1000000",
+      valueInUsd: 1.2,
+      change: 5, // Green
     },
     {
-      name: "Ethereum",
-      mc: "$1845.00",
-      liq: "$10000",
-      value: "0.25",
-      valueInUsd: 461.25,
-      change: -25, // Red
+      name: "Marinade",
+      mc: "$0.10",
+      liq: "$7,500,000",
+      value: "150",
+      valueInUsd: 15.0,
+      change: -15, // Red
     },
     {
-      name: "Bitcoin",
-      mc: "$27345.67",
-      liq: "$50000",
-      value: "0.01",
-      valueInUsd: 273.46,
-      change: 10, // Green
+      name: "JitoSOL",
+      mc: "$25.65",
+      liq: "$3,000,000",
+      value: "2.00",
+      valueInUsd: 51.3,
+      change: 12, // Green
     },
     {
-      name: "Dogecoin",
-      mc: "$0.06",
-      liq: "$1000",
-      value: "1000",
-      valueInUsd: 60.0,
-      change: -5, // Red
+      name: "Mango",
+      mc: "$0.028",
+      liq: "$2,500,000",
+      value: "5000",
+      valueInUsd: 140.0,
+      change: -7, // Red
     },
   ];
 
