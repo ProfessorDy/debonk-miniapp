@@ -7,12 +7,13 @@ import { getWebApp } from "@/utils/getWebApp";
 
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
+
   const telegramId = searchParams.get("telegramId");
   const tokenAddress = searchParams.get("tokenAddress");
   const amountInSol = searchParams.get("amountInSol");
   const amountPercent = searchParams.get("amountPercent");
   const type = searchParams.get("type");
-  const webApp = getWebApp();
+  // const webApp = getWebApp();
 
   const params: SellTokenInput = {
     telegramId,
@@ -20,7 +21,7 @@ export async function GET(req: Request) {
     tokenAddress,
     amountPercent: Number(amountPercent),
     type: type as "PERCENT" | "AMOUNT",
-    WebAppInitData: webApp.initData,
+    WebAppInitData: `webApp.initData`,
   };
 
   if (!telegramId) {

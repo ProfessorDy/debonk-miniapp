@@ -10,7 +10,7 @@ export const getUserFromTelegramId = async (telegramId: string) => {
         positions: true,
       },
     });
-    if (!user.id) {
+    if (!user) {
       await prisma.user.upsert({
         where: { telegramId: telegramId.toString() },
         update: {},
@@ -523,7 +523,6 @@ export const setUserTokenTrackingData = async (
 //SIMULATION
 export const getUserSImulationBalance = async (telegramId: string) => {
   const user = await getUserFromTelegramId(telegramId);
-
   return user.simulationBalance;
 };
 

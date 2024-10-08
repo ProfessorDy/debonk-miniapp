@@ -12,7 +12,8 @@ export async function GET(req: Request) {
     const amountInSol = searchParams.get("amountInSol");
     const amountPercent = searchParams.get("amountPercent");
     const type = searchParams.get("type");
-    const webApp = getWebApp();
+
+    // const webApp = getWebApp();
 
     const params: SellTokenInput = {
       telegramId,
@@ -20,7 +21,7 @@ export async function GET(req: Request) {
       tokenAddress,
       amountPercent: Number(amountPercent),
       type: type as "PERCENT" | "AMOUNT",
-      WebAppInitData: webApp.initData,
+      WebAppInitData: "",
     };
 
     if (!telegramId) {
@@ -31,10 +32,10 @@ export async function GET(req: Request) {
     }
 
     try {
-      console.log("buying")
+      console.log("buying");
       const { status } = await simulationBuy(params);
 
-      console.log("status", status)
+      console.log("status", status);
 
       if (!status) {
         return NextResponse.json(
@@ -53,5 +54,10 @@ export async function GET(req: Request) {
     }
   } catch (error) {
     console.log("error: ", error);
+
+    return NextResponse.json(
+      { error: "Error: Internal server Error", details: error.message },
+      { status: 500 }
+    );
   }
 }
