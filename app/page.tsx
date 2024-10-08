@@ -17,6 +17,9 @@ type Position = {
   value: number;
   price: number;
   change: number;
+  mc: string;
+  liq: string;
+  valueInUsd: number;
 };
 
 // Helper function to fetch SOL price from the API
@@ -196,9 +199,46 @@ const Home = () => {
   ];
 
   const demoPositions = [
-    { name: "Token A", value: 2, price: 30, change: -5 },
-    { name: "Token B", value: 5, price: 100, change: 3.5 },
-    { name: "Token C", value: 5, price: 100, change: 3.5 },
+    {
+      name: "Hexacat",
+      mc: "$0.000046",
+      liq: "$3165",
+      value: "0.000046",
+      valueInUsd: 0.0,
+      change: -98, // Red
+    },
+    {
+      name: "Solana",
+      mc: "$20.45",
+      liq: "$5000",
+      value: "1.50",
+      valueInUsd: 30.68,
+      change: 50, // Green
+    },
+    {
+      name: "Ethereum",
+      mc: "$1845.00",
+      liq: "$10000",
+      value: "0.25",
+      valueInUsd: 461.25,
+      change: -25, // Red
+    },
+    {
+      name: "Bitcoin",
+      mc: "$27345.67",
+      liq: "$50000",
+      value: "0.01",
+      valueInUsd: 273.46,
+      change: 10, // Green
+    },
+    {
+      name: "Dogecoin",
+      mc: "$0.06",
+      liq: "$1000",
+      value: "1000",
+      valueInUsd: 60.0,
+      change: -5, // Red
+    },
   ];
 
   return (
@@ -243,7 +283,7 @@ const Home = () => {
               title="Copy Address"
             />
           </p>
-          <h2 className="text-[34px] ">{walletBalance} SOL</h2>
+          <h2 className="text-[34px] ">{walletBalance.toFixed(3)} SOL</h2>
           <p className="text-primary flex gap-[2px] items-center">
             {totalValueInUsd !== null
               ? `$${totalValueInUsd.toFixed(2)}`
@@ -282,31 +322,75 @@ const Home = () => {
       </section>
 
       <section className="mt-2 mb-5 bg-[#3C3C3C3B] backdrop-blur-2xl border-[#0493CC] border-[.5px] text-white shadow-lg rounded-xl p-3">
-        <div className="text-xs flex flex-col gap-2">
-          <div className="flex justify-between items-start">
-            <p className="font-light">Active Positions</p>
-            <GiPlainCircle className="text-accent text-xs" />
-          </div>
-          <hr className="border-[#D9D9D9]" />
-          <div className="flex flex-col gap-2">
-            {positions.length > 0
-              ? positions.map((position, idx) => (
-                  <div key={idx} className="flex justify-between items-center">
-                    <p className="font-medium">{position.name}</p>
-                    <p className="font-light">
-                      {position.value} @ {position.price} ({position.change}%)
+        <p className="text-xs font-light">Position Overview</p>
+        <div className="flex flex-col gap-2 mt-2">
+          {positions.length > 0
+            ? positions.map((position, idx) => (
+                <div
+                  key={idx}
+                  className="bg-[#1C1C1C] border-[#2F2F2F] border-[1px] p-3 rounded-lg shadow-sm"
+                >
+                  <div className="flex justify-between items-center mb-2">
+                    <p className="text-base font-bold">{position.name}</p>
+                    <button className="bg-[#333] text-xs text-white py-1 px-2 rounded-md">
+                      PNL Card
+                    </button>
+                  </div>
+                  <div className="text-sm text-gray-400 flex justify-between items-center">
+                    <div>
+                      <p>MC {position.mc}</p>
+                      <p>LIQ {position.liq}</p>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-primary">{position.value} SOL</p>
+                      <p>{position.valueInUsd.toFixed(2)} USD</p>
+                    </div>
+                  </div>
+                  <div className="mt-2 text-right">
+                    <p
+                      className={`font-bold ${
+                        position.change > 0 ? "text-green-500" : "text-red-500"
+                      }`}
+                    >
+                      {position.change > 0 ? "+" : ""}
+                      {position.change}%
                     </p>
                   </div>
-                ))
-              : demoPositions.map((position, idx) => (
-                  <div key={idx} className="flex justify-between items-center">
-                    <p className="font-medium">{position.name}</p>
-                    <p className="font-light">
-                      {position.value} @ {position.price} ({position.change}%)
+                </div>
+              ))
+            : demoPositions.map((position, idx) => (
+                <div
+                  key={idx}
+                  className="bg-[#1C1C1C] border-[#2F2F2F] border-[1px] p-3 rounded-lg shadow-sm"
+                >
+                  <div className="flex justify-between items-center mb-2">
+                    <p className="text-base font-bold">{position.name}</p>
+                    <button className="bg-[#333] text-xs text-white py-1 px-2 rounded-md">
+                      PNL Card
+                    </button>
+                  </div>
+                  <div className="text-sm text-gray-400 flex justify-between items-center">
+                    <div>
+                      <p>MC {position.mc}</p>
+                      <p>LIQ {position.liq}</p>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-primary">{position.value} SOL</p>
+                      <p>{position.valueInUsd.toFixed(2)} USD</p>
+                    </div>
+                  </div>
+                  <div className="mt-2 text-right">
+                    <p
+                      className={`font-bold ${
+                        position.change > 0 ? "text-green-500" : "text-red-500"
+                      }`}
+                    >
+                      {position.change > 0 ? "+" : ""}
+                      {position.change}%
                     </p>
                   </div>
-                ))}
-          </div>
+                </div>
+              ))}
         </div>
       </section>
 
