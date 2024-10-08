@@ -39,11 +39,11 @@ async function fetchWalletBalance(telegramId: string) {
 }
 
 // Helper function to fetch the user's active positions
-async function fetchUserPositions(telegramId: string) {
-  const res = await fetch(`/api/getUserPositions?telegramId=${telegramId}`);
-  const data = await res.json();
-  return data.positions; // assuming positions are returned in an array
-}
+// async function fetchUserPositions(telegramId: string) {
+//   const res = await fetch(`/api/getUserPositions?telegramId=${telegramId}`);
+//   const data = await res.json();
+//   return data.positions; // assuming positions are returned in an array
+// }
 
 const Home = () => {
   const [walletAddress, setWalletAddress] = useState("A1BbDsD4E5F6G7HHtQJ");
@@ -111,7 +111,7 @@ const Home = () => {
     } else {
       console.log("No user data available in Telegram WebApp");
     }
-  }, [setWalletBalance]);
+  }, [setWalletBalance, setUserId, isLiveTrading]);
 
   useEffect(() => {
     console.log("Component mounted. Checking Telegram WebApp user data...");
