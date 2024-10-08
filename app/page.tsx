@@ -11,6 +11,7 @@ import { copyToClipboard } from "@/utils/clipboardUtils";
 import DepositModal from "@/components/DepositModal";
 import WithdrawModal from "@/components/WithdrawModal";
 import useTelegramUserStore from "@/store/useTelegramUserStore";
+import useLiveTradingStore from "@/store/useLiveTradingStore";
 
 type Position = {
   name: string;
@@ -59,6 +60,10 @@ const Home = () => {
   const [positions, setPositions] = useState<Position[]>([]); //eslint-disable-line
 
   const setUserId = useTelegramUserStore((state) => state.setUserId);
+  const isLiveTrading = useLiveTradingStore((state) => state.isLiveTrading);
+  const toggleLiveTrading = useLiveTradingStore(
+    (state) => state.toggleLiveTrading
+  );
 
   useEffect(() => {
     const telegram = window.Telegram?.WebApp;
@@ -76,14 +81,18 @@ const Home = () => {
           console.log("Fetched SOL Price:", price); // Log the fetched SOL price
           setSolPrice(price);
 
-          // Fetch the wallet balance only when telegramId is available
-          const balance = await fetchWalletBalance(userId.toString());
-          console.log("Fetched Wallet Balance:", balance); // Log the fetched wallet balance
-          setWalletBalance(parseFloat(balance));
+          const { balance, simulationBalance } = await fetchWalletBalance(
+            userId.toString()
+          );
 
-          // Calculate total value in USD (wallet balance * SOL price)
-          const totalValue = balance * price;
-          console.log("Calculated Total Value in USD:", totalValue); // Log the calculated total value
+          if (isLiveTrading) {
+            setWalletBalance(parseFloat(balance));
+          } else {
+            setWalletBalance(parseFloat(simulationBalance));
+          }
+
+          const totalValue =
+            (isLiveTrading ? balance : simulationBalance) * price;
           setTotalValueInUsd(totalValue);
 
           // // // Fetch active positions
@@ -191,8 +200,19 @@ const Home = () => {
             </p>
             <p className="text-xs text-primary font-light ">$0.00</p>
           </div>
-          <button className="flex gap-1 items-center text-xs text-accent rounded-xl bg-black border border-accent px-3 py-1">
-            <PiTestTubeFill className="text-sm" /> Simulation
+          <button
+            className="flex gap-1 items-center self-centertext-xs text-accent rounded-xl bg-black border border-accent px-3 py-1"
+            onClick={toggleLiveTrading}
+          >
+            {isLiveTrading ? (
+              <>
+                <PiTestTubeFill className="text-sm" /> Live Trading
+              </>
+            ) : (
+              <>
+                <PiTestTubeFill className="text-sm" /> Simulation
+              </>
+            )}
           </button>
         </div>
 
@@ -216,9 +236,19 @@ const Home = () => {
           </p>
         </div>
 
-        <button className="flex text-sm gap-1 pt-2 items-center mx-auto font-poppins">
-          Demo <GiPlainCircle className="text-[#1DD75B] text-xs font-light" />
-        </button>
+        <div className="flex justify-center items-center text-sm gap-1 pt-2 font-poppins">
+          {isLiveTrading ? (
+            <>
+              Live{" "}
+              <GiPlainCircle className="text-[#FF0000] text-xs font-light" />
+            </>
+          ) : (
+            <>
+              Demo{" "}
+              <GiPlainCircle className="text-[#1DD75B] text-xs font-light" />
+            </>
+          )}
+        </div>
 
         {/* Action Buttons */}
         <div className="flex w-3/5 mx-auto justify-between mt-4 text-[10px] text-accent font-light">
