@@ -324,73 +324,45 @@ const Home = () => {
       <section className="mt-2 mb-5 bg-[#3C3C3C3B] backdrop-blur-2xl border-[#0493CC] border-[.5px] text-white shadow-lg rounded-xl p-3">
         <p className="text-xs font-light">Position Overview</p>
         <div className="flex flex-col gap-2 mt-2">
-          {positions.length > 0
-            ? positions.map((position, idx) => (
-                <div
-                  key={idx}
-                  className="bg-[#1C1C1C] border-[#2F2F2F] border-[1px] p-3 rounded-lg shadow-sm"
-                >
-                  <div className="flex justify-between items-center mb-2">
-                    <p className="text-base font-bold">{position.name}</p>
-                    <button className="bg-[#333] text-xs text-white py-1 px-2 rounded-md">
-                      PNL Card
-                    </button>
+          {isLiveTrading && positions.length > 0 ? (
+            positions.map((position, idx) => (
+              <div
+                key={idx}
+                className="bg-[#1C1C1C] border-[#2F2F2F] border-[1px] p-3 rounded-lg shadow-sm"
+              >
+                <div className="flex justify-between items-center mb-2">
+                  <p className="text-base font-bold">{position.name}</p>
+                  <button className="bg-[#333] text-xs text-white py-1 px-2 rounded-md">
+                    PNL Card
+                  </button>
+                </div>
+                <div className="text-sm text-gray-400 flex justify-between items-center">
+                  <div>
+                    <p>MC {position.mc}</p>
+                    <p>LIQ {position.liq}</p>
                   </div>
-                  <div className="text-sm text-gray-400 flex justify-between items-center">
-                    <div>
-                      <p>MC {position.mc}</p>
-                      <p>LIQ {position.liq}</p>
-                    </div>
-                    <div className="text-right">
-                      <p className="text-primary">{position.value} SOL</p>
-                      <p>{position.valueInUsd.toFixed(2)} USD</p>
-                    </div>
-                  </div>
-                  <div className="mt-2 text-right">
-                    <p
-                      className={`font-bold ${
-                        position.change > 0 ? "text-green-500" : "text-red-500"
-                      }`}
-                    >
-                      {position.change > 0 ? "+" : ""}
-                      {position.change}%
-                    </p>
+                  <div className="text-right">
+                    <p className="text-primary">{position.value} SOL</p>
+                    <p>{position.valueInUsd.toFixed(2)} USD</p>
                   </div>
                 </div>
-              ))
-            : demoPositions.map((position, idx) => (
-                <div
-                  key={idx}
-                  className="bg-[#1C1C1C] border-[#2F2F2F] border-[1px] p-3 rounded-lg shadow-sm"
-                >
-                  <div className="flex justify-between items-center mb-2">
-                    <p className="text-base font-bold">{position.name}</p>
-                    <button className="bg-[#333] text-xs text-white py-1 px-2 rounded-md">
-                      PNL Card
-                    </button>
-                  </div>
-                  <div className="text-sm text-gray-400 flex justify-between items-center">
-                    <div>
-                      <p>MC {position.mc}</p>
-                      <p>LIQ {position.liq}</p>
-                    </div>
-                    <div className="text-right">
-                      <p className="text-primary">{position.value} SOL</p>
-                      <p>{position.valueInUsd.toFixed(2)} USD</p>
-                    </div>
-                  </div>
-                  <div className="mt-2 text-right">
-                    <p
-                      className={`font-bold ${
-                        position.change > 0 ? "text-green-500" : "text-red-500"
-                      }`}
-                    >
-                      {position.change > 0 ? "+" : ""}
-                      {position.change}%
-                    </p>
-                  </div>
+                <div className="mt-2 text-right">
+                  <p
+                    className={`font-bold ${
+                      position.change > 0 ? "text-green-500" : "text-red-500"
+                    }`}
+                  >
+                    {position.change > 0 ? "+" : ""}
+                    {position.change}%
+                  </p>
                 </div>
-              ))}
+              </div>
+            ))
+          ) : (
+            <p className="text-sm text-center text-gray-400">
+              No positions available in simulation mode.
+            </p>
+          )}
         </div>
       </section>
 
