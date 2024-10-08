@@ -37,12 +37,12 @@ async function fetchWalletBalance(telegramId: string) {
   return data.balance; // assuming the balance is returned as a number
 }
 
-// // Helper function to fetch the user's active positions
-// async function fetchUserPositions(telegramId: string) {
-//   const res = await fetch(`/api/getUserPositions?telegramId=${telegramId}`);
-//   const data = await res.json();
-//   return data.positions; // assuming positions are returned in an array
-// }
+// Helper function to fetch the user's active positions
+async function fetchUserPositions(telegramId: string) {
+  const res = await fetch(`/api/getUserPositions?telegramId=${telegramId}`);
+  const data = await res.json();
+  return data.positions; // assuming positions are returned in an array
+}
 
 const Home = () => {
   const [walletAddress, setWalletAddress] = useState("A1BbDsD4E5F6G7HHtQJ");
