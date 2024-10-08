@@ -17,8 +17,8 @@ type Position = {
   value: number;
   price: number;
   change: number;
-  mc: any;
-  liq: any;
+  mc: string;
+  liq: string;
   valueInUsd: number;
 };
 
