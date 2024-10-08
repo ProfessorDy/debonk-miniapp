@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 
-import { sellToken, SellTokenInput } from "@/actions";
+import { sellToken, SellTokenInput, simulationSellToken } from "@/actions";
 // import { getWebApp } from "@/utils/getWebApp";
 
 export async function GET(req: Request) {
@@ -30,7 +30,7 @@ export async function GET(req: Request) {
   }
 
   try {
-    const { status, result } = await sellToken(params);
+    const { status } = await simulationSellToken(params);
 
     if (!status) {
       return NextResponse.json(
@@ -39,7 +39,7 @@ export async function GET(req: Request) {
       );
     }
 
-    return NextResponse.json({ result });
+    return NextResponse.json({ status });
   } catch (error) {
     console.error("API error: ", error); // Log the error for debugging
     return NextResponse.json(
