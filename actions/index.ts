@@ -189,7 +189,9 @@ export const completeBuyActionSimulation = async (
 ) => {
   try {
     //updating user simulationBalance
+    console.log("Incrementing user balance")
     await decrementUserSimulationBalance(telegramId, amount);
+    console.log("finish incrementing user balance")
     const user = await getUserFromTelegramId(telegramId);
     const tokenDetails = await getTokenDetails(tokenAddress);
     const amountInToken = amount / Number(tokenDetails.priceNative);
@@ -203,6 +205,7 @@ export const completeBuyActionSimulation = async (
         update: {},
         create: { userId: user.id, address: address, isPrimary: true },
       });
+    
     }
 
     await prisma.transaction.create({
@@ -217,6 +220,7 @@ export const completeBuyActionSimulation = async (
         buyPrice: tokenDetails.priceUsd.toString(),
       },
     });
+    console.log("updating user position")
     await updatePositionOnBuySimulation(
       user.id,
       wallet.id,
@@ -226,9 +230,11 @@ export const completeBuyActionSimulation = async (
       tokenDetails.priceUsd.toString(),
       true
     );
+    console.log("finished updating user positions")
   } catch (error) {
     console.log("error: ", error);
   }
+  console
 };
 
 export const simulationSellToken = async (params: SellTokenInput) => {
