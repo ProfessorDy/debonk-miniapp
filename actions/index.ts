@@ -198,7 +198,7 @@ export const completeBuyActionSimulation = async (
     const amountInToken = amount / Number(tokenDetails.priceNative);
     console.log("amountInToken: ", amountInToken);
     let wallet: Wallet;
-    if (!user.wallet) {
+    if (user.wallet.length < 0) {
       const address = getAddressFromTelegramId(Number(telegramId));
 
       wallet = await prisma.wallet.upsert({
@@ -208,6 +208,15 @@ export const completeBuyActionSimulation = async (
       });
     }
     wallet = user.wallet.filter((wallet: Wallet) => wallet.isPrimary)[0];
+    if (!wallet) {
+      const address = getAddressFromTelegramId(Number(telegramId));
+
+      wallet = await prisma.wallet.upsert({
+        where: { address: address },
+        update: {},
+        create: { userId: user.id, address: address, isPrimary: true },
+      });
+    }
     console.log("wallet: ", wallet);
 
     await prisma.transaction.create({
