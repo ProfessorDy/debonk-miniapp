@@ -14,7 +14,9 @@ export async function GET(req: Request) {
 
   try {
     const balance = await getUserSolBalance(telegramId);
-    const simulationBalance = await getUserSImulationBalance(telegramId);
+    const simulationBalance = Number ( await getUserSImulationBalance(telegramId))
+    console.log(balance)
+    console.log(simulationBalance)
     return NextResponse.json({ balance, simulationBalance });
   } catch (error) {
     console.error("Error fetching wallet balance:", error);

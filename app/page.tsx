@@ -84,6 +84,8 @@ const Home = () => {
           const { balance, simulationBalance } = await fetchWalletBalance(
             userId.toString()
           );
+          console.log(balance);
+          console.log(simulationBalance);
 
           const parsedBalance = parseFloat(balance) || 0; // Ensure number format
           const parsedSimulationBalance = parseFloat(simulationBalance) || 0;
