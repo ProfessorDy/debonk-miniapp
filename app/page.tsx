@@ -57,7 +57,7 @@ const Home = () => {
   const [isDepositModalOpen, setIsDepositModalOpen] = useState(false);
   const [isWithdrawModalOpen, setIsWithdrawModalOpen] = useState(false);
 
-  const [solPrice, setSolPrice] = useState<number | null>(null); //eslint-disable-line
+  const [solPrice, setSolPrice] = useState<number | null>(null);
   const [walletBalance, setWalletBalance] = useState<number>(0);
   const [totalValueInUsd, setTotalValueInUsd] = useState<number | null>(null);
   const [positions, setPositions] = useState<Position[]>([]); //eslint-disable-line
@@ -326,6 +326,7 @@ const Home = () => {
       <WithdrawModal
         isOpen={isWithdrawModalOpen}
         onClose={handleCloseWithdrawModal}
+        solPrice={solPrice}
         availableBalance={walletBalance}
       />
     </main>
