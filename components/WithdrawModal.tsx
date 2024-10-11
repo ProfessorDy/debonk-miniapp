@@ -19,6 +19,23 @@ const WithdrawModal: React.FC<WithdrawModalProps> = ({
 
   if (!isOpen) return null;
 
+  const handleConfirmAndSend = async () => {
+    try {
+      const response = await fetch(
+        `/api/withdrawSol?telegramId=12345&amount=${amount}&destinationAddress=${walletAddress}`
+      );
+      const result = await response.json();
+      if (response.ok) {
+        setStep(3); // Move to success screen
+      } else {
+        // Handle the error, maybe show an error message in the modal
+        console.error(result.error || "Transaction failed");
+      }
+    } catch (error) {
+      console.error("Error while processing withdrawal:", error);
+    }
+  };
+
   // Simple wallet address validation (can be enhanced)
   const validateAddress = (address: string) => {
     if (address.length < 10) {
@@ -109,7 +126,7 @@ const WithdrawModal: React.FC<WithdrawModalProps> = ({
 
       {/* Confirm and Send Button */}
       <button
-        onClick={() => setStep(3)} // Move to success screen
+        onClick={handleConfirmAndSend}
         className="bg-[#0493CC] text-white font-semibold py-3 rounded-lg w-full mb-6"
       >
         Confirm & Send
