@@ -375,6 +375,7 @@ const Home = () => {
         isOpen={isWithdrawModalOpen}
         onClose={handleCloseWithdrawModal}
         walletAddress={walletAddress}
+        availableBalance={walletBalance}
       />
     </main>
   );
