@@ -77,11 +77,13 @@ const WithdrawModal: React.FC<WithdrawModalProps> = ({
 
       {/* Continue Button */}
       <button
-        onClick={() => amount > 0 && setStep(2)} // Validate amount is more than 0
+        onClick={() => parseFloat(amount.toString()) > 0 && setStep(2)} // Ensure comparison is valid
         className={`${
-          amount > 0 ? "bg-[#0493CC]" : "bg-gray-600 cursor-not-allowed"
+          parseFloat(amount.toString()) > 0
+            ? "bg-[#0493CC]"
+            : "bg-gray-600 cursor-not-allowed"
         } text-white font-semibold py-3 rounded-lg w-full mb-6`}
-        disabled={amount <= 0}
+        disabled={parseFloat(amount.toString()) <= 0}
       >
         Continue
       </button>
