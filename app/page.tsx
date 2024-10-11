@@ -67,6 +67,7 @@ const Home = () => {
   const toggleLiveTrading = useLiveTradingStore(
     (state) => state.toggleLiveTrading
   );
+
   useEffect(() => {
     const telegram = window.Telegram?.WebApp;
 
@@ -74,23 +75,17 @@ const Home = () => {
       const { id: userId } = telegram.initDataUnsafe.user;
 
       setUserId(userId.toString());
-      console.log("User ID:", userId); // Log the user ID
 
       const getSolData = async () => {
         try {
-          // Fetch SOL price
           const price = await fetchSolPrice();
-          console.log("Fetched SOL Price:", price); // Log the fetched SOL price
           setSolPrice(price);
 
-          // Fetch wallet balance
           const { balance, simulationBalance } = await fetchWalletBalance(
             userId.toString()
           );
-          console.log(balance);
-          console.log(simulationBalance);
 
-          const parsedBalance = parseFloat(balance) || 0; // Ensure number format
+          const parsedBalance = parseFloat(balance) || 0;
           const parsedSimulationBalance = parseFloat(simulationBalance) || 0;
 
           if (isLiveTrading) {
@@ -99,19 +94,21 @@ const Home = () => {
             setWalletBalance(parsedSimulationBalance);
           }
 
-          // Ensure price is not null or undefined before calculation
           if (price !== null && price !== undefined) {
             const totalValue =
               (isLiveTrading ? parsedBalance : parsedSimulationBalance) * price;
             setTotalValueInUsd(totalValue);
-          } else {
-            console.error("SOL price is not available.");
           }
 
-          // Fetch active positions (if necessary)
+          // Fetch active positions
           const userPositions = await fetchUserPositions(userId.toString());
-          console.log("Fetched User Positions:", userPositions);
-          setPositions(userPositions);
+          if (userPositions.length === 0) {
+            setPositions([]);
+            console.log("No active positions found.");
+          } else {
+            setPositions(userPositions);
+            console.log("Fetched User Positions:", userPositions);
+          }
         } catch (error) {
           console.error(
             "Error fetching SOL price, balance, or positions",
@@ -121,8 +118,6 @@ const Home = () => {
       };
 
       getSolData();
-    } else {
-      console.log("No user data available in Telegram WebApp");
     }
   }, [setWalletBalance, setUserId, isLiveTrading]);
 
@@ -195,49 +190,6 @@ const Home = () => {
       label: "Refresh",
       icon: <SlRefresh className="text-[20px]" />,
       action: handleRefresh,
-    },
-  ];
-
-  const demoPositions = [
-    {
-      name: "Hexacat",
-      mc: "$0.000046",
-      liq: "$3165",
-      value: "0.000046",
-      valueInUsd: 0.0,
-      change: -98, // Red
-    },
-    {
-      name: "Bonk",
-      mc: "$0.0000012",
-      liq: "$850,000",
-      value: "1000000",
-      valueInUsd: 1.2,
-      change: 5, // Green
-    },
-    {
-      name: "Marinade",
-      mc: "$0.10",
-      liq: "$7,500,000",
-      value: "150",
-      valueInUsd: 15.0,
-      change: -15, // Red
-    },
-    {
-      name: "JitoSOL",
-      mc: "$25.65",
-      liq: "$3,000,000",
-      value: "2.00",
-      valueInUsd: 51.3,
-      change: 12, // Green
-    },
-    {
-      name: "Mango",
-      mc: "$0.028",
-      liq: "$2,500,000",
-      value: "5000",
-      valueInUsd: 140.0,
-      change: -7, // Red
     },
   ];
 
@@ -324,8 +276,8 @@ const Home = () => {
       <section className="mt-2 mb-5 bg-[#3C3C3C3B] backdrop-blur-2xl border-[#0493CC] border-[.5px] text-white shadow-lg rounded-xl p-3">
         <p className="text-xs font-light">Position Overview</p>
         <div className="flex flex-col gap-2 mt-2">
-          {!isLiveTrading && demoPositions.length > 0 ? (
-            demoPositions.map((position, idx) => (
+          {positions.length > 0 ? (
+            positions.map((position, idx) => (
               <div
                 key={idx}
                 className="bg-[#1C1C1C] border-[#2F2F2F] border-[1px] p-3 rounded-lg shadow-sm"
@@ -360,7 +312,7 @@ const Home = () => {
             ))
           ) : (
             <p className="text-sm text-center text-gray-400">
-              No positions available in live mode.
+              You have no active positions at the moment.
             </p>
           )}
         </div>
@@ -374,7 +326,7 @@ const Home = () => {
       <WithdrawModal
         isOpen={isWithdrawModalOpen}
         onClose={handleCloseWithdrawModal}
-        walletAddress={walletAddress}
+        availableBalance={walletBalance}
       />
     </main>
   );

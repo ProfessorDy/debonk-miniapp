@@ -34,7 +34,7 @@ interface WebApp {
 interface GetWalletAddressInput extends WebApp {
   telegramId: string;
 }
-interface WithdrawalInput extends WebApp {
+export interface WithdrawalInput extends WebApp {
   destinationAddress: string;
   amount: number;
   telegramId: string;
@@ -334,10 +334,9 @@ const validateAmountGetTokenAndSellSimulation = async (
 
 export const getUserActivePositions = async (telegramId: string) => {
   const user = await getUserFromTelegramId(telegramId);
-  const positions = user.positions.filter(
-    (position) => position.isSimulation == false
-  );
-  console.log(positions);
+
+  const positions = user.positions;
+
   const wallet = user.wallet.filter((wallet: Wallet) => wallet.isPrimary)[0];
   const userPositions = [];
 
@@ -410,10 +409,8 @@ export const getUserActivePositions = async (telegramId: string) => {
         token: tokenDetails,
       };
       userPositions.push(data);
-      console.log("data: ", data);
     }
 
-    console.log("userPositions: ", userPositions);
     return userPositions;
   } catch (error) {
     console.log("error: ", error);
