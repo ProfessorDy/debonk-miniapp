@@ -4,13 +4,15 @@ import { IoClose } from "react-icons/io5";
 interface WithdrawModalProps {
   isOpen: boolean;
   onClose: () => void;
+  solPrice: number;
   availableBalance: number; // Add available balance as a prop
 }
 
 const WithdrawModal: React.FC<WithdrawModalProps> = ({
   isOpen,
   onClose,
-  availableBalance, // Use the available balance in the modal
+  availableBalance,
+  solPrice,
 }) => {
   const [step, setStep] = useState(1); // Track the form step
   const [amount, setAmount] = useState(0.0); // Track the entered amount
@@ -77,9 +79,8 @@ const WithdrawModal: React.FC<WithdrawModalProps> = ({
       <div className="flex flex-col items-center mb-6">
         <div className="text-5xl text-white font-bold">{amount} SOL</div>
         <div className="text-base text-gray-400">
-          ${(amount * 22.5).toFixed(2)}
+          ${amount && solPrice ? (amount * solPrice).toFixed(2) : "0.00"}
         </div>{" "}
-        {/* Assuming 1 SOL = $22.5 */}
       </div>
 
       {/* MAX and Available Balance */}

@@ -47,7 +47,7 @@ async function fetchWalletBalance(telegramId: string) {
 async function fetchUserPositions(telegramId: string) {
   const res = await fetch(`/api/getUserPositions?telegramId=${telegramId}`);
   const data = await res.json();
-  return data.positions; // assuming positions are returned in an array
+  return data.positions;
 }
 
 const Home = () => {
@@ -57,7 +57,7 @@ const Home = () => {
   const [isDepositModalOpen, setIsDepositModalOpen] = useState(false);
   const [isWithdrawModalOpen, setIsWithdrawModalOpen] = useState(false);
 
-  const [solPrice, setSolPrice] = useState<number | null>(null); //eslint-disable-line
+  const [solPrice, setSolPrice] = useState<number | null>(null);
   const [walletBalance, setWalletBalance] = useState<number>(0);
   const [totalValueInUsd, setTotalValueInUsd] = useState<number | null>(null);
   const [positions, setPositions] = useState<Position[]>([]); //eslint-disable-line
@@ -326,6 +326,7 @@ const Home = () => {
       <WithdrawModal
         isOpen={isWithdrawModalOpen}
         onClose={handleCloseWithdrawModal}
+        solPrice={solPrice}
         availableBalance={walletBalance}
       />
     </main>
