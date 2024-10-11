@@ -4,70 +4,71 @@ import { IoClose } from "react-icons/io5";
 interface WithdrawModalProps {
   isOpen: boolean;
   onClose: () => void;
-  walletAddress: string;
-  availableBalance: number; // New prop for available balance
+  availableBalance: number; // Add available balance as a prop
 }
 
 const WithdrawModal: React.FC<WithdrawModalProps> = ({
   isOpen,
   onClose,
-  walletAddress,
-  availableBalance, // Now being passed as a prop
+  availableBalance, // Use the available balance in the modal
 }) => {
-  const [step, setStep] = useState(1); // To track which step of the form we're in
-  const [amount, setAmount] = useState<number | string>(""); // Tracking amount, starting as empty
-  const [isProcessing, setIsProcessing] = useState(false); // Loading state for the withdrawal
+  const [step, setStep] = useState(1); // Track the form step
+  const [amount, setAmount] = useState(0.0); // Track the entered amount
+  const [walletAddress, setWalletAddress] = useState(""); // Track entered wallet address
+  const [addressError, setAddressError] = useState(""); // Track validation for wallet address
 
   if (!isOpen) return null;
 
-  // Handle the MAX button click
-  const handleMaxClick = () => {
-    setAmount(availableBalance);
-  };
-
-  // Handle amount change
-  const handleAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = parseFloat(e.target.value);
-    if (!isNaN(value) && value <= availableBalance) {
-      setAmount(value);
+  // Simple wallet address validation (can be enhanced)
+  const validateAddress = (address: string) => {
+    if (address.length < 10) {
+      setAddressError("Invalid wallet address. Too short.");
+      return false;
     }
+    setAddressError("");
+    return true;
   };
 
-  // Step 1 - Enter Amount
+  // Step 1 - Enter Address and Amount
   const renderStepOne = () => (
     <div className="flex flex-col justify-between h-full">
       {/* Title */}
-      <h2 className="text-2xl font-semibold text-white mb-6">Amount</h2>
+      <h2 className="text-2xl font-semibold text-white mb-6">
+        Enter Withdrawal Details
+      </h2>
 
-      {/* Wallet Address */}
-      <div className="bg-gray-900 p-4 rounded-lg text-left text-gray-300 mb-4">
-        To: {walletAddress.slice(0, 5)}...{walletAddress.slice(-5)}
+      {/* Wallet Address Input */}
+      <div className="flex flex-col items-start mb-4 w-full">
+        <label htmlFor="walletAddress" className="text-gray-400 mb-2">
+          Wallet Address
+        </label>
+        <input
+          type="text"
+          id="walletAddress"
+          value={walletAddress}
+          onChange={(e) => setWalletAddress(e.target.value)}
+          onBlur={() => validateAddress(walletAddress)}
+          placeholder="Enter wallet address"
+          className="bg-gray-800 text-white p-3 w-full rounded-md"
+        />
+        {addressError && (
+          <p className="text-red-500 text-sm mt-2">{addressError}</p>
+        )}
       </div>
 
       {/* Amount Input */}
       <div className="flex flex-col items-center mb-6">
-        <input
-          type="number"
-          value={amount}
-          onChange={handleAmountChange}
-          className="text-5xl text-white font-bold bg-transparent border-none focus:outline-none w-full text-center"
-          placeholder="0.0"
-          min="0"
-          max={availableBalance}
-          step="0.01"
-        />
+        <div className="text-5xl text-white font-bold">{amount} SOL</div>
         <div className="text-base text-gray-400">
-          {amount
-            ? `$${(parseFloat(amount.toString()) * 22.5).toFixed(2)}`
-            : "$0.00"}{" "}
-          {/* Assuming 1 SOL = $22.5 */}
-        </div>
+          ${(amount * 22.5).toFixed(2)}
+        </div>{" "}
+        {/* Assuming 1 SOL = $22.5 */}
       </div>
 
       {/* MAX and Available Balance */}
       <div className="flex justify-between text-white mb-4">
         <button
-          onClick={handleMaxClick}
+          onClick={() => setAmount(availableBalance)} // Set max amount to available balance
           className="bg-gray-800 px-4 py-2 rounded-md"
         >
           MAX
@@ -77,13 +78,15 @@ const WithdrawModal: React.FC<WithdrawModalProps> = ({
 
       {/* Continue Button */}
       <button
-        onClick={() => parseFloat(amount.toString()) > 0 && setStep(2)} // Ensure comparison is valid
+        onClick={() => {
+          if (validateAddress(walletAddress)) {
+            setStep(2);
+          }
+        }}
         className={`${
-          parseFloat(amount.toString()) > 0
-            ? "bg-[#0493CC]"
-            : "bg-gray-600 cursor-not-allowed"
+          !walletAddress || addressError ? "bg-gray-600" : "bg-[#0493CC]"
         } text-white font-semibold py-3 rounded-lg w-full mb-6`}
-        disabled={parseFloat(amount.toString()) <= 0}
+        disabled={!walletAddress || !!addressError}
       >
         Continue
       </button>
@@ -94,7 +97,9 @@ const WithdrawModal: React.FC<WithdrawModalProps> = ({
   const renderStepTwo = () => (
     <div className="flex flex-col justify-between h-full">
       {/* Title */}
-      <h2 className="text-2xl font-semibold text-white mb-6">Withdraw</h2>
+      <h2 className="text-2xl font-semibold text-white mb-6">
+        Confirm Withdrawal
+      </h2>
 
       {/* Confirm Details */}
       <div className="bg-gray-900 p-4 rounded-lg text-left text-gray-300 mb-4">
@@ -102,15 +107,12 @@ const WithdrawModal: React.FC<WithdrawModalProps> = ({
         <div>Amount: {amount} SOL</div>
       </div>
 
-      {/* Continue Button */}
+      {/* Confirm and Send Button */}
       <button
-        onClick={handleConfirmAndSend}
-        className={`${
-          isProcessing ? "bg-gray-600 cursor-not-allowed" : "bg-[#0493CC]"
-        } text-white font-semibold py-3 rounded-lg w-full mb-6`}
-        disabled={isProcessing}
+        onClick={() => setStep(3)} // Move to success screen
+        className="bg-[#0493CC] text-white font-semibold py-3 rounded-lg w-full mb-6"
       >
-        {isProcessing ? "Processing..." : "Confirm & Send"}
+        Confirm & Send
       </button>
     </div>
   );
@@ -147,15 +149,6 @@ const WithdrawModal: React.FC<WithdrawModalProps> = ({
       </button>
     </div>
   );
-
-  // Simulating the transaction processing
-  const handleConfirmAndSend = () => {
-    setIsProcessing(true);
-    setTimeout(() => {
-      setStep(3); // After a short delay, move to success step
-      setIsProcessing(false);
-    }, 2000); // Simulate a delay of 2 seconds for processing
-  };
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-40 pb-16">
