@@ -5,7 +5,7 @@ import { FaExternalLinkAlt } from "react-icons/fa";
 import { IoCopySharp } from "react-icons/io5";
 
 const PositionsPage = () => {
-  const [positions, setPositions] = useState<any[]>([]);
+  const [positions, setPositions] = useState<any[]>([]); //eslint-disable-line
   const [loading, setLoading] = useState<boolean>(true);
 
   // Fetch positions data from API
