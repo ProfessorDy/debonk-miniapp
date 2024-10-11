@@ -118,7 +118,7 @@ const TokenModal: React.FC<TokenModalProps> = ({
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-40 pb-16">
-      <div className="bg-black h-[90%] w-full max-w-md p-6 text-center shadow-lg relative rounded-lg flex flex-col justify-center">
+      <div className="bg-black max-h-[550px] w-full max-w-md p-6 text-center shadow-lg relative rounded-lg flex flex-col justify-center">
         {/* Close button */}
         <button onClick={onClose} className="absolute top-4 left-4 text-accent">
           <IoClose size={24} />
