@@ -47,7 +47,7 @@ async function fetchWalletBalance(telegramId: string) {
 async function fetchUserPositions(telegramId: string) {
   const res = await fetch(`/api/getUserPositions?telegramId=${telegramId}`);
   const data = await res.json();
-  return data.positions; // assuming positions are returned in an array
+  return data.positions;
 }
 
 const Home = () => {
