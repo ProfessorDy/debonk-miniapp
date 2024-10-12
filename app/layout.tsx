@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import { Open_Sans } from "next/font/google";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 import "./globals.css";
 import Navbar from "@/components/Navbar";
@@ -33,6 +35,7 @@ export default function RootLayout({
       <body className={`${openSans.variable} antialiased`}>
         <Header />
         {children}
+        <ToastContainer position="bottom-center" autoClose={2000} />
         <Navbar />
       </body>
     </html>

@@ -9,6 +9,7 @@ import { FaCog } from "react-icons/fa";
 import { IoMdPeople } from "react-icons/io";
 import { TbChartCandleFilled } from "react-icons/tb";
 import { RiTokenSwapFill } from "react-icons/ri";
+import { toast } from "react-toastify";
 
 import { pasteFromClipboard } from "@/utils/clipboardUtils";
 
@@ -34,6 +35,7 @@ const Navbar = () => {
     const clipboardText = await pasteFromClipboard();
     if (clipboardText) {
       setTokenInput(clipboardText);
+      toast.success("Successfully pasted from clipboard!");
     }
   };
 
