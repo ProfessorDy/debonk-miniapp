@@ -34,10 +34,10 @@ async function fetchWalletBalance(telegramId: string) {
 }
 
 // Helper function to fetch the user's active positions
-async function fetchUserPositions(telegramId: string) {
+async function fetchUserPositions(telegramId: string): Promise<TokenDataArray> {
   const res = await fetch(`/api/getUserPositions?telegramId=${telegramId}`);
   const data = await res.json();
-  return data.positions;
+  return data.positions as TokenDataArray;
 }
 
 const Home = () => {
@@ -50,7 +50,7 @@ const Home = () => {
   const [solPrice, setSolPrice] = useState<number | null>(null);
   const [walletBalance, setWalletBalance] = useState<number>(0);
   const [totalValueInUsd, setTotalValueInUsd] = useState<number | null>(null);
-  const [positions, setPositions] = useState<Position[]>([]); //eslint-disable-line
+  const [positions, setPositions] = useState<TokenDataArray>([]); //eslint-disable-line
 
   const setUserId = useTelegramUserStore((state) => state.setUserId);
   const isLiveTrading = useLiveTradingStore((state) => state.isLiveTrading);
@@ -274,28 +274,27 @@ const Home = () => {
               >
                 <div className="flex justify-between items-center mb-2">
                   <p className="text-base font-bold">{position.token.name}</p>
-                  <button className="bg-[#333] text-xs text-white py-1 px-2 rounded-md">
-                    PNL Card
-                  </button>
                 </div>
                 <div className="text-sm text-gray-400 flex justify-between items-center">
                   <div>
-                    <p>MC {position.mc}</p>
-                    <p>LIQ {position.liq}</p>
+                    <p>MC {position.token.mc}</p>
+                    <p>LIQ {position.token.liquidityInUsd}</p>
                   </div>
                   <div className="text-right">
-                    <p className="text-primary">{position.value} SOL</p>
-                    <p>{position.valueInUsd} USD</p>
+                    <p className="text-primary">{position.PNL_sol} sol</p>
+                    <p>{position.PNL_usd} USD</p>
                   </div>
                 </div>
                 <div className="mt-2 text-right">
                   <p
                     className={`font-bold ${
-                      position.change > 0 ? "text-green-500" : "text-red-500"
+                      Number(position.PNL_Sol_percent) > 0
+                        ? "text-green-500"
+                        : "text-red-500"
                     }`}
                   >
-                    {position.change > 0 ? "+" : ""}
-                    {position.change}%
+                    {Number(position.PNL_Sol_percent) > 0 ? "+" : ""}
+                    {Number(position.PNL_Sol_percent)}%
                   </p>
                 </div>
               </div>
