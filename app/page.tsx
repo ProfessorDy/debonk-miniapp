@@ -295,8 +295,10 @@ const Home = () => {
                     <p>LIQ {position.token.liquidityInUsd}</p>
                   </div>
                   <div className="text-right">
-                    <p className="text-primary">{position.PNL_sol} sol</p>
-                    <p>{position.PNL_usd} USD</p>
+                    <p className="text-primary">
+                      {position.PNL_sol.toFixed(2)} sol
+                    </p>
+                    <p>{position.PNL_usd.toFixed(2)} USD</p>
                   </div>
                 </div>
                 <div className="mt-2 text-right">
