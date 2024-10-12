@@ -91,7 +91,11 @@ const PositionsPage = () => {
                     MC ${position.mc?.toLocaleString() || "N/A"}
                   </p>
                   <p className="text-sm text-gray-400">
-                    Liq ${position.token?.liquidityInUsd?.toFixed(2) || "N/A"}
+                    Liq $
+                    {position.token?.liquidityInUsd !== undefined &&
+                    position.token?.liquidityInUsd !== null
+                      ? position.token.liquidityInUsd.toFixed(2)
+                      : "N/A"}
                   </p>
                 </div>
 
@@ -100,13 +104,19 @@ const PositionsPage = () => {
                   <div className="text-sm text-right">
                     <p className="text-gray-400">Capital</p>
                     <p className="text-white font-medium">
-                      {position.capital ? `${position.capital} SOL` : "N/A"}
+                      {position.capital !== undefined &&
+                      position.capital !== null
+                        ? `${position.capital} SOL`
+                        : "N/A"}
                     </p>
                   </div>
                   <div className="text-sm text-right">
                     <p className="text-gray-400">Value</p>
                     <p className="text-white font-medium">
-                      {position.balance ? `${position.balance} SOL` : "N/A"}
+                      {position.balance !== undefined &&
+                      position.balance !== null
+                        ? `${position.balance} SOL`
+                        : "N/A"}
                     </p>
                   </div>
                   <div
@@ -118,7 +128,8 @@ const PositionsPage = () => {
                   >
                     <p>
                       PNL:{" "}
-                      {position.PNL_usd
+                      {position.PNL_usd !== undefined &&
+                      position.PNL_usd !== null
                         ? `$${position.PNL_usd.toFixed(2)}`
                         : "N/A"}
                     </p>
