@@ -3,23 +3,6 @@ import { IoClose } from "react-icons/io5";
 import InvestmentButton from "./InvestmentButton";
 import useTelegramUserStore from "@/store/useTelegramUserStore";
 
-interface TokenInfo {
-  name: string;
-  symbol: string;
-  priceUsd: number;
-  liquidityInUsd: number;
-  mc: number;
-  volume: {
-    h24: number;
-  };
-  priceNative: number;
-  change: {
-    m5: number;
-    h1: number;
-    h24: number;
-  };
-}
-
 interface TokenModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -31,7 +14,7 @@ const TokenModal: React.FC<TokenModalProps> = ({
   onClose,
   tokenAddress,
 }) => {
-  const [tokenInfo, setTokenInfo] = useState<TokenInfo | null>(null);
+  const [tokenInfo, setTokenInfo] = useState<TokenDetails | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [buying, setBuying] = useState<boolean>(false);
   const [selling, setSelling] = useState<boolean>(false);
@@ -119,21 +102,25 @@ const TokenModal: React.FC<TokenModalProps> = ({
   return (
     <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-40 pb-16">
       <div className="bg-black max-h-[550px] w-full max-w-md p-6 text-center shadow-lg relative rounded-lg flex flex-col justify-center">
-        {/* Close button */}
-        <button onClick={onClose} className="absolute top-4 left-4 text-accent">
-          <IoClose size={24} />
-        </button>
-
         {loading ? (
           <div className="flex items-center justify-center">
             <div className="loader ease-linear rounded-full border-8 border-t-8 border-gray-200 h-32 w-32"></div>
           </div>
         ) : tokenInfo ? (
           <>
+            <div className="flex justify-between items-center">
+              <h2 className="text-xl font-bold text-white mb-6">
+                {tokenInfo.name}
+              </h2>
+              {/* Close button */}
+              <button
+                onClick={onClose}
+                className="absolute top-4 left-4 text-accent"
+              >
+                <IoClose size={24} />
+              </button>
+            </div>
             {/* Title */}
-            <h2 className="text-xl font-bold text-white mb-6">
-              {tokenInfo.name}
-            </h2>
 
             {/* Price Change Overview */}
             <div className="text-sm text-green-500 mb-2">
@@ -229,7 +216,16 @@ const TokenModal: React.FC<TokenModalProps> = ({
             )}
           </>
         ) : (
-          <div className="text-white">Failed to load token information</div>
+          <>
+            {/* Close button */}
+            <button
+              onClick={onClose}
+              className="absolute top-4 left-4 text-accent"
+            >
+              <IoClose size={24} />
+            </button>
+            <div className="text-white">Failed to load token information</div>
+          </>
         )}
       </div>
     </div>
