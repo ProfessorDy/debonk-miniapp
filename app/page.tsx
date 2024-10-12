@@ -12,16 +12,6 @@ import WithdrawModal from "@/components/WithdrawModal";
 import useTelegramUserStore from "@/store/useTelegramUserStore";
 import useLiveTradingStore from "@/store/useLiveTradingStore";
 
-type Position = {
-  name: string;
-  value: number;
-  price: number;
-  change: number;
-  mc: string;
-  liq: string;
-  valueInUsd: number;
-};
-
 // Helper function to fetch SOL price from the API
 const fetchSolPrice = async () => {
   const response = await fetch("/api/solPrice");
@@ -283,7 +273,7 @@ const Home = () => {
                 className="bg-[#1C1C1C] border-[#2F2F2F] border-[1px] p-3 rounded-lg shadow-sm"
               >
                 <div className="flex justify-between items-center mb-2">
-                  <p className="text-base font-bold">{position.name}</p>
+                  <p className="text-base font-bold">{position.token.name}</p>
                   <button className="bg-[#333] text-xs text-white py-1 px-2 rounded-md">
                     PNL Card
                   </button>
