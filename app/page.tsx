@@ -295,7 +295,7 @@ const Home = () => {
                   </div>
                   <div className="text-right">
                     <p className="text-primary">{position.value} SOL</p>
-                    <p>{position.valueInUsd.toFixed(2)} USD</p>
+                    <p>{position.valueInUsd} USD</p>
                   </div>
                 </div>
                 <div className="mt-2 text-right">

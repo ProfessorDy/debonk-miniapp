@@ -94,7 +94,7 @@ const PositionsPage = () => {
                     Liq $
                     {position.token?.liquidityInUsd !== undefined &&
                     position.token?.liquidityInUsd !== null
-                      ? position.token.liquidityInUsd.toFixed(2)
+                      ? position.token.liquidityInUsd
                       : "N/A"}
                   </p>
                 </div>
@@ -130,7 +130,7 @@ const PositionsPage = () => {
                       PNL:{" "}
                       {position.PNL_usd !== undefined &&
                       position.PNL_usd !== null
-                        ? `$${position.PNL_usd.toFixed(2)}`
+                        ? `$${position.PNL_usd}`
                         : "N/A"}
                     </p>
                     <p>{position.PNL_sol || "N/A"} SOL</p>
