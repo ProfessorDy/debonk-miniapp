@@ -1,9 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { GiPlainCircle } from "react-icons/gi";
-import { FaExternalLinkAlt } from "react-icons/fa";
-import { IoCopySharp } from "react-icons/io5";
 import useTelegramUserStore from "@/store/useTelegramUserStore";
 
 type Position = {
