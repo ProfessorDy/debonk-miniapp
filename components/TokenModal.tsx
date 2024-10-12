@@ -3,23 +3,6 @@ import { IoClose } from "react-icons/io5";
 import InvestmentButton from "./InvestmentButton";
 import useTelegramUserStore from "@/store/useTelegramUserStore";
 
-interface TokenInfo {
-  name: string;
-  symbol: string;
-  priceUsd: number;
-  liquidityInUsd: number;
-  mc: number;
-  volume: {
-    h24: number;
-  };
-  priceNative: number;
-  change: {
-    m5: number;
-    h1: number;
-    h24: number;
-  };
-}
-
 interface TokenModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -31,7 +14,7 @@ const TokenModal: React.FC<TokenModalProps> = ({
   onClose,
   tokenAddress,
 }) => {
-  const [tokenInfo, setTokenInfo] = useState<TokenInfo | null>(null);
+  const [tokenInfo, setTokenInfo] = useState<TokenDetails | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [buying, setBuying] = useState<boolean>(false);
   const [selling, setSelling] = useState<boolean>(false);
