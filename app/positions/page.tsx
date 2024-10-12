@@ -1,12 +1,20 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { FaExternalLinkAlt } from "react-icons/fa";
-import { IoCopySharp } from "react-icons/io5";
 import useTelegramUserStore from "@/store/useTelegramUserStore";
 
+type Position = {
+  name: string;
+  value: number;
+  price: number;
+  change: number;
+  mc: string;
+  liq: string;
+  valueInUsd: number;
+};
+
 const PositionsPage = () => {
-  const [positions, setPositions] = useState<any[]>([]); //eslint-disable-line
+  const [positions, setPositions] = useState<Position[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -66,7 +74,6 @@ const PositionsPage = () => {
       <h2 className="text-2xl font-semibold text-center font-poppins mb-2 text-white">
         Positions
       </h2>
-      {/* Positions Table */}
       <div className="space-y-4">
         {positions.length > 0 ? (
           positions.map((position, index) => (
@@ -74,75 +81,32 @@ const PositionsPage = () => {
               key={index}
               className="bg-[#1C1C1C] border-[#2F2F2F] border-[1px] p-4 rounded-lg shadow-lg"
             >
-              {/* Position Details */}
-              <div className="flex justify-between items-start">
-                {/* Left side: Name, MC, Liq */}
+              <div className="flex justify-between items-center mb-2">
+                <p className="text-base font-bold">{position.name}</p>
+                <button className="bg-[#333] text-xs text-white py-1 px-2 rounded-md">
+                  PNL Card
+                </button>
+              </div>
+              <div className="text-sm text-gray-400 flex justify-between items-center">
                 <div>
-                  <div className="flex items-center">
-                    <div className="text-lg font-semibold text-white">
-                      {position.token?.name || "N/A"}
-                    </div>
-                    <IoCopySharp
-                      className="cursor-pointer text-[10px] text-gray-400 ml-2"
-                      title="Copy Address"
-                    />
-                  </div>
-                  <p className="text-sm text-gray-400">
-                    MC ${position.mc?.toLocaleString() || "N/A"}
-                  </p>
-                  <p className="text-sm text-gray-400">
-                    Liq $
-                    {position.token?.liquidityInUsd !== undefined &&
-                    position.token?.liquidityInUsd !== null
-                      ? position.token.liquidityInUsd
-                      : "N/A"}
-                  </p>
+                  <p>MC {position.mc}</p>
+                  <p>LIQ {position.liq}</p>
                 </div>
-
-                {/* Right side: Capital, Value, PNL */}
-                <div className="flex items-center space-x-6">
-                  <div className="text-sm text-right">
-                    <p className="text-gray-400">Capital</p>
-                    <p className="text-white font-medium">
-                      {position.capital !== undefined &&
-                      position.capital !== null
-                        ? `${position.capital} SOL`
-                        : "N/A"}
-                    </p>
-                  </div>
-                  <div className="text-sm text-right">
-                    <p className="text-gray-400">Value</p>
-                    <p className="text-white font-medium">
-                      {position.balance !== undefined &&
-                      position.balance !== null
-                        ? `${position.balance} SOL`
-                        : "N/A"}
-                    </p>
-                  </div>
-                  <div
-                    className={`text-sm font-bold ${
-                      parseFloat(position.PNL_usd_percent) < 0
-                        ? "text-red-500"
-                        : "text-green-500"
-                    } text-right`}
-                  >
-                    <p>
-                      PNL:{" "}
-                      {position.PNL_usd !== undefined &&
-                      position.PNL_usd !== null
-                        ? `$${position.PNL_usd}`
-                        : "N/A"}
-                    </p>
-                    <p>{position.PNL_sol || "N/A"} SOL</p>
-                    <p>{position.PNL_Sol_percent || "N/A"}%</p>
-                  </div>
+                <div className="text-right">
+                  <p className="text-primary">{position.value} SOL</p>
+                  <p>{position.valueInUsd} USD</p>
                 </div>
               </div>
-
-              {/* External Link Icon */}
-              <button className="flex justify-end mt-2">
-                <FaExternalLinkAlt className="text-accent text-base" />
-              </button>
+              <div className="mt-2 text-right">
+                <p
+                  className={`font-bold ${
+                    position.change > 0 ? "text-green-500" : "text-red-500"
+                  }`}
+                >
+                  {position.change > 0 ? "+" : ""}
+                  {position.change}%
+                </p>
+              </div>
             </div>
           ))
         ) : (
