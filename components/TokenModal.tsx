@@ -216,7 +216,16 @@ const TokenModal: React.FC<TokenModalProps> = ({
             )}
           </>
         ) : (
-          <div className="text-white">Failed to load token information</div>
+          <>
+            {/* Close button */}
+            <button
+              onClick={onClose}
+              className="absolute top-4 left-4 text-accent"
+            >
+              <IoClose size={24} />
+            </button>
+            <div className="text-white">Failed to load token information</div>
+          </>
         )}
       </div>
     </div>
