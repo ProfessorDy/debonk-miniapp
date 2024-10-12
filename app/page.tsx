@@ -293,13 +293,14 @@ const Home = () => {
                 <div className="text-sm text-gray-400 flex justify-between items-center">
                   <div>
                     <p>
-                      MC{" "}
+                      <span className="font-bold"> MC </span>
+
                       {position.token.mc
                         ? formatNumber(position.token.mc)
                         : "N/A"}
                     </p>
                     <p>
-                      LIQ{" "}
+                      <span className="font-bold"> LIQ </span>
                       {position.token.liquidityInUsd
                         ? formatNumber(position.token.liquidityInUsd)
                         : "N/A"}
@@ -311,8 +312,7 @@ const Home = () => {
                       sol
                     </p>
                     <p>
-                      {position.PNL_usd ? position.PNL_usd.toFixed(2) : "0.00"}{" "}
-                      USD
+                      ${position.PNL_usd ? position.PNL_usd.toFixed(2) : "0.00"}{" "}
                     </p>
                   </div>
                 </div>
