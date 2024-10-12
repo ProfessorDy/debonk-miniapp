@@ -11,6 +11,7 @@ import DepositModal from "@/components/DepositModal";
 import WithdrawModal from "@/components/WithdrawModal";
 import useTelegramUserStore from "@/store/useTelegramUserStore";
 import useLiveTradingStore from "@/store/useLiveTradingStore";
+import { formatNumber } from "@/utils/numberUtils";
 
 // Helper function to fetch SOL price from the API
 const fetchSolPrice = async () => {
@@ -291,8 +292,8 @@ const Home = () => {
                 </div>
                 <div className="text-sm text-gray-400 flex justify-between items-center">
                   <div>
-                    <p>MC {position.token.mc}</p>
-                    <p>LIQ {position.token.liquidityInUsd}</p>
+                    <p>MC {formatNumber(position.token.mc)}</p>
+                    <p>LIQ {formatNumber(position.token.liquidityInUsd)}</p>
                   </div>
                   <div className="text-right">
                     <p className="text-primary">
