@@ -46,6 +46,8 @@ const Home = () => {
   const [unrealizedPNL] = useState("-0.00%");
   const [isDepositModalOpen, setIsDepositModalOpen] = useState(false);
   const [isWithdrawModalOpen, setIsWithdrawModalOpen] = useState(false);
+  const [liveBalance, setLiveBalance] = useState<number>(0);
+  const [simulationBalance, setSimulationBalance] = useState<number>(0);
 
   const [solPrice, setSolPrice] = useState<number | null>(null);
   const [walletBalance, setWalletBalance] = useState<number>(0);
@@ -75,18 +77,19 @@ const Home = () => {
             userId.toString()
           );
 
-          const parsedBalance = parseFloat(balance) || 0;
+          const parsedLiveBalance = parseFloat(balance) || 0;
           const parsedSimulationBalance = parseFloat(simulationBalance) || 0;
 
-          if (isLiveTrading) {
-            setWalletBalance(parsedBalance);
-          } else {
-            setWalletBalance(parsedSimulationBalance);
-          }
+          setLiveBalance(parsedLiveBalance);
+          setSimulationBalance(parsedSimulationBalance);
+
+          // Set the balance based on the current trading mode
+          setWalletBalance(
+            isLiveTrading ? parsedLiveBalance : parsedSimulationBalance
+          );
 
           if (price !== null && price !== undefined) {
-            const totalValue =
-              (isLiveTrading ? parsedBalance : parsedSimulationBalance) * price;
+            const totalValue = walletBalance * price;
             setTotalValueInUsd(totalValue);
           }
 
@@ -157,6 +160,17 @@ const Home = () => {
       console.log("No Telegram user data available.");
     }
   }, [setWalletAddress]);
+
+  // Toggle between live and simulation balances when trading mode changes
+  useEffect(() => {
+    setWalletBalance(isLiveTrading ? liveBalance : simulationBalance);
+
+    if (solPrice !== null && solPrice !== undefined) {
+      const totalValue =
+        (isLiveTrading ? liveBalance : simulationBalance) * solPrice;
+      setTotalValueInUsd(totalValue);
+    }
+  }, [isLiveTrading, liveBalance, simulationBalance, solPrice]);
 
   const handleOpenDepositModal = () => setIsDepositModalOpen(true);
   const handleOpenWithdrawModal = () => setIsWithdrawModalOpen(true);
