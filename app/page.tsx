@@ -292,26 +292,44 @@ const Home = () => {
                 </div>
                 <div className="text-sm text-gray-400 flex justify-between items-center">
                   <div>
-                    <p>MC {formatNumber(position.token.mc)}</p>
-                    <p>LIQ {formatNumber(position.token.liquidityInUsd)}</p>
+                    <p>
+                      MC{" "}
+                      {position.token.mc
+                        ? formatNumber(position.token.mc)
+                        : "N/A"}
+                    </p>
+                    <p>
+                      LIQ{" "}
+                      {position.token.liquidityInUsd
+                        ? formatNumber(position.token.liquidityInUsd)
+                        : "N/A"}
+                    </p>
                   </div>
                   <div className="text-right">
                     <p className="text-primary">
-                      {position.PNL_sol.toFixed(2)} sol
+                      {position.PNL_sol ? position.PNL_sol.toFixed(2) : "0.00"}{" "}
+                      sol
                     </p>
-                    <p>{position.PNL_usd.toFixed(2)} USD</p>
+                    <p>
+                      {position.PNL_usd ? position.PNL_usd.toFixed(2) : "0.00"}{" "}
+                      USD
+                    </p>
                   </div>
                 </div>
                 <div className="mt-2 text-right">
                   <p
                     className={`font-bold ${
+                      position.PNL_Sol_percent &&
                       Number(position.PNL_Sol_percent) > 0
                         ? "text-green-500"
                         : "text-red-500"
                     }`}
                   >
-                    {Number(position.PNL_Sol_percent) > 0 ? "+" : ""}
-                    {Number(position.PNL_Sol_percent)}%
+                    {position.PNL_Sol_percent
+                      ? `${
+                          Number(position.PNL_Sol_percent) > 0 ? "+" : ""
+                        }${Number(position.PNL_Sol_percent)}%`
+                      : "N/A"}
                   </p>
                 </div>
               </div>
