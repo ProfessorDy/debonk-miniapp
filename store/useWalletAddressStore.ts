@@ -3,14 +3,14 @@ import { persist, createJSONStorage } from 'zustand/middleware';
 
 interface UserState {
   walletAddress: string;
-  setWallateAddress: (userId: string) => void;
+  setWalletAddress: (userId: string) => void;
 }
 
-const useTelegramUserStore = create<UserState>()(
+const useWalletAddressStore = create<UserState>()(
   persist(
     (set) => ({
       walletAddress: '',
-      setWallateAddress: (walletAddress) => set(() => ({ walletAddress })),
+      setWalletAddress: (walletAddress) => set(() => ({ walletAddress })),
     }),
     {
       name: 'user-wallet-address', // Unique name for the storage
@@ -19,4 +19,4 @@ const useTelegramUserStore = create<UserState>()(
   )
 );
 
-export default useTelegramUserStore;
+export default useWalletAddressStore;

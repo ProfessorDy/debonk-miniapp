@@ -11,6 +11,7 @@ import DepositModal from "@/components/DepositModal";
 import WithdrawModal from "@/components/WithdrawModal";
 import useTelegramUserStore from "@/store/useTelegramUserStore";
 import useLiveTradingStore from "@/store/useLiveTradingStore";
+import useWalletAddressStore from "@/store/useWalletAddressStore";
 import { formatNumber } from "@/utils/numberUtils";
 
 // Helper function to fetch SOL price from the API
@@ -42,7 +43,9 @@ async function fetchUserPositions(telegramId: string): Promise<TokenDataArray> {
 }
 
 const Home = () => {
-  const [walletAddress, setWalletAddress] = useState("A1BbDsD4E5F6G7HHtQJ");
+  const { walletAddress, setWalletAddress } = useWalletAddressStore();
+  const { setUserId } = useTelegramUserStore();
+  const { isLiveTrading, toggleLiveTrading } = useLiveTradingStore();
   const [error, setError] = useState<string | null>(null); //eslint-disable-line
   const [unrealizedPNL] = useState("-0.00%");
   const [isDepositModalOpen, setIsDepositModalOpen] = useState(false);
@@ -54,12 +57,6 @@ const Home = () => {
   const [walletBalance, setWalletBalance] = useState<number>(0);
   const [totalValueInUsd, setTotalValueInUsd] = useState<number | null>(null);
   const [positions, setPositions] = useState<TokenDataArray>([]); //eslint-disable-line
-
-  const setUserId = useTelegramUserStore((state) => state.setUserId);
-  const isLiveTrading = useLiveTradingStore((state) => state.isLiveTrading);
-  const toggleLiveTrading = useLiveTradingStore(
-    (state) => state.toggleLiveTrading
-  );
 
   useEffect(() => {
     const telegram = window.Telegram?.WebApp;
