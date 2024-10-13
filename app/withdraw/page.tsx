@@ -1,7 +1,10 @@
+"use client";
+
 import React, { useState } from "react";
 import { IoClose } from "react-icons/io5";
 import useTelegramUserStore from "@/store/useTelegramUserStore";
 import { useRouter } from "next/navigation";
+import { PublicKey } from "@solana/web3.js";
 
 interface WithdrawPageProps {
   solPrice: number;
@@ -36,12 +39,19 @@ const WithdrawPage: React.FC<WithdrawPageProps> = ({
   };
 
   const validateAddress = (address: string) => {
-    if (address.length < 10) {
-      setAddressError("Invalid wallet address. Too short.");
+    try {
+      const pubKey = new PublicKey(address);
+      if (PublicKey.isOnCurve(pubKey)) {
+        setAddressError("");
+        return true;
+      } else {
+        setAddressError("Invalid wallet address. Not on curve.");
+        return false;
+      }
+    } catch (error) {
+      setAddressError("Invalid wallet address.");
       return false;
     }
-    setAddressError("");
-    return true;
   };
 
   const renderStepOne = () => (
