@@ -8,11 +8,12 @@ import { CiCircleAlert } from "react-icons/ci";
 import { GiPlainCircle } from "react-icons/gi";
 import { copyToClipboard } from "@/utils/clipboardUtils";
 import DepositModal from "@/components/DepositModal";
-import WithdrawModal from "@/components/WithdrawModal";
+import WithdrawModal from "@/app/withdraw/page";
 import useTelegramUserStore from "@/store/useTelegramUserStore";
 import useLiveTradingStore from "@/store/useLiveTradingStore";
 import useWalletAddressStore from "@/store/useWalletAddressStore";
 import { formatNumber } from "@/utils/numberUtils";
+import { useRouter } from "next/navigation";
 
 // Helper function to fetch SOL price from the API
 const fetchSolPrice = async () => {
@@ -49,7 +50,6 @@ const Home = () => {
   const [error, setError] = useState<string | null>(null); //eslint-disable-line
   const [unrealizedPNL] = useState("-0.00%");
   const [isDepositModalOpen, setIsDepositModalOpen] = useState(false);
-  const [isWithdrawModalOpen, setIsWithdrawModalOpen] = useState(false);
   const [liveBalance, setLiveBalance] = useState<number>(0);
   const [simulationBalance, setSimulationBalance] = useState<number>(0);
 
@@ -57,6 +57,7 @@ const Home = () => {
   const [walletBalance, setWalletBalance] = useState<number>(0);
   const [totalValueInUsd, setTotalValueInUsd] = useState<number | null>(null);
   const [positions, setPositions] = useState<TokenDataArray>([]); //eslint-disable-line
+  const router = useRouter();
 
   useEffect(() => {
     const telegram = window.Telegram?.WebApp;
@@ -167,11 +168,10 @@ const Home = () => {
   }, [isLiveTrading, liveBalance, simulationBalance, solPrice]);
 
   const handleOpenDepositModal = () => setIsDepositModalOpen(true);
-  const handleOpenWithdrawModal = () => setIsWithdrawModalOpen(true);
-  const handleCloseWithdrawModal = () => setIsWithdrawModalOpen(false);
   const handleCloseDepositModal = () => setIsDepositModalOpen(false);
   const handleCopy = () => copyToClipboard(walletAddress);
   const handleRefresh = () => window.location.reload();
+  const handleWithdraw = () => router.push(`/withdraw`);
 
   const buttons = [
     {
@@ -182,7 +182,7 @@ const Home = () => {
     {
       label: "Withdraw",
       icon: <PiDownloadDuotone className="text-[20px]" />,
-      action: handleOpenWithdrawModal,
+      action: handleWithdraw,
     },
     {
       label: "Refresh",
@@ -339,12 +339,6 @@ const Home = () => {
         isOpen={isDepositModalOpen}
         onClose={handleCloseDepositModal}
         walletAddress={walletAddress}
-      />
-      <WithdrawModal
-        isOpen={isWithdrawModalOpen}
-        onClose={handleCloseWithdrawModal}
-        solPrice={solPrice}
-        availableBalance={walletBalance}
       />
     </main>
   );

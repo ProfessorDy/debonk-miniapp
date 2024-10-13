@@ -1,27 +1,23 @@
 import React, { useState } from "react";
 import { IoClose } from "react-icons/io5";
 import useTelegramUserStore from "@/store/useTelegramUserStore";
+import { useRouter } from "next/navigation";
 
-interface WithdrawModalProps {
-  isOpen: boolean;
-  onClose: () => void;
+interface WithdrawPageProps {
   solPrice: number;
   availableBalance: number;
 }
 
-const WithdrawModal: React.FC<WithdrawModalProps> = ({
-  isOpen,
-  onClose,
+const WithdrawPage: React.FC<WithdrawPageProps> = ({
   availableBalance,
   solPrice,
 }) => {
   const { userId } = useTelegramUserStore();
+  const router = useRouter();
   const [step, setStep] = useState(1);
   const [amount, setAmount] = useState(0.0);
   const [walletAddress, setWalletAddress] = useState("");
   const [addressError, setAddressError] = useState("");
-
-  if (!isOpen) return null;
 
   const handleConfirmAndSend = async () => {
     try {
@@ -32,7 +28,6 @@ const WithdrawModal: React.FC<WithdrawModalProps> = ({
       if (response.ok) {
         setStep(3); // Move to success screen
       } else {
-        // Handle the error, maybe show an error message in the modal
         console.error(result.error || "Transaction failed");
       }
     } catch (error) {
@@ -40,7 +35,6 @@ const WithdrawModal: React.FC<WithdrawModalProps> = ({
     }
   };
 
-  // Simple wallet address validation (can be enhanced)
   const validateAddress = (address: string) => {
     if (address.length < 10) {
       setAddressError("Invalid wallet address. Too short.");
@@ -50,15 +44,12 @@ const WithdrawModal: React.FC<WithdrawModalProps> = ({
     return true;
   };
 
-  // Step 1 - Enter Address and Amount
   const renderStepOne = () => (
     <div className="flex flex-col justify-between h-full">
-      {/* Title */}
       <h2 className="text-2xl font-semibold text-white mb-6">
         Enter Withdrawal Details
       </h2>
 
-      {/* Wallet Address Input */}
       <div className="flex flex-col items-start mb-4 w-full">
         <label htmlFor="walletAddress" className="text-gray-400 mb-2">
           Wallet Address
@@ -77,18 +68,16 @@ const WithdrawModal: React.FC<WithdrawModalProps> = ({
         )}
       </div>
 
-      {/* Amount Input */}
       <div className="flex flex-col items-center mb-6">
         <div className="text-5xl text-white font-bold">{amount} SOL</div>
         <div className="text-base text-gray-400">
           ${amount && solPrice ? (amount * solPrice).toFixed(2) : "0.00"}
-        </div>{" "}
+        </div>
       </div>
 
-      {/* MAX and Available Balance */}
       <div className="flex justify-between text-white mb-4">
         <button
-          onClick={() => setAmount(availableBalance)} // Set max amount to available balance
+          onClick={() => setAmount(availableBalance)}
           className="bg-gray-800 px-4 py-2 rounded-md"
         >
           MAX
@@ -96,7 +85,6 @@ const WithdrawModal: React.FC<WithdrawModalProps> = ({
         <span className="text-gray-500">Available: {availableBalance} SOL</span>
       </div>
 
-      {/* Continue Button */}
       <button
         onClick={() => {
           if (validateAddress(walletAddress)) {
@@ -113,21 +101,17 @@ const WithdrawModal: React.FC<WithdrawModalProps> = ({
     </div>
   );
 
-  // Step 2 - Confirm Details
   const renderStepTwo = () => (
     <div className="flex flex-col justify-between h-full">
-      {/* Title */}
       <h2 className="text-2xl font-semibold text-white mb-6">
         Confirm Withdrawal
       </h2>
 
-      {/* Confirm Details */}
       <div className="bg-gray-900 p-4 rounded-lg text-left text-gray-300 mb-4">
         <div className="mb-2">Address: {walletAddress}</div>
         <div>Amount: {amount} SOL</div>
       </div>
 
-      {/* Confirm and Send Button */}
       <button
         onClick={handleConfirmAndSend}
         className="bg-[#0493CC] text-white font-semibold py-3 rounded-lg w-full mb-6"
@@ -137,7 +121,6 @@ const WithdrawModal: React.FC<WithdrawModalProps> = ({
     </div>
   );
 
-  // Step 3 - Success Screen
   const renderSuccess = () => (
     <div className="flex flex-col justify-center items-center h-full">
       <div className="bg-green-500 rounded-full p-6 mb-6">
@@ -162,7 +145,7 @@ const WithdrawModal: React.FC<WithdrawModalProps> = ({
       <div className="text-gray-400 mb-6">To: {walletAddress}</div>
       <div className="text-white mb-6">- {amount} SOL</div>
       <button
-        onClick={onClose}
+        onClick={() => router.push("/")}
         className="bg-[#0493CC] text-white font-semibold py-3 rounded-lg w-full mb-6"
       >
         Close
@@ -173,12 +156,13 @@ const WithdrawModal: React.FC<WithdrawModalProps> = ({
   return (
     <div className="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-40 pb-16">
       <div className="bg-[#1B1B1B] h-[90%] w-full max-w-md p-6 text-center shadow-lg relative rounded-lg flex flex-col">
-        {/* Close button */}
-        <button onClick={onClose} className="absolute top-4 right-4 text-white">
+        <button
+          onClick={() => router.push("/")}
+          className="absolute top-4 right-4 text-white"
+        >
           <IoClose size={24} />
         </button>
 
-        {/* Conditional rendering based on step */}
         {step === 1 && renderStepOne()}
         {step === 2 && renderStepTwo()}
         {step === 3 && renderSuccess()}
@@ -187,4 +171,4 @@ const WithdrawModal: React.FC<WithdrawModalProps> = ({
   );
 };
 
-export default WithdrawModal;
+export default WithdrawPage;
