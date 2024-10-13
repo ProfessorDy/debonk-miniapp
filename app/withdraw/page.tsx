@@ -69,14 +69,10 @@ const Withdraw = () => {
   };
 
   const renderStepOne = () => (
-    <div className="flex flex-col justify-between h-full">
-      <h2 className="text-2xl font-semibold text-white mb-6">
-        Enter Withdrawal Details
-      </h2>
-
+    <div className="flex flex-col justify-between h-full bg-[#3C3C3C3B] backdrop-blur-2xl border-[#0493CC] border-[.5px] text-white shadow-lg rounded-xl p-3">
       <div className="flex flex-col items-start mb-4 w-full relative">
         <label htmlFor="walletAddress" className="text-gray-400 mb-2">
-          Wallet Address
+          Address
         </label>
         <input
           type="text"
@@ -98,31 +94,6 @@ const Withdraw = () => {
         )}
       </div>
 
-      <div className="bg-gray-900 p-4 rounded-md mb-4 w-full">
-        <div className="flex items-center justify-between">
-          <span className="text-white">Wallet W1</span>
-          <span className="text-gray-400">DIeBDs...HtCQ</span>
-          <IoClose className="text-gray-400" />
-        </div>
-      </div>
-
-      <div className="flex flex-col items-center mb-6">
-        <div className="text-5xl text-white font-bold">{amount} SOL</div>
-        <div className="text-base text-gray-400">
-          ${amount && solPrice ? (amount * solPrice).toFixed(2) : "0.00"}
-        </div>
-      </div>
-
-      <div className="flex justify-between items-center text-white mb-4">
-        <button
-          onClick={() => setAmount(availableBalance)}
-          className="bg-gray-800 px-4 py-2 rounded-md"
-        >
-          MAX
-        </button>
-        <span className="text-gray-500">Available: {availableBalance} SOL</span>
-      </div>
-
       <button
         onClick={() => {
           if (validateAddress(walletAddress)) {
@@ -140,10 +111,9 @@ const Withdraw = () => {
   );
 
   const renderStepTwo = () => (
-    <div className="flex flex-col justify-between h-full">
-      <h2 className="sr-only">Confirm Withdrawal</h2>{" "}
-      {/* Hiding the title as per the image's design */}
-      {/* Amount section */}
+    <div className="flex flex-col justify-between h-full bg-[#3C3C3C3B] backdrop-blur-2xl border-[#0493CC] border-[.5px] text-white shadow-lg rounded-xl p-3">
+      <h2>Amount</h2>
+
       <div className="flex flex-col items-center mb-6">
         <div className="text-6xl text-white font-bold">{amount} SOL</div>
         <div className="text-base text-gray-400">
@@ -154,8 +124,20 @@ const Withdraw = () => {
       <div className="bg-gray-900 p-4 rounded-md mb-6 w-full">
         <div className="flex items-center justify-between">
           <span className="text-white">To:</span>
-          <span className="text-gray-400">{walletAddress}</span>
+          <span className="text-gray-400">{`${walletAddress.slice(
+            0,
+            6
+          )}...${walletAddress.slice(-4)}`}</span>
         </div>
+      </div>
+      <div className="flex justify-between items-center text-white mb-4">
+        <button
+          onClick={() => setAmount(availableBalance)}
+          className="bg-gray-800 px-4 py-2 rounded-md"
+        >
+          MAX
+        </button>
+        <span className="text-gray-500">Available: {availableBalance} SOL</span>
       </div>
       {/* Continue button */}
       <button
@@ -200,7 +182,10 @@ const Withdraw = () => {
   );
 
   return (
-    <main className="bg-black bg-opacity-80 flex items-center justify-center">
+    <main
+      className="pt-0 p-3 pb-20 bg-black min-h-screen bg-repeat-y"
+      style={{ backgroundImage: "url('/Rectangle.png')" }}
+    >
       <div className="bg-[#1B1B1B] w-full max-w-md p-6 text-center shadow-lg relative rounded-lg flex flex-col">
         <button
           onClick={() => router.push("/")}
