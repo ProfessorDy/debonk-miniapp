@@ -9,11 +9,11 @@ interface LiveTradingState {
 const useLiveTradingStore = create<LiveTradingState>()(
   persist(
     (set) => ({
-      isLiveTrading: false, // Initial state for live trading
+      isLiveTrading: false, 
       toggleLiveTrading: () => set((state) => ({ isLiveTrading: !state.isLiveTrading })),
     }),
     {
-      name: 'live-trading', // Name for the persistent storage
+      name: 'live-trading', 
       storage: createJSONStorage(() => localStorage),
     }
   )

@@ -290,7 +290,7 @@ const Home = () => {
                 <div className="flex justify-between items-center mb-2">
                   <p className="text-base font-bold">{position.token.name}</p>
                 </div>
-                <div className="text-sm text-gray-400 flex justify-between items-center">
+                <div className="text-sm  flex justify-between items-center">
                   <div>
                     <p>
                       <span className="font-bold"> MC </span>
@@ -307,7 +307,7 @@ const Home = () => {
                     </p>
                   </div>
                   <div className="text-right">
-                    <p className="text-primary">
+                    <p className="">
                       {position.PNL_sol ? position.PNL_sol.toFixed(2) : "0.00"}{" "}
                       sol
                     </p>
