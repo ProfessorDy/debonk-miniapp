@@ -197,11 +197,11 @@ const Home = () => {
               >
                 {isLiveTrading ? (
                   <>
-                    <PiTestTubeFill className="text-sm" /> Live Trading
+                    <PiTestTubeFill className="text-sm" /> Simulation
                   </>
                 ) : (
                   <>
-                    <PiTestTubeFill className="text-sm" /> Simulation
+                    <PiTestTubeFill className="text-sm" /> Live Trading
                   </>
                 )}
               </button>
