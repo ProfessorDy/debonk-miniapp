@@ -1,11 +1,12 @@
 import React, { useState } from "react";
 import { IoClose } from "react-icons/io5";
+import useTelegramUserStore from "@/store/useTelegramUserStore";
 
 interface WithdrawModalProps {
   isOpen: boolean;
   onClose: () => void;
   solPrice: number;
-  availableBalance: number; // Add available balance as a prop
+  availableBalance: number;
 }
 
 const WithdrawModal: React.FC<WithdrawModalProps> = ({
@@ -14,17 +15,18 @@ const WithdrawModal: React.FC<WithdrawModalProps> = ({
   availableBalance,
   solPrice,
 }) => {
-  const [step, setStep] = useState(1); // Track the form step
-  const [amount, setAmount] = useState(0.0); // Track the entered amount
-  const [walletAddress, setWalletAddress] = useState(""); // Track entered wallet address
-  const [addressError, setAddressError] = useState(""); // Track validation for wallet address
+  const { userId } = useTelegramUserStore();
+  const [step, setStep] = useState(1);
+  const [amount, setAmount] = useState(0.0);
+  const [walletAddress, setWalletAddress] = useState("");
+  const [addressError, setAddressError] = useState("");
 
   if (!isOpen) return null;
 
   const handleConfirmAndSend = async () => {
     try {
       const response = await fetch(
-        `/api/withdrawSol?telegramId=12345&amount=${amount}&destinationAddress=${walletAddress}`
+        `/api/withdrawSol?telegramId=${userId}&amount=${amount}&destinationAddress=${walletAddress}`
       );
       const result = await response.json();
       if (response.ok) {
