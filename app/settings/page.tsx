@@ -138,7 +138,7 @@ const SettingsPage = () => {
         <Image width={72} height={28.67} src="/LOGO.png" alt="debonk logo" />
         <div className="mt-3 mb-4">
           <p>
-            <Link href="https://delabz.com" className="hover:underline">
+            <Link href="https://x.com/delabz_" className="hover:underline">
               Delabz Website
             </Link>{" "}
             |
