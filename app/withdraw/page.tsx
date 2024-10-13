@@ -1,26 +1,39 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { IoClose } from "react-icons/io5";
 import useTelegramUserStore from "@/store/useTelegramUserStore";
 import { useRouter } from "next/navigation";
 import { PublicKey } from "@solana/web3.js";
+import { fetchSolPrice, fetchWalletBalance } from "@/lib/solana";
 
-interface WithdrawPageProps {
-  solPrice: number;
-  availableBalance: number;
-}
-
-const WithdrawPage: React.FC<WithdrawPageProps> = ({
-  availableBalance,
-  solPrice,
-}) => {
+const Withdraw = () => {
   const { userId } = useTelegramUserStore();
   const router = useRouter();
   const [step, setStep] = useState(1);
   const [amount, setAmount] = useState(0.0);
   const [walletAddress, setWalletAddress] = useState("");
   const [addressError, setAddressError] = useState("");
+  const [solPrice, setSolPrice] = useState(0);
+  const [availableBalance, setAvailableBalance] = useState(0);
+
+  useEffect(() => {
+    const getSolData = async () => {
+      try {
+        const price = await fetchSolPrice();
+        setSolPrice(price);
+
+        const { balance } = await fetchWalletBalance(userId);
+        const parsedBalance = parseFloat(balance) || 0;
+
+        setAvailableBalance(parsedBalance);
+      } catch (error) {
+        console.error("Error fetching SOL price or balance", error);
+      }
+    };
+
+    getSolData();
+  }, [userId]);
 
   const handleConfirmAndSend = async () => {
     try {
@@ -165,8 +178,8 @@ const WithdrawPage: React.FC<WithdrawPageProps> = ({
   );
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-40 pb-16">
-      <div className="bg-[#1B1B1B] h-[90%] w-full max-w-md p-6 text-center shadow-lg relative rounded-lg flex flex-col">
+    <main className="bg-black bg-opacity-80 flex items-center justify-center">
+      <div className="bg-[#1B1B1B] w-full max-w-md p-6 text-center shadow-lg relative rounded-lg flex flex-col">
         <button
           onClick={() => router.push("/")}
           className="absolute top-4 right-4 text-white"
@@ -178,8 +191,8 @@ const WithdrawPage: React.FC<WithdrawPageProps> = ({
         {step === 2 && renderStepTwo()}
         {step === 3 && renderSuccess()}
       </div>
-    </div>
+    </main>
   );
 };
 
-export default WithdrawPage;
+export default Withdraw;
