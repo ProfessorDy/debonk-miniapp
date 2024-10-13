@@ -115,7 +115,7 @@ const TokenModal: React.FC<TokenModalProps> = ({
               {/* Close button */}
               <button
                 onClick={onClose}
-                className="absolute top-4 left-4 text-accent"
+                className="px-[6.34px] py-[2.54px] text-accent bg-[#3C3C3C3B]"
               >
                 <IoClose size={24} />
               </button>

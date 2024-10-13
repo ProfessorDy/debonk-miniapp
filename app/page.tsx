@@ -8,45 +8,24 @@ import { CiCircleAlert } from "react-icons/ci";
 import { GiPlainCircle } from "react-icons/gi";
 import { copyToClipboard } from "@/utils/clipboardUtils";
 import DepositModal from "@/components/DepositModal";
-import WithdrawModal from "@/components/WithdrawModal";
 import useTelegramUserStore from "@/store/useTelegramUserStore";
 import useLiveTradingStore from "@/store/useLiveTradingStore";
+import useWalletAddressStore from "@/store/useWalletAddressStore";
 import { formatNumber } from "@/utils/numberUtils";
-
-// Helper function to fetch SOL price from the API
-const fetchSolPrice = async () => {
-  const response = await fetch("/api/solPrice");
-  const data = await response.json();
-  if (response.ok) {
-    return data.solUsdPrice; // Use the solUsdPrice as needed
-  } else {
-    console.error(data.error);
-  }
-};
-
-// Helper function to fetch the user's wallet and simulation balances
-async function fetchWalletBalance(telegramId: string) {
-  const res = await fetch(`/api/getUserSolanaBalance?telegramId=${telegramId}`);
-  const data = await res.json();
-  return {
-    balance: data.balance, // Solana balance
-    simulationBalance: data.simulationBalance, // Simulation balance
-  };
-}
-
-// Helper function to fetch the user's active positions
-async function fetchUserPositions(telegramId: string): Promise<TokenDataArray> {
-  const res = await fetch(`/api/getUserPositions?telegramId=${telegramId}`);
-  const data = await res.json();
-  return data.positions as TokenDataArray;
-}
+import { useRouter } from "next/navigation";
+import {
+  fetchSolPrice,
+  fetchWalletBalance,
+  fetchUserPositions,
+} from "@/utils/apiUtils";
 
 const Home = () => {
-  const [walletAddress, setWalletAddress] = useState("A1BbDsD4E5F6G7HHtQJ");
+  const { walletAddress, setWalletAddress } = useWalletAddressStore();
+  const { setUserId } = useTelegramUserStore();
+  const { isLiveTrading, toggleLiveTrading } = useLiveTradingStore();
   const [error, setError] = useState<string | null>(null); //eslint-disable-line
   const [unrealizedPNL] = useState("-0.00%");
   const [isDepositModalOpen, setIsDepositModalOpen] = useState(false);
-  const [isWithdrawModalOpen, setIsWithdrawModalOpen] = useState(false);
   const [liveBalance, setLiveBalance] = useState<number>(0);
   const [simulationBalance, setSimulationBalance] = useState<number>(0);
 
@@ -54,12 +33,7 @@ const Home = () => {
   const [walletBalance, setWalletBalance] = useState<number>(0);
   const [totalValueInUsd, setTotalValueInUsd] = useState<number | null>(null);
   const [positions, setPositions] = useState<TokenDataArray>([]); //eslint-disable-line
-
-  const setUserId = useTelegramUserStore((state) => state.setUserId);
-  const isLiveTrading = useLiveTradingStore((state) => state.isLiveTrading);
-  const toggleLiveTrading = useLiveTradingStore(
-    (state) => state.toggleLiveTrading
-  );
+  const router = useRouter();
 
   useEffect(() => {
     const telegram = window.Telegram?.WebApp;
@@ -89,10 +63,8 @@ const Home = () => {
             isLiveTrading ? parsedLiveBalance : parsedSimulationBalance
           );
 
-          if (price !== null && price !== undefined) {
-            const totalValue = walletBalance * price;
-            setTotalValueInUsd(totalValue);
-          }
+          const totalValue = walletBalance * price;
+          setTotalValueInUsd(totalValue);
 
           // Fetch active positions
           const userPositions = await fetchUserPositions(userId.toString());
@@ -113,7 +85,7 @@ const Home = () => {
 
       getSolData();
     }
-  }, [setWalletBalance, setUserId, isLiveTrading]);
+  }, [setWalletBalance, setUserId, isLiveTrading, walletBalance]);
 
   useEffect(() => {
     console.log("Component mounted. Checking Telegram WebApp user data...");
@@ -166,19 +138,16 @@ const Home = () => {
   useEffect(() => {
     setWalletBalance(isLiveTrading ? liveBalance : simulationBalance);
 
-    if (solPrice !== null && solPrice !== undefined) {
-      const totalValue =
-        (isLiveTrading ? liveBalance : simulationBalance) * solPrice;
-      setTotalValueInUsd(totalValue);
-    }
+    const totalValue =
+      (isLiveTrading ? liveBalance : simulationBalance) * solPrice;
+    setTotalValueInUsd(totalValue);
   }, [isLiveTrading, liveBalance, simulationBalance, solPrice]);
 
   const handleOpenDepositModal = () => setIsDepositModalOpen(true);
-  const handleOpenWithdrawModal = () => setIsWithdrawModalOpen(true);
-  const handleCloseWithdrawModal = () => setIsWithdrawModalOpen(false);
   const handleCloseDepositModal = () => setIsDepositModalOpen(false);
   const handleCopy = () => copyToClipboard(walletAddress);
   const handleRefresh = () => window.location.reload();
+  const handleWithdraw = () => router.push(`/withdraw`);
 
   const buttons = [
     {
@@ -189,7 +158,7 @@ const Home = () => {
     {
       label: "Withdraw",
       icon: <PiDownloadDuotone className="text-[20px]" />,
-      action: handleOpenWithdrawModal,
+      action: handleWithdraw,
     },
     {
       label: "Refresh",
@@ -290,7 +259,7 @@ const Home = () => {
                 <div className="flex justify-between items-center mb-2">
                   <p className="text-base font-bold">{position.token.name}</p>
                 </div>
-                <div className="text-sm text-gray-400 flex justify-between items-center">
+                <div className="text-sm  flex justify-between items-center">
                   <div>
                     <p>
                       <span className="font-bold"> MC </span>
@@ -307,7 +276,7 @@ const Home = () => {
                     </p>
                   </div>
                   <div className="text-right">
-                    <p className="text-primary">
+                    <p className="">
                       {position.PNL_sol ? position.PNL_sol.toFixed(2) : "0.00"}{" "}
                       sol
                     </p>
@@ -346,12 +315,6 @@ const Home = () => {
         isOpen={isDepositModalOpen}
         onClose={handleCloseDepositModal}
         walletAddress={walletAddress}
-      />
-      <WithdrawModal
-        isOpen={isWithdrawModalOpen}
-        onClose={handleCloseWithdrawModal}
-        solPrice={solPrice}
-        availableBalance={walletBalance}
       />
     </main>
   );
