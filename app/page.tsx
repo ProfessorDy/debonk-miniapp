@@ -86,10 +86,8 @@ const Home = () => {
             isLiveTrading ? parsedLiveBalance : parsedSimulationBalance
           );
 
-          if (price !== null && price !== undefined) {
-            const totalValue = walletBalance * price;
-            setTotalValueInUsd(totalValue);
-          }
+          const totalValue = walletBalance * price;
+          setTotalValueInUsd(totalValue);
 
           // Fetch active positions
           const userPositions = await fetchUserPositions(userId.toString());
@@ -163,11 +161,9 @@ const Home = () => {
   useEffect(() => {
     setWalletBalance(isLiveTrading ? liveBalance : simulationBalance);
 
-    if (solPrice !== null && solPrice !== undefined) {
-      const totalValue =
-        (isLiveTrading ? liveBalance : simulationBalance) * solPrice;
-      setTotalValueInUsd(totalValue);
-    }
+    const totalValue =
+      (isLiveTrading ? liveBalance : simulationBalance) * solPrice;
+    setTotalValueInUsd(totalValue);
   }, [isLiveTrading, liveBalance, simulationBalance, solPrice]);
 
   const handleOpenDepositModal = () => setIsDepositModalOpen(true);
