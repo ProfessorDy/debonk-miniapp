@@ -13,34 +13,11 @@ import useLiveTradingStore from "@/store/useLiveTradingStore";
 import useWalletAddressStore from "@/store/useWalletAddressStore";
 import { formatNumber } from "@/utils/numberUtils";
 import { useRouter } from "next/navigation";
-
-// Helper function to fetch SOL price from the API
-const fetchSolPrice = async () => {
-  const response = await fetch("/api/solPrice");
-  const data = await response.json();
-  if (response.ok) {
-    return data.solUsdPrice; // Use the solUsdPrice as needed
-  } else {
-    console.error(data.error);
-  }
-};
-
-// Helper function to fetch the user's wallet and simulation balances
-async function fetchWalletBalance(telegramId: string) {
-  const res = await fetch(`/api/getUserSolanaBalance?telegramId=${telegramId}`);
-  const data = await res.json();
-  return {
-    balance: data.balance, // Solana balance
-    simulationBalance: data.simulationBalance, // Simulation balance
-  };
-}
-
-// Helper function to fetch the user's active positions
-async function fetchUserPositions(telegramId: string): Promise<TokenDataArray> {
-  const res = await fetch(`/api/getUserPositions?telegramId=${telegramId}`);
-  const data = await res.json();
-  return data.positions as TokenDataArray;
-}
+import {
+  fetchSolPrice,
+  fetchWalletBalance,
+  fetchUserPositions,
+} from "@/utils/apiUtils";
 
 const Home = () => {
   const { walletAddress, setWalletAddress } = useWalletAddressStore();

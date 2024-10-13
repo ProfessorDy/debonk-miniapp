@@ -5,7 +5,7 @@ import { IoClose } from "react-icons/io5";
 import useTelegramUserStore from "@/store/useTelegramUserStore";
 import { useRouter } from "next/navigation";
 import { PublicKey } from "@solana/web3.js";
-import { fetchSolPrice, fetchWalletBalance } from "@/lib/solana";
+import { fetchSolPrice, fetchWalletBalance } from "@/utils/apiUtils";
 
 const Withdraw = () => {
   const { userId } = useTelegramUserStore();
