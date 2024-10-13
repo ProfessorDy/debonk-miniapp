@@ -69,7 +69,7 @@ const Withdraw = () => {
   };
 
   const renderStepOne = () => (
-    <div className="flex flex-col justify-between h-full">
+    <div className="flex flex-col justify-between h-full bg-[#3C3C3C3B] backdrop-blur-2xl border-[#0493CC] border-[.5px] text-white shadow-lg rounded-xl p-3">
       <div className="flex flex-col items-start mb-4 w-full relative">
         <label htmlFor="walletAddress" className="text-gray-400 mb-2">
           Address
@@ -111,7 +111,7 @@ const Withdraw = () => {
   );
 
   const renderStepTwo = () => (
-    <div className="flex flex-col justify-between h-full">
+    <div className="flex flex-col justify-between h-full bg-[#3C3C3C3B] backdrop-blur-2xl border-[#0493CC] border-[.5px] text-white shadow-lg rounded-xl p-3">
       <h2>Amount</h2>
 
       <div className="flex flex-col items-center mb-6">
