@@ -141,20 +141,28 @@ const Withdraw = () => {
 
   const renderStepTwo = () => (
     <div className="flex flex-col justify-between h-full">
-      <h2 className="text-2xl font-semibold text-white mb-6">
-        Confirm Withdrawal
-      </h2>
-
-      <div className="bg-gray-900 p-4 rounded-lg text-left text-gray-300 mb-4">
-        <div className="mb-2">Address: {walletAddress}</div>
-        <div>Amount: {amount} SOL</div>
+      <h2 className="sr-only">Confirm Withdrawal</h2>{" "}
+      {/* Hiding the title as per the image's design */}
+      {/* Amount section */}
+      <div className="flex flex-col items-center mb-6">
+        <div className="text-6xl text-white font-bold">{amount} SOL</div>
+        <div className="text-base text-gray-400">
+          ${amount && solPrice ? (amount * solPrice).toFixed(2) : "0.00"}
+        </div>
       </div>
-
+      {/* Wallet details */}
+      <div className="bg-gray-900 p-4 rounded-md mb-6 w-full">
+        <div className="flex items-center justify-between">
+          <span className="text-white">To:</span>
+          <span className="text-gray-400">{walletAddress}</span>
+        </div>
+      </div>
+      {/* Continue button */}
       <button
         onClick={handleConfirmAndSend}
         className="bg-[#0493CC] text-white font-semibold py-3 rounded-lg w-full mb-6"
       >
-        Confirm & Send
+        Continue
       </button>
     </div>
   );
