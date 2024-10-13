@@ -68,8 +68,18 @@ const Withdraw = () => {
     }
   };
 
+  const handleNextStep = () => {
+    if (step === 1 && validateAddress(walletAddress)) {
+      setStep(2);
+    } else if (step === 2) {
+      handleConfirmAndSend();
+    } else if (step === 3) {
+      router.push("/");
+    }
+  };
+
   const renderStepOne = () => (
-    <div className="flex flex-col justify-between h-full bg-[#3C3C3C3B] backdrop-blur-2xl border-[#0493CC] border-[.5px] text-white shadow-lg rounded-xl p-3">
+    <div className="bg-[#3C3C3C3B] backdrop-blur-2xl border-[#0493CC] border-[.5px] text-white shadow-lg rounded-xl p-3 h-[60vh] my-auto">
       <div className="flex flex-col items-start mb-4 w-full relative">
         <label htmlFor="walletAddress" className="text-gray-400 mb-2">
           Address
@@ -93,25 +103,11 @@ const Withdraw = () => {
           <p className="text-red-500 text-sm mt-2">{addressError}</p>
         )}
       </div>
-
-      <button
-        onClick={() => {
-          if (validateAddress(walletAddress)) {
-            setStep(2);
-          }
-        }}
-        className={`${
-          !walletAddress || addressError ? "bg-gray-600" : "bg-[#0493CC]"
-        } text-white font-semibold py-3 rounded-lg w-full mb-6`}
-        disabled={!walletAddress || !!addressError}
-      >
-        Continue
-      </button>
     </div>
   );
 
   const renderStepTwo = () => (
-    <div className="flex flex-col justify-between h-full bg-[#3C3C3C3B] backdrop-blur-2xl border-[#0493CC] border-[.5px] text-white shadow-lg rounded-xl p-3">
+    <div className="bg-[#3C3C3C3B] backdrop-blur-2xl border-[#0493CC] border-[.5px] text-white shadow-lg rounded-xl p-3 h-[60vh] my-auto">
       <h2>Amount</h2>
 
       <div className="flex flex-col items-center mb-6">
@@ -139,13 +135,6 @@ const Withdraw = () => {
         </button>
         <span className="text-gray-500">Available: {availableBalance} SOL</span>
       </div>
-      {/* Continue button */}
-      <button
-        onClick={handleConfirmAndSend}
-        className="bg-[#0493CC] text-white font-semibold py-3 rounded-lg w-full mb-6"
-      >
-        Continue
-      </button>
     </div>
   );
 
@@ -172,31 +161,37 @@ const Withdraw = () => {
       </h2>
       <div className="text-gray-400 mb-6">To: {walletAddress}</div>
       <div className="text-white mb-6">- {amount} SOL</div>
-      <button
-        onClick={() => router.push("/")}
-        className="bg-[#0493CC] text-white font-semibold py-3 rounded-lg w-full mb-6"
-      >
-        Close
-      </button>
     </div>
   );
 
+  const renderButtonText = () => {
+    if (step === 1) return "Continue";
+    if (step === 2) return "Send";
+    if (step === 3) return "Close";
+  };
+
   return (
     <main
-      className="pt-0 p-3 pb-20 bg-black min-h-screen bg-repeat-y"
+      className="pt-0 p-3 pb-20 bg-black min-h-screen bg-repeat-y "
       style={{ backgroundImage: "url('/Rectangle.png')" }}
     >
-      <div className="bg-[#1B1B1B] w-full max-w-md p-6 text-center shadow-lg relative rounded-lg flex flex-col">
-        <button
-          onClick={() => router.push("/")}
-          className="absolute top-4 right-4 text-white"
-        >
-          <IoClose size={24} />
-        </button>
+      {step === 1 && renderStepOne()}
+      {step === 2 && renderStepTwo()}
+      {step === 3 && renderSuccess()}
 
-        {step === 1 && renderStepOne()}
-        {step === 2 && renderStepTwo()}
-        {step === 3 && renderSuccess()}
+      {/* Step-specific button */}
+      <div className="mt-4 w-full">
+        <button
+          onClick={handleNextStep}
+          className={`${
+            step === 1 && (!walletAddress || addressError)
+              ? "bg-gray-600"
+              : "bg-[#0493CC]"
+          } text-white font-semibold py-3 rounded-lg w-full`}
+          disabled={step === 1 && (!walletAddress || !!addressError)}
+        >
+          {renderButtonText()}
+        </button>
       </div>
     </main>
   );
