@@ -8,7 +8,6 @@ import { CiCircleAlert } from "react-icons/ci";
 import { GiPlainCircle } from "react-icons/gi";
 import { copyToClipboard } from "@/utils/clipboardUtils";
 import DepositModal from "@/components/DepositModal";
-import WithdrawModal from "@/app/withdraw/page";
 import useTelegramUserStore from "@/store/useTelegramUserStore";
 import useLiveTradingStore from "@/store/useLiveTradingStore";
 import useWalletAddressStore from "@/store/useWalletAddressStore";
@@ -109,7 +108,7 @@ const Home = () => {
 
       getSolData();
     }
-  }, [setWalletBalance, setUserId, isLiveTrading]);
+  }, [setWalletBalance, setUserId, isLiveTrading, walletBalance]);
 
   useEffect(() => {
     console.log("Component mounted. Checking Telegram WebApp user data...");

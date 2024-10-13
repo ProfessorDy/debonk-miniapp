@@ -50,6 +50,7 @@ const WithdrawPage: React.FC<WithdrawPageProps> = ({
       }
     } catch (error) {
       setAddressError("Invalid wallet address.");
+      console.log("Invalid sol address", error);
       return false;
     }
   };
