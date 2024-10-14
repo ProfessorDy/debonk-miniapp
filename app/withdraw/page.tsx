@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { IoClose } from "react-icons/io5";
+import { TiArrowBack } from "react-icons/ti";
 import useTelegramUserStore from "@/store/useTelegramUserStore";
 import { useRouter } from "next/navigation";
 import { PublicKey } from "@solana/web3.js";
@@ -79,53 +80,52 @@ const Withdraw = () => {
   };
 
   const renderStepOne = () => (
-    <div className="bg-[#3C3C3C3B] backdrop-blur-2xl border-[#0493CC] border-[.5px] text-white shadow-lg rounded-xl p-3 h-[60vh] my-auto">
-      <div className="flex flex-col items-start mb-4 w-full relative">
-        <label htmlFor="walletAddress" className="text-gray-400 mb-2">
+    <div className="bg-[#3C3C3C3B] backdrop-blur-2xl border-[#0493CC] border-[.5px] text-white shadow-lg rounded-xl p-3 h-[40vh] my-auto">
+      <div className="flex items-center justify-between px-2 py-3 rounded-xl w-full relative bg-background">
+        <label htmlFor="walletAddress" className="text-primary w-full mr-1">
           Address
+          <input
+            type="text"
+            id="walletAddress"
+            value={walletAddress}
+            onChange={(e) => setWalletAddress(e.target.value)}
+            onBlur={() => validateAddress(walletAddress)}
+            placeholder="Enter wallet address"
+            className="bg-background text-white w-full te"
+          />
         </label>
-        <input
-          type="text"
-          id="walletAddress"
-          value={walletAddress}
-          onChange={(e) => setWalletAddress(e.target.value)}
-          onBlur={() => validateAddress(walletAddress)}
-          placeholder="Enter wallet address"
-          className="bg-gray-800 text-white p-3 w-full rounded-md pr-10"
-        />
-        <button
-          className="absolute right-3 top-10 text-gray-400"
-          onClick={() => setWalletAddress("")}
-        >
+
+        <button className="text-primary" onClick={() => setWalletAddress("")}>
           <IoClose size={18} />
         </button>
-        {addressError && (
-          <p className="text-red-500 text-sm mt-2">{addressError}</p>
-        )}
       </div>
+      {addressError && (
+        <p className="text-red-500 text-sm mt-2">{addressError}</p>
+      )}
     </div>
   );
 
   const renderStepTwo = () => (
-    <div className="bg-[#3C3C3C3B] backdrop-blur-2xl border-[#0493CC] border-[.5px] text-white shadow-lg rounded-xl p-3 h-[60vh] my-auto">
-      <h2>Amount</h2>
-
-      <div className="flex flex-col items-center mb-6">
-        <div className="text-6xl text-white font-bold">{amount} SOL</div>
-        <div className="text-base text-gray-400">
-          ${amount && solPrice ? (amount * solPrice).toFixed(2) : "0.00"}
-        </div>
-      </div>
-      {/* Wallet details */}
-      <div className="bg-gray-900 p-4 rounded-md mb-6 w-full">
-        <div className="flex items-center justify-between">
-          <span className="text-white">To:</span>
-          <span className="text-gray-400">{`${walletAddress.slice(
+    <>
+      <div className="bg-[#3C3C3C3B] backdrop-blur-2xl border-[#0493CC] border-[.5px] text-white shadow-lg rounded-xl p-4 h-[40vh] my-auto flex flex-col justify-between items-center">
+        {/* Wallet details */}
+        <p className="text-primary font-semibold">
+          To:{" "}
+          <span className="font-normal text-sm">{`${walletAddress.slice(
             0,
             6
           )}...${walletAddress.slice(-4)}`}</span>
+        </p>
+
+        <div className="flex flex-col items-center mb-6">
+          <div className="text-6xl text-white font-bold">{amount} SOL</div>
+          <div className="text-base text-gray-400">
+            ${amount && solPrice ? (amount * solPrice).toFixed(2) : "0.00"}
+          </div>
         </div>
+        <div></div>
       </div>
+
       <div className="flex justify-between items-center text-white mb-4">
         <button
           onClick={() => setAmount(availableBalance)}
@@ -133,9 +133,12 @@ const Withdraw = () => {
         >
           MAX
         </button>
-        <span className="text-gray-500">Available: {availableBalance} SOL</span>
+        <span className="text-gray-500">
+          Available: {availableBalance !== 0 ? availableBalance.toFixed(3) : 0}{" "}
+          SOLANA
+        </span>
       </div>
-    </div>
+    </>
   );
 
   const renderSuccess = () => (
@@ -172,22 +175,27 @@ const Withdraw = () => {
 
   return (
     <main
-      className="pt-0 p-3 pb-20 bg-black min-h-screen bg-repeat-y "
+      className="pt-0 p-3 pb-30 bg-black min-h-screen bg-repeat-y  py-auto"
       style={{ backgroundImage: "url('/Rectangle.png')" }}
     >
+      <div className="flex justify-between items-center text-accent py-4 bg-black mb-4">
+        <TiArrowBack size={27} />
+        <h2 className="text-white text-2xl font">Amount</h2>
+        <IoClose size={27} />
+      </div>
       {step === 1 && renderStepOne()}
       {step === 2 && renderStepTwo()}
       {step === 3 && renderSuccess()}
 
       {/* Step-specific button */}
-      <div className="mt-4 w-full">
+      <div className="mt-4 w-full relative">
         <button
           onClick={handleNextStep}
           className={`${
-            step === 1 && (!walletAddress || addressError)
-              ? "bg-gray-600"
-              : "bg-[#0493CC]"
-          } text-white font-semibold py-3 rounded-lg w-full`}
+            step === 3 && (!walletAddress || addressError)
+              ? "bg-black border border-accent text-accent"
+              : "bg-accent text-black"
+          }   py-5 rounded-xl w-full text-center  relative -bottom-32`}
           disabled={step === 1 && (!walletAddress || !!addressError)}
         >
           {renderButtonText()}
