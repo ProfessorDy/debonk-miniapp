@@ -92,14 +92,13 @@ const Withdraw = () => {
       <div className="flex items-center justify-between px-2 py-3 rounded-xl w-full relative bg-background">
         <label htmlFor="walletAddress" className="text-primary w-full mr-1">
           Address
-          <input
-            type="text"
+          <textarea
             id="walletAddress"
             value={walletAddress}
             onChange={(e) => setWalletAddress(e.target.value)}
             onBlur={() => validateAddress(walletAddress)}
             placeholder="Enter wallet address"
-            className="bg-background text-white w-full te"
+            className="bg-background text-white w-full rounded-md focus:outline-none resize-none "
           />
         </label>
 
@@ -189,7 +188,7 @@ const Withdraw = () => {
       {step !== 3 && (
         <div className="flex justify-between items-center text-accent py-4 bg-black mb-4">
           <TiArrowBack size={27} onClick={handlePreviousStep} />
-          <h2 className="text-white text-2xl font">Amount</h2>
+          {step === 2 && <h2 className="text-white text-2xl font">Amount</h2>}
           <IoClose size={27} />
         </div>
       )}
