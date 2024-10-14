@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from "react";
 import { IoClose } from "react-icons/io5";
 import { TiArrowBack } from "react-icons/ti";
+import { CgArrowsExchangeV } from "react-icons/cg";
 import useTelegramUserStore from "@/store/useTelegramUserStore";
 import { useRouter } from "next/navigation";
 import { PublicKey } from "@solana/web3.js";
@@ -16,7 +17,7 @@ const Withdraw = () => {
   const [walletAddress, setWalletAddress] = useState("");
   const [addressError, setAddressError] = useState("");
   const [solPrice, setSolPrice] = useState(0);
-  const [availableBalance, setAvailableBalance] = useState(0);
+  const [availableBalance, setAvailableBalance] = useState(0.0);
 
   useEffect(() => {
     const getSolData = async () => {
@@ -88,8 +89,8 @@ const Withdraw = () => {
   };
 
   const renderStepOne = () => (
-    <div className="bg-[#3C3C3C3B] backdrop-blur-2xl border-[#0493CC] border-[.5px] text-white shadow-lg rounded-xl p-3 h-[40vh] my-auto">
-      <div className="flex items-center justify-between px-2 py-3 rounded-xl w-full relative bg-background">
+    <div className="bg-[#3C3C3C3B] backdrop-blur-2xl border-[#0493CC] border-[.5px] text-white shadow-lg rounded-xl p-3 h-[50vh] my-auto">
+      <div className="flex items-center justify-between px-2 py-1 rounded-xl w-full relative bg-background">
         <label htmlFor="walletAddress" className="text-primary w-full mr-1">
           Address
           <textarea
@@ -98,7 +99,7 @@ const Withdraw = () => {
             onChange={(e) => setWalletAddress(e.target.value)}
             onBlur={() => validateAddress(walletAddress)}
             placeholder="Enter wallet address"
-            className="bg-background text-white w-full rounded-md focus:outline-none resize-none "
+            className="bg-background text-white w-full   rounded-md focus:outline-none resize-none "
           />
         </label>
 
@@ -114,7 +115,7 @@ const Withdraw = () => {
 
   const renderStepTwo = () => (
     <>
-      <div className="bg-[#3C3C3C3B] backdrop-blur-2xl border-[#0493CC] border-[.5px] text-white shadow-lg rounded-xl p-4 h-[40vh] my-auto flex flex-col justify-between items-center">
+      <div className="bg-[#3C3C3C3B] backdrop-blur-2xl border-[#0493CC] border-[.5px] text-white shadow-lg rounded-xl p-4 h-[50vh] my-auto flex flex-col justify-between items-center">
         {/* Wallet details */}
         <p className="text-primary font-semibold">
           To:{" "}
@@ -124,23 +125,28 @@ const Withdraw = () => {
           )}...${walletAddress.slice(-4)}`}</span>
         </p>
 
-        <div className="flex flex-col items-center mb-6">
-          <div className="text-6xl text-white font-bold">{amount} SOL</div>
-          <div className="text-base text-gray-400">
+        <div className="flex flex-col items-center gap-2 font-poppins">
+          <div className="text-5xl text-white font-bold">
+            {amount} <span className="text-xl">SOL</span>
+          </div>
+          <button>
+            <CgArrowsExchangeV className="bg-black text-accent" size={28} />
+          </button>
+          <div className="text-lg font-light">
             ${amount && solPrice ? (amount * solPrice).toFixed(2) : "0.00"}
           </div>
         </div>
         <div></div>
       </div>
 
-      <div className="flex justify-between items-center text-white mb-4">
+      <div className="flex justify-between items-center text-white font-light font-poppins text-sm mt-4">
         <button
           onClick={() => setAmount(availableBalance)}
-          className="bg-gray-800 px-4 py-2 rounded-md"
+          className="bg-background px-4 py-2 rounded-md"
         >
           MAX
         </button>
-        <span className="text-gray-500">
+        <span className="">
           Available: {availableBalance !== 0 ? availableBalance.toFixed(3) : 0}{" "}
           SOLANA
         </span>
@@ -188,8 +194,12 @@ const Withdraw = () => {
       {step !== 3 && (
         <div className="flex justify-between items-center text-accent py-4 bg-black mb-4">
           <TiArrowBack size={27} onClick={handlePreviousStep} />
-          {step === 2 && <h2 className="text-white text-2xl font">Amount</h2>}
-          <IoClose size={27} />
+          {step === 2 && (
+            <>
+              <h2 className="text-white text-2xl font">Amount</h2>
+              <IoClose size={27} onClick={() => router.push("/")} />
+            </>
+          )}
         </div>
       )}
 
@@ -205,7 +215,7 @@ const Withdraw = () => {
             step === 3 && (!walletAddress || addressError)
               ? "bg-black border border-accent text-accent"
               : "bg-accent text-black"
-          }   py-5 rounded-xl w-full text-center font-poppins relative -bottom-36`}
+          }   py-5 rounded-xl w-full text-center font-poppins relative -bottom-28`}
           disabled={step === 1 && (!walletAddress || !!addressError)}
         >
           {renderButtonText()}
