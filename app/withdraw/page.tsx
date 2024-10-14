@@ -79,6 +79,14 @@ const Withdraw = () => {
     }
   };
 
+  const handlePreviousStep = () => {
+    if (step === 2) {
+      setStep(1);
+    } else {
+      router.push("/");
+    }
+  };
+
   const renderStepOne = () => (
     <div className="bg-[#3C3C3C3B] backdrop-blur-2xl border-[#0493CC] border-[.5px] text-white shadow-lg rounded-xl p-3 h-[40vh] my-auto">
       <div className="flex items-center justify-between px-2 py-3 rounded-xl w-full relative bg-background">
@@ -178,11 +186,14 @@ const Withdraw = () => {
       className="pt-0 p-3 pb-30 bg-black min-h-screen bg-repeat-y  py-auto"
       style={{ backgroundImage: "url('/Rectangle.png')" }}
     >
-      <div className="flex justify-between items-center text-accent py-4 bg-black mb-4">
-        <TiArrowBack size={27} />
-        <h2 className="text-white text-2xl font">Amount</h2>
-        <IoClose size={27} />
-      </div>
+      {step !== 3 && (
+        <div className="flex justify-between items-center text-accent py-4 bg-black mb-4">
+          <TiArrowBack size={27} onClick={handlePreviousStep} />
+          <h2 className="text-white text-2xl font">Amount</h2>
+          <IoClose size={27} />
+        </div>
+      )}
+
       {step === 1 && renderStepOne()}
       {step === 2 && renderStepTwo()}
       {step === 3 && renderSuccess()}
@@ -195,7 +206,7 @@ const Withdraw = () => {
             step === 3 && (!walletAddress || addressError)
               ? "bg-black border border-accent text-accent"
               : "bg-accent text-black"
-          }   py-5 rounded-xl w-full text-center  relative -bottom-32`}
+          }   py-5 rounded-xl w-full text-center font-poppins relative -bottom-36`}
           disabled={step === 1 && (!walletAddress || !!addressError)}
         >
           {renderButtonText()}
