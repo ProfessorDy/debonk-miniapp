@@ -130,80 +130,91 @@ const Withdraw = () => {
     </div>
   );
 
-  const renderStepTwo = () => (
-    <>
-      <div className="bg-[#3C3C3C3B] backdrop-blur-2xl border-[#0493CC] border-[.5px] text-white shadow-lg rounded-xl p-4 h-[50vh] my-auto flex flex-col justify-between items-center">
-        {/* Wallet details */}
-        <p className="text-primary font-semibold">
-          To:{" "}
-          <span className="font-normal text-sm">{`${walletAddress.slice(
-            0,
-            6
-          )}...${walletAddress.slice(-4)}`}</span>
-        </p>
+  const renderStepTwo = () => {
+    const handleAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+      const inputValue = parseFloat(e.target.value) || 0;
+      if (isSolMode) {
+        setAmount(inputValue); // Update amount in SOL
+      } else {
+        setAmount(inputValue / solPrice); // Update amount in SOL based on USD input
+      }
+    };
 
-        <div className="flex flex-col items-center gap-2 font-poppins">
-          {/* Top amount display reflects the converted value */}
-          <div className="text-5xl text-white font-bold">
-            {isSolMode
-              ? `$${(amount * solPrice).toFixed(2)}` // Show USD when input is SOL
-              : `${(amount / solPrice).toFixed(2)} SOL`}{" "}
-            {/* Show SOL when input is USD */}
+    return (
+      <>
+        <div className="bg-[#3C3C3C3B] backdrop-blur-2xl border-[#0493CC] border-[.5px] text-white shadow-lg rounded-xl p-4 h-[50vh] my-auto flex flex-col justify-between items-center">
+          {/* Wallet details */}
+          <p className="text-primary font-semibold">
+            To:{" "}
+            <span className="font-normal text-sm">{`${walletAddress.slice(
+              0,
+              6
+            )}...${walletAddress.slice(-4)}`}</span>
+          </p>
+
+          <div className="flex flex-col items-center gap-2 font-poppins">
+            {/* Top amount display reflects the converted value */}
+            <div className="text-5xl text-white font-bold">
+              {isSolMode
+                ? `$${(amount * solPrice).toFixed(2)}` // Show USD when input is SOL
+                : `${amount.toFixed(2)} SOL`}{" "}
+              {/* Show SOL when input is USD */}
+            </div>
+
+            {/* Toggle button to switch currency */}
+            <button onClick={toggleCurrencyMode}>
+              <CgArrowsExchangeV className="bg-black text-accent" size={28} />
+            </button>
+
+            {/* Input and currency on the same line */}
+            <div className="flex items-center gap-2">
+              {isSolMode ? (
+                <>
+                  {/* Input for SOL */}
+                  <input
+                    type="number"
+                    className="text-lg inline-block font-light bg-background p-1 rounded-xl text-center outline-none"
+                    value={amount.toFixed(2)}
+                    onChange={handleAmountChange}
+                    placeholder="Amount in SOL"
+                  />
+                  <span className="text-xl text-white font-bold">SOL</span>
+                </>
+              ) : (
+                <>
+                  {/* Input for USD */}
+                  <span className="text-xl text-white font-bold">$</span>
+                  <input
+                    type="number"
+                    className="text-lg inline-block font-light bg-background p-1 rounded-xl text-center outline-none"
+                    value={(amount * solPrice).toFixed(2)}
+                    onChange={handleAmountChange}
+                    placeholder="Amount in USD"
+                  />
+                </>
+              )}
+            </div>
           </div>
 
-          {/* Toggle button to switch currency */}
-          <button onClick={toggleCurrencyMode}>
-            <CgArrowsExchangeV className="bg-black text-accent" size={28} />
-          </button>
-
-          {/* Input and currency on the same line */}
-          <div className="flex items-center gap-2">
-            {isSolMode ? (
-              <>
-                {/* Input for SOL */}
-                <input
-                  type="number"
-                  className="text-lg inline-block font-light bg-background p-1 rounded-xl text-center outline-none"
-                  value={amount.toFixed(2)}
-                  onChange={handleAmountChange}
-                  placeholder="Amount in SOL"
-                />
-                <span className="text-xl text-white font-bold">SOL</span>
-              </>
-            ) : (
-              <>
-                {/* Input for USD */}
-                <span className="text-xl text-white font-bold">$</span>
-                <input
-                  type="number"
-                  className="text-lg inline-block font-light bg-background p-1 rounded-xl text-center outline-none"
-                  value={(amount * solPrice).toFixed(2)}
-                  onChange={handleAmountChange}
-                  placeholder="Amount in USD"
-                />
-              </>
-            )}
-          </div>
+          <div></div>
         </div>
 
-        <div></div>
-      </div>
-
-      {/* MAX button and available balance display */}
-      <div className="flex justify-between items-center text-white font-light font-poppins text-sm mt-4">
-        <button
-          onClick={() => setAmount(availableBalance)}
-          className="bg-background px-4 py-2 rounded-md"
-        >
-          MAX
-        </button>
-        <span>
-          Available: {availableBalance !== 0 ? availableBalance.toFixed(3) : 0}{" "}
-          SOLANA
-        </span>
-      </div>
-    </>
-  );
+        {/* MAX button and available balance display */}
+        <div className="flex justify-between items-center text-white font-light font-poppins text-sm mt-4">
+          <button
+            onClick={() => setAmount(availableBalance)}
+            className="bg-background px-4 py-2 rounded-md"
+          >
+            MAX
+          </button>
+          <span>
+            Available:{" "}
+            {availableBalance !== 0 ? availableBalance.toFixed(3) : 0} SOLANA
+          </span>
+        </div>
+      </>
+    );
+  };
 
   const renderSuccess = () => (
     <div className="space-y-36  pt-14">
