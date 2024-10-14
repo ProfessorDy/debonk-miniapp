@@ -143,29 +143,53 @@ const Withdraw = () => {
         </p>
 
         <div className="flex flex-col items-center gap-2 font-poppins">
+          {/* Top amount display reflects the converted value */}
           <div className="text-5xl text-white font-bold">
-            {amount} <span className="text-xl">SOL</span>
+            {isSolMode
+              ? `$${(amount * solPrice).toFixed(2)}` // Show USD when input is SOL
+              : `${(amount / solPrice).toFixed(2)} SOL`}{" "}
+            {/* Show SOL when input is USD */}
           </div>
+
+          {/* Toggle button to switch currency */}
           <button onClick={toggleCurrencyMode}>
             <CgArrowsExchangeV className="bg-black text-accent" size={28} />
           </button>
 
-          <input
-            type="number"
-            className="text-lg inline-block font-light bg-background p-1 rounded-xl text-center outline-none"
-            value={
-              isSolMode ? amount.toFixed(2) : (amount * solPrice).toFixed(2)
-            }
-            onChange={handleAmountChange}
-            placeholder={isSolMode ? "Amount in SOL" : "Amount in USD"}
-          />
-          <span className="text-xl text-white font-bold">
-            {isSolMode ? "SOL" : "USD"}
-          </span>
+          {/* Input and currency on the same line */}
+          <div className="flex items-center gap-2">
+            {isSolMode ? (
+              <>
+                {/* Input for SOL */}
+                <input
+                  type="number"
+                  className="text-lg inline-block font-light bg-background p-1 rounded-xl text-center outline-none"
+                  value={amount.toFixed(2)}
+                  onChange={handleAmountChange}
+                  placeholder="Amount in SOL"
+                />
+                <span className="text-xl text-white font-bold">SOL</span>
+              </>
+            ) : (
+              <>
+                {/* Input for USD */}
+                <span className="text-xl text-white font-bold">$</span>
+                <input
+                  type="number"
+                  className="text-lg inline-block font-light bg-background p-1 rounded-xl text-center outline-none"
+                  value={(amount * solPrice).toFixed(2)}
+                  onChange={handleAmountChange}
+                  placeholder="Amount in USD"
+                />
+              </>
+            )}
+          </div>
         </div>
+
         <div></div>
       </div>
 
+      {/* MAX button and available balance display */}
       <div className="flex justify-between items-center text-white font-light font-poppins text-sm mt-4">
         <button
           onClick={() => setAmount(availableBalance)}
@@ -173,7 +197,7 @@ const Withdraw = () => {
         >
           MAX
         </button>
-        <span className="">
+        <span>
           Available: {availableBalance !== 0 ? availableBalance.toFixed(3) : 0}{" "}
           SOLANA
         </span>
