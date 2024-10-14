@@ -18,6 +18,7 @@ const Withdraw = () => {
   const [addressError, setAddressError] = useState("");
   const [solPrice, setSolPrice] = useState(0);
   const [availableBalance, setAvailableBalance] = useState(0.0);
+  const [isSolMode, setIsSolMode] = useState(true);
 
   useEffect(() => {
     const getSolData = async () => {
@@ -89,6 +90,21 @@ const Withdraw = () => {
     }
   };
 
+  const handleAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = parseFloat(e.target.value);
+    if (!isNaN(value)) {
+      if (isSolMode) {
+        setAmount(value);
+      } else {
+        setAmount(value / solPrice);
+      }
+    }
+  };
+
+  const toggleCurrencyMode = () => {
+    setIsSolMode(!isSolMode);
+  };
+
   const renderStepOne = () => (
     <div className="bg-[#3C3C3C3B] backdrop-blur-2xl border-[#0493CC] border-[.5px] text-white shadow-lg rounded-xl p-3 h-[50vh] my-auto">
       <div className="flex items-center justify-between px-2 py-1 rounded-xl w-full relative bg-background">
@@ -130,12 +146,22 @@ const Withdraw = () => {
           <div className="text-5xl text-white font-bold">
             {amount} <span className="text-xl">SOL</span>
           </div>
-          <button>
+          <button onClick={toggleCurrencyMode}>
             <CgArrowsExchangeV className="bg-black text-accent" size={28} />
           </button>
-          <div className="text-lg font-light">
-            ${amount && solPrice ? (amount * solPrice).toFixed(2) : "0.00"}
-          </div>
+
+          <input
+            type="number"
+            className="text-lg inline-block font-light bg-background p-1 rounded-xl text-center outline-none"
+            value={
+              isSolMode ? amount.toFixed(2) : (amount * solPrice).toFixed(2)
+            }
+            onChange={handleAmountChange}
+            placeholder={isSolMode ? "Amount in SOL" : "Amount in USD"}
+          />
+          <span className="text-xl text-white font-bold">
+            {isSolMode ? "SOL" : "USD"}
+          </span>
         </div>
         <div></div>
       </div>
