@@ -75,8 +75,7 @@ const Withdraw = () => {
     if (step === 1 && validateAddress(walletAddress)) {
       setStep(2);
     } else if (step === 2) {
-      setStep(3);
-      // handleConfirmAndSend();
+      handleConfirmAndSend();
     } else if (step === 3) {
       router.push("/");
     }
@@ -87,17 +86,6 @@ const Withdraw = () => {
       setStep(1);
     } else {
       router.push("/");
-    }
-  };
-
-  const handleAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = parseFloat(e.target.value);
-    if (!isNaN(value)) {
-      if (isSolMode) {
-        setAmount(value);
-      } else {
-        setAmount(value / solPrice);
-      }
     }
   };
 
