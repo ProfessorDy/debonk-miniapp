@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { IoClose } from "react-icons/io5";
+import { IoClose, IoCheckmarkDoneCircle } from "react-icons/io5";
 import { TiArrowBack } from "react-icons/ti";
 import { CgArrowsExchangeV } from "react-icons/cg";
 import useTelegramUserStore from "@/store/useTelegramUserStore";
@@ -74,7 +74,8 @@ const Withdraw = () => {
     if (step === 1 && validateAddress(walletAddress)) {
       setStep(2);
     } else if (step === 2) {
-      handleConfirmAndSend();
+      setStep(3);
+      // handleConfirmAndSend();
     } else if (step === 3) {
       router.push("/");
     }
@@ -155,28 +156,21 @@ const Withdraw = () => {
   );
 
   const renderSuccess = () => (
-    <div className="flex flex-col justify-center items-center h-full">
-      <div className="bg-green-500 rounded-full p-6 mb-6">
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="white"
-          className="w-12 h-12"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M5 13l4 4L19 7"
-          />
-        </svg>
+    <div className="space-y-36  pt-14">
+      <IoCheckmarkDoneCircle size={133} className="mx-auto text-[#439C0CE8]" />
+
+      <div className="text-white">
+        <h2 className="font-light text-center">Transaction</h2>
+        <div className="px-4 py-5 bg-background flex justify-between items-center w-full rounded-md">
+          <div>
+            <p className="font-semibold mb-1">Sent</p>
+            <p className="font-light text-sm">
+              To: {`${walletAddress.slice(0, 6)}...${walletAddress.slice(-4)}`}
+            </p>
+          </div>
+          <p className="text-white font-light">-{amount} SOL</p>
+        </div>
       </div>
-      <h2 className="text-2xl font-semibold text-white mb-6">
-        Transaction Sent
-      </h2>
-      <div className="text-gray-400 mb-6">To: {walletAddress}</div>
-      <div className="text-white mb-6">- {amount} SOL</div>
     </div>
   );
 
@@ -212,9 +206,9 @@ const Withdraw = () => {
         <button
           onClick={handleNextStep}
           className={`${
-            step === 3 && (!walletAddress || addressError)
-              ? "bg-black border border-accent text-accent"
-              : "bg-accent text-black"
+            step !== 3 && (!walletAddress || addressError)
+              ? "bg-accent text-black"
+              : "bg-black border border-accent text-accent"
           }   py-5 rounded-xl w-full text-center font-poppins relative -bottom-28`}
           disabled={step === 1 && (!walletAddress || !!addressError)}
         >
