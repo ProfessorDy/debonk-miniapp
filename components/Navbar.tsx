@@ -35,6 +35,7 @@ const Navbar = () => {
     const clipboardText = await pasteFromClipboard();
     if (clipboardText) {
       setTokenInput(clipboardText);
+      setIsPasteModalOpen(true); // Open modal immediately after pasting
       toast.success("Successfully pasted from clipboard!");
     }
   };
