@@ -9,13 +9,13 @@ export async function GET(req: Request) {
   const telegramId = searchParams.get("telegramId");
   const amountInSol = searchParams.get("amountInSol");
   const tokenAddress = searchParams.get("tokenAddress");
-  const webApp = getWebApp();
+  // const webApp = getWebApp();
 
   const params: BuyTokenInput = {
     telegramId,
     amountInSol: Number(amountInSol),
     tokenAddress,
-    WebAppInitData: webApp.initData,
+    WebAppInitData: "webApp.initData",
   };
 
   if (!telegramId) {

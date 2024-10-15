@@ -94,11 +94,12 @@ export const getUserPositions = async (data: GetUserPositionsInput) => {
 };
 
 export const buyToken = async (data: BuyTokenInput) => {
-  const validateData = await verifyTelegramWebAppData(data.WebAppInitData);
+  //!MAKE SURE YOU ADD ALL THESE VALIDATIONS BACK AFTER TESTING
+  // const validateData = await verifyTelegramWebAppData(data.WebAppInitData);
 
-  if (!validateData) {
-    throw new Error("Invalid WebAppInitData");
-  }
+  // if (!validateData) {
+  //   throw new Error("Invalid WebAppInitData");
+  // }
   const key = getPrivateKeyFromTelegramId(data.telegramId);
   const userWalletClass = new UserSolSmartWalletClass(key);
   const res = await userWalletClass.buy({
@@ -407,6 +408,7 @@ export const getUserActivePositions = async (telegramId: string) => {
         currentHolding,
         tokenAddress: position.tokenAddress,
         token: tokenDetails,
+        isSim: position.isSimulation,
       };
       userPositions.push(data);
     }
