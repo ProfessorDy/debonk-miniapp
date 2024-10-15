@@ -13,13 +13,13 @@ const InvestmentButton: React.FC<InvestmentButtonProps> = ({
   type,
   isLoading = false,
 }) => {
-  const buttonColor = type === "buy" ? "bg-green-600" : "bg-red-600";
+  const buttonColor = type === "buy" ? "bg-[#1DD75B]" : "bg-[#E82E2E]";
   const buttonText = isLoading ? "..." : label;
 
   return (
     <button
-      className={`${buttonColor} text-white text-xs px-4 py-2 rounded-lg ${
-        isLoading ? "opacity-50 cursor-not-allowed" : ""
+      className={`${buttonColor} text-white text-xs px-4 py-3 rounded-lg min-w-20 ${
+        isLoading ? "opacity-50 cursor-not-allowed font-semibold" : ""
       }`}
       onClick={!isLoading ? onClick : undefined}
       disabled={isLoading}

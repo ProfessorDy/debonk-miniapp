@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { IoClose } from "react-icons/io5";
 import InvestmentButton from "./InvestmentButton";
 import useTelegramUserStore from "@/store/useTelegramUserStore";
-import { formatNumber } from "@/utils/numberUtils";
+import { formatNumber, formatDecimal } from "@/utils/numberUtils";
 
 interface TokenModalProps {
   isOpen: boolean;
@@ -83,6 +83,7 @@ const TokenModal: React.FC<TokenModalProps> = ({
       }
     } catch (error) {
       setTransactionStatus("API error during buy.");
+      console.log("API error during buy", error);
     } finally {
       setBuying(false);
     }
@@ -103,6 +104,7 @@ const TokenModal: React.FC<TokenModalProps> = ({
       }
     } catch (error) {
       setTransactionStatus("API error during sell.");
+      console.log("API error during sell", error);
     } finally {
       setSelling(false);
     }
@@ -118,9 +120,27 @@ const TokenModal: React.FC<TokenModalProps> = ({
         ) : tokenInfo ? (
           <>
             <div className="flex justify-between items-center">
-              <h2 className="text-xl font-bold text-white mb-6">
-                {tokenInfo.name}
-              </h2>
+              <div>
+                <h2 className="text-xl text-left mb-2">
+                  {tokenInfo.name}{" "}
+                  <span className="text-base text-primary">$0.00=0.0SOL</span>
+                </h2>
+
+                <div className="text-sm mb-2">
+                  <span className={getChangeColor(tokenInfo.change?.m5 ?? 0)}>
+                    5m: {tokenInfo.change?.m5 ?? 0}%
+                  </span>{" "}
+                  |{" "}
+                  <span className={getChangeColor(tokenInfo.change?.h1 ?? 0)}>
+                    1hr: {tokenInfo.change?.h1 ?? 0}%
+                  </span>{" "}
+                  |{" "}
+                  <span className={getChangeColor(tokenInfo.change?.h24 ?? 0)}>
+                    24hrs: {tokenInfo.change?.h24 ?? 0}%
+                  </span>
+                </div>
+              </div>
+
               <button
                 onClick={onClose}
                 className="px-[6.34px] py-[2.54px] text-accent bg-[#3C3C3C3B]"
@@ -129,21 +149,7 @@ const TokenModal: React.FC<TokenModalProps> = ({
               </button>
             </div>
 
-            <div className="text-sm mb-2">
-              <span className={getChangeColor(tokenInfo.change?.m5 ?? 0)}>
-                5m: {tokenInfo.change?.m5 ?? 0}%
-              </span>{" "}
-              |{" "}
-              <span className={getChangeColor(tokenInfo.change?.h1 ?? 0)}>
-                1hr: {tokenInfo.change?.h1 ?? 0}%
-              </span>{" "}
-              |{" "}
-              <span className={getChangeColor(tokenInfo.change?.h24 ?? 0)}>
-                24hrs: {tokenInfo.change?.h24 ?? 0}%
-              </span>
-            </div>
-
-            <div className="grid grid-cols-2 gap-4 gap-y-10 my-6">
+            <div className="grid grid-cols-2 gap-4 gap-y-10 my-8">
               <TokenInfoRow
                 label="Liquidity"
                 value={`$${formatNumber(tokenInfo.liquidityInUsd ?? 0)}`}
@@ -159,7 +165,7 @@ const TokenModal: React.FC<TokenModalProps> = ({
               <TokenInfoRow label="Holders" value="N/A" />
               <TokenInfoRow
                 label="Price (USD)"
-                value={`$${tokenInfo.priceUsd ?? 0}`}
+                value={`$${formatDecimal(tokenInfo.priceUsd) ?? 0}`}
               />
               <TokenInfoRow
                 label="Total Market Cap"
@@ -167,27 +173,41 @@ const TokenModal: React.FC<TokenModalProps> = ({
               />
             </div>
 
-            <div className="flex justify-between mb-4">
+            <div className="flex justify-center gap-4 mb-6">
               {[0.1, 0.5, 1].map((amount) => (
                 <InvestmentButton
                   key={amount}
-                  label={`${amount} SOL`}
+                  label={`${amount} Sol`}
                   onClick={() => handleBuy(amount)}
                   type="buy"
                   isLoading={buying}
                 />
               ))}
+              <InvestmentButton
+                key={"X"}
+                label={`${"X"} Sol`}
+                onClick={() => handleBuy(10)}
+                type="buy"
+                isLoading={buying}
+              />
             </div>
-            <div className="flex justify-between">
+            <div className="flex justify-center gap-4 ">
               {[25, 50, 100].map((percentage) => (
                 <InvestmentButton
                   key={percentage}
-                  label={`${percentage}%`}
+                  label={`${percentage} %`}
                   onClick={() => handleSell(percentage)}
                   type="sell"
                   isLoading={selling}
                 />
               ))}
+              <InvestmentButton
+                key={"X"}
+                label={`${"X"} %`}
+                onClick={() => handleSell(10)}
+                type="sell"
+                isLoading={selling}
+              />
             </div>
 
             {transactionStatus && (
