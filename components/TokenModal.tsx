@@ -9,6 +9,11 @@ interface TokenModalProps {
   onClose: () => void;
   tokenAddress: string;
 }
+const getChangeColor = (value: number) => {
+  if (value < 0) return "text-red-500";
+  if (value === 0) return "text-white";
+  return "text-green-500";
+};
 
 const TokenInfoRow: React.FC<{ label: string; value: string }> = ({
   label,
@@ -124,10 +129,18 @@ const TokenModal: React.FC<TokenModalProps> = ({
               </button>
             </div>
 
-            <div className="text-sm text-green-500 mb-2">
-              5m: {tokenInfo.change?.m5 ?? 0}% | 1hr:{" "}
-              {tokenInfo.change?.h1 ?? 0}% | 24hrs: {tokenInfo.change?.h24 ?? 0}
-              %
+            <div className="text-sm mb-2">
+              <span className={getChangeColor(tokenInfo.change?.m5 ?? 0)}>
+                5m: {tokenInfo.change?.m5 ?? 0}%
+              </span>{" "}
+              |{" "}
+              <span className={getChangeColor(tokenInfo.change?.h1 ?? 0)}>
+                1hr: {tokenInfo.change?.h1 ?? 0}%
+              </span>{" "}
+              |{" "}
+              <span className={getChangeColor(tokenInfo.change?.h24 ?? 0)}>
+                24hrs: {tokenInfo.change?.h24 ?? 0}%
+              </span>
             </div>
 
             <div className="grid grid-cols-2 gap-4 gap-y-10 my-6">
