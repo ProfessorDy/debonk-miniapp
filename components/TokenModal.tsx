@@ -149,7 +149,7 @@ const TokenModal: React.FC<TokenModalProps> = ({
               </button>
             </div>
 
-            <div className="grid grid-cols-2 gap-4 gap-y-10 my-8">
+            <div className="grid grid-cols-2 gap-3 gap-y-10 my-8">
               <TokenInfoRow
                 label="Liquidity"
                 value={`$${formatNumber(tokenInfo.liquidityInUsd ?? 0)}`}
@@ -173,7 +173,7 @@ const TokenModal: React.FC<TokenModalProps> = ({
               />
             </div>
 
-            <div className="flex justify-center gap-4 mb-6">
+            <div className="flex justify-center gap-3 mb-6">
               {[0.1, 0.5, 1].map((amount) => (
                 <InvestmentButton
                   key={amount}
