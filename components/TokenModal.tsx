@@ -2,12 +2,23 @@ import React, { useEffect, useState } from "react";
 import { IoClose } from "react-icons/io5";
 import InvestmentButton from "./InvestmentButton";
 import useTelegramUserStore from "@/store/useTelegramUserStore";
+import { formatNumber } from "@/utils/numberUtils";
 
 interface TokenModalProps {
   isOpen: boolean;
   onClose: () => void;
   tokenAddress: string;
 }
+
+const TokenInfoRow: React.FC<{ label: string; value: string }> = ({
+  label,
+  value,
+}) => (
+  <div className="text-center bg-[#3C3C3C3B] py-1 space-y-3 rounded-[4px]">
+    <p className="font-bold uppercase text-xs">{label}</p>
+    <p className="text-xs">{value}</p>
+  </div>
+);
 
 const TokenModal: React.FC<TokenModalProps> = ({
   isOpen,
@@ -56,20 +67,16 @@ const TokenModal: React.FC<TokenModalProps> = ({
     setBuying(true);
     setTransactionStatus(null);
     try {
-      console.log("userID", userId);
       const response = await fetch(
         `/api/simulationBuyToken?telegramId=${userId}&tokenAddress=${tokenAddress}&amountInSol=${amount}&amountPercent=100&type=AMOUNT`
       );
       const result = await response.json();
       if (result.status) {
-        console.log("Buy transaction successful", result);
         setTransactionStatus("Buy transaction successful!");
       } else {
-        console.error("Buy transaction failed", result.error);
         setTransactionStatus("Buy transaction failed.");
       }
     } catch (error) {
-      console.error("API error during buy:", error);
       setTransactionStatus("API error during buy.");
     } finally {
       setBuying(false);
@@ -85,14 +92,11 @@ const TokenModal: React.FC<TokenModalProps> = ({
       );
       const result = await response.json();
       if (result.status) {
-        console.log("Sell transaction successful");
         setTransactionStatus("Sell transaction successful!");
       } else {
-        console.error("Sell transaction failed", result.error);
         setTransactionStatus("Sell transaction failed.");
       }
     } catch (error) {
-      console.error("API error during sell:", error);
       setTransactionStatus("API error during sell.");
     } finally {
       setSelling(false);
@@ -101,7 +105,7 @@ const TokenModal: React.FC<TokenModalProps> = ({
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-40 pb-16">
-      <div className="bg-black max-h-[550px] w-full max-w-md p-6 text-center shadow-lg relative rounded-lg flex flex-col justify-center">
+      <div className="bg-black max-h-[550px] w-full max-w-md p-4 text-center shadow-lg relative rounded-lg flex flex-col justify-center">
         {loading ? (
           <div className="flex items-center justify-center">
             <div className="loader ease-linear rounded-full border-8 border-t-8 border-gray-200 h-32 w-32"></div>
@@ -112,7 +116,6 @@ const TokenModal: React.FC<TokenModalProps> = ({
               <h2 className="text-xl font-bold text-white mb-6">
                 {tokenInfo.name}
               </h2>
-              {/* Close button */}
               <button
                 onClick={onClose}
                 className="px-[6.34px] py-[2.54px] text-accent bg-[#3C3C3C3B]"
@@ -120,104 +123,66 @@ const TokenModal: React.FC<TokenModalProps> = ({
                 <IoClose size={24} />
               </button>
             </div>
-            {/* Title */}
 
-            {/* Price Change Overview */}
             <div className="text-sm text-green-500 mb-2">
               5m: {tokenInfo.change?.m5 ?? 0}% | 1hr:{" "}
               {tokenInfo.change?.h1 ?? 0}% | 24hrs: {tokenInfo.change?.h24 ?? 0}
               %
             </div>
 
-            {/* Token Information Grid */}
-            <div className="grid grid-cols-2 gap-4 mb-6">
-              <div>
-                <p className="text-gray-400">Liquidity</p>
-                <p className="text-white">
-                  ${tokenInfo.liquidityInUsd?.toLocaleString() ?? "N/A"}
-                </p>
-              </div>
-              <div>
-                <p className="text-gray-400">Market Cap</p>
-                <p className="text-white">
-                  ${tokenInfo.mc?.toLocaleString() ?? "N/A"}
-                </p>
-              </div>
-              <div>
-                <p className="text-gray-400">Volume (24h)</p>
-                <p className="text-white">
-                  ${tokenInfo.volume?.h24?.toLocaleString() ?? "N/A"}
-                </p>
-              </div>
-              <div>
-                <p className="text-gray-400">Holders</p>
-                <p className="text-white">N/A</p> {/* Hardcoded "N/A" */}
-              </div>
-              <div>
-                <p className="text-gray-400">Price (USD)</p>
-                <p className="text-white">
-                  ${tokenInfo.priceUsd?.toFixed(6) ?? "N/A"}
-                </p>
-              </div>
-              <div>
-                <p className="text-gray-400">Total Market Cap</p>
-                <p className="text-white">
-                  ${tokenInfo.mc?.toLocaleString() ?? "N/A"}
-                </p>
-              </div>
+            <div className="grid grid-cols-2 gap-4 gap-y-10 my-6">
+              <TokenInfoRow
+                label="Liquidity"
+                value={`$${formatNumber(tokenInfo.liquidityInUsd ?? 0)}`}
+              />
+              <TokenInfoRow
+                label="Market Cap"
+                value={`$${formatNumber(tokenInfo.mc ?? 0)}`}
+              />
+              <TokenInfoRow
+                label="Volume (24h)"
+                value={`$${formatNumber(tokenInfo.volume?.h24 ?? 0)}`}
+              />
+              <TokenInfoRow label="Holders" value="N/A" />
+              <TokenInfoRow
+                label="Price (USD)"
+                value={`$${formatNumber(tokenInfo.priceUsd ?? 0)}`}
+              />
+              <TokenInfoRow
+                label="Total Market Cap"
+                value={`$${formatNumber(tokenInfo.mc ?? 0)}`}
+              />
             </div>
 
-            {/* Buy and Sell Buttons */}
             <div className="flex justify-between mb-4">
-              <InvestmentButton
-                label="0.1 SOL"
-                onClick={() => handleBuy(0.1)}
-                type="buy"
-                isLoading={buying}
-              />
-              <InvestmentButton
-                label="0.5 SOL"
-                onClick={() => handleBuy(0.5)}
-                type="buy"
-                isLoading={buying}
-              />
-
-              <InvestmentButton
-                label="1 SOL"
-                onClick={() => handleBuy(1)}
-                type="buy"
-                isLoading={buying}
-              />
+              {[0.1, 0.5, 1].map((amount) => (
+                <InvestmentButton
+                  key={amount}
+                  label={`${amount} SOL`}
+                  onClick={() => handleBuy(amount)}
+                  type="buy"
+                  isLoading={buying}
+                />
+              ))}
             </div>
             <div className="flex justify-between">
-              <InvestmentButton
-                label="25%"
-                onClick={() => handleSell(25)}
-                type="sell"
-                isLoading={selling}
-              />
-              <InvestmentButton
-                label="50%"
-                onClick={() => handleSell(50)}
-                type="sell"
-                isLoading={selling}
-              />
-              <InvestmentButton
-                label="100%"
-                onClick={() => handleSell(100)}
-                type="sell"
-                isLoading={selling}
-              />
+              {[25, 50, 100].map((percentage) => (
+                <InvestmentButton
+                  key={percentage}
+                  label={`${percentage}%`}
+                  onClick={() => handleSell(percentage)}
+                  type="sell"
+                  isLoading={selling}
+                />
+              ))}
             </div>
 
-            {/* Transaction Status */}
             {transactionStatus && (
               <div className="mt-4 text-white">{transactionStatus}</div>
             )}
           </>
         ) : (
           <>
-            {/* Close button */}
             <button
               onClick={onClose}
               className="absolute top-4 left-4 text-accent"
