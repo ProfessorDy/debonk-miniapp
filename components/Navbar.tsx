@@ -50,7 +50,7 @@ const Navbar = () => {
     <footer className="fixed bottom-0 w-full shadow-lg space-y-2 z-50">
       {showContractInput && (
         <div className="px-3">
-          <div className="bg-background rounded-xl py-[24px] px-[8px] text-sm border-accent border">
+          <div className="bg-background rounded-xl py-2 px-[8px] text-sm border-accent border">
             <div className="flex items-center text-[#797979]">
               <IoLinkSharp className="text-2xl" />
               <input
@@ -60,7 +60,7 @@ const Navbar = () => {
                 onChange={(e) => setTokenInput(e.target.value)}
                 className="flex-grow px-1 leading-4 font-light bg-background border-none focus:outline-none"
               />
-              <button onClick={handlePaste} className="text-accent">
+              <button onClick={handlePaste} className="text-accent p-4">
                 Paste
               </button>
             </div>
