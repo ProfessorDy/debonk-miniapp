@@ -39,6 +39,7 @@ interface VolumeData {
     PNL_usd_percent: string;
     PNL_usd: number | null;
     PNL_sol: number | null;
+    isSim: boolean;
     currentHolding: string;
     tokenAddress: string;
     token: TokenDetails;
