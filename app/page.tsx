@@ -255,15 +255,14 @@ const Home = () => {
               ))}
             </div>
           </section>
-
           <section className="mt-2 mb-5 bg-[#3C3C3C3B] backdrop-blur-2xl border-[#0493CC] border-[.5px] text-white shadow-lg rounded-xl p-3">
             <p className="text-xs font-light">Position Overview</p>
             <div className="flex flex-col gap-2 mt-2">
               {positions.length > 0 ? (
                 positions
-                  .filter((position) => {
-                    return isLiveTrading ? !position.isSim : position.isSim;
-                  })
+                  .filter((position) =>
+                    isLiveTrading ? !position.isSim : position.isSim
+                  )
                   .map((position, idx) => (
                     <div
                       key={idx}
@@ -278,7 +277,6 @@ const Home = () => {
                         <div>
                           <p>
                             <span className="font-bold"> MC </span>
-
                             {position.token.mc
                               ? formatNumber(position.token.mc)
                               : "N/A"}
@@ -291,7 +289,7 @@ const Home = () => {
                           </p>
                         </div>
                         <div className="text-right">
-                          <p className="">
+                          <p>
                             {position.PNL_sol
                               ? position.PNL_sol.toFixed(2)
                               : "0.00"}{" "}
@@ -301,7 +299,7 @@ const Home = () => {
                             $
                             {position.PNL_usd
                               ? position.PNL_usd.toFixed(2)
-                              : "0.00"}{" "}
+                              : "0.00"}
                           </p>
                         </div>
                       </div>
