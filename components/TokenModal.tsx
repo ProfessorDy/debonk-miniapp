@@ -146,7 +146,7 @@ const TokenModal: React.FC<TokenModalProps> = ({
               <TokenInfoRow label="Holders" value="N/A" />
               <TokenInfoRow
                 label="Price (USD)"
-                value={`$${formatNumber(tokenInfo.priceUsd ?? 0)}`}
+                value={`$${tokenInfo.priceUsd ?? 0}`}
               />
               <TokenInfoRow
                 label="Total Market Cap"
