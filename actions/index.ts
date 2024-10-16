@@ -1,6 +1,5 @@
 // import { getWebApp } from "@/utils/getWebApp";
 import {
-  formatCurrency,
   formatCurrencyWithoutDollarSign,
   formatter,
   getAddressFromTelegramId,
