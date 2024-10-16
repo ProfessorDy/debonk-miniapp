@@ -1,14 +1,18 @@
 import React, { useEffect, useState } from "react";
 import { IoClose } from "react-icons/io5";
+import { FaTelegramPlane, FaTwitter, FaGlobe } from "react-icons/fa";
 import InvestmentButton from "./InvestmentButton";
+import Link from "next/link";
 import useTelegramUserStore from "@/store/useTelegramUserStore";
 import { formatNumber, formatDecimal } from "@/utils/numberUtils";
 
 interface TokenModalProps {
   isOpen: boolean;
+  activePosition?: boolean;
   onClose: () => void;
   tokenAddress: string;
 }
+
 const getChangeColor = (value: number) => {
   if (value < 0) return "text-red-500";
   if (value === 0) return "text-white";
@@ -27,6 +31,7 @@ const TokenInfoRow: React.FC<{ label: string; value: string }> = ({
 
 const TokenModal: React.FC<TokenModalProps> = ({
   isOpen,
+  activePosition,
   onClose,
   tokenAddress,
 }) => {
@@ -111,8 +116,12 @@ const TokenModal: React.FC<TokenModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-40 pb-16">
-      <div className="bg-black max-h-[550px] w-full max-w-md p-4 text-center shadow-lg relative rounded-lg flex flex-col justify-center">
+    <div className="fixed inset-0 bg-black bg-opacity-70 flex items-end justify-center z-40 pb-16">
+      <div
+        className={`bg-black max-h-[550px] w-full max-w-md p-4 text-center shadow-lg relative rounded-t-lg flex flex-col justify-center transition-transform duration-300 ease-in-out transform ${
+          isOpen ? "translate-y-0" : "translate-y-full"
+        }`}
+      >
         {loading ? (
           <div className="flex items-center justify-center">
             <div className="loader ease-linear rounded-full border-8 border-t-8 border-gray-200 h-32 w-32"></div>
@@ -149,7 +158,7 @@ const TokenModal: React.FC<TokenModalProps> = ({
               </button>
             </div>
 
-            <div className="grid grid-cols-2 gap-3 gap-y-10 my-8">
+            <div className="grid grid-cols-2 gap-3 gap-y-12 my-8">
               <TokenInfoRow
                 label="Liquidity"
                 value={`$${formatNumber(tokenInfo.liquidityInUsd ?? 0)}`}
@@ -162,15 +171,22 @@ const TokenModal: React.FC<TokenModalProps> = ({
                 label="Volume (24h)"
                 value={`$${formatNumber(tokenInfo.volume?.h24 ?? 0)}`}
               />
-              <TokenInfoRow label="Holders" value="N/A" />
               <TokenInfoRow
                 label="Price (USD)"
                 value={`$${formatDecimal(tokenInfo.priceUsd) ?? 0}`}
               />
-              <TokenInfoRow
-                label="Total Market Cap"
-                value={`$${formatNumber(tokenInfo.mc ?? 0)}`}
-              />
+              {activePosition && (
+                <>
+                  <TokenInfoRow
+                    label="Capital"
+                    value={`$${formatNumber(tokenInfo.volume?.h24 ?? 0)}`}
+                  />
+                  <TokenInfoRow
+                    label="PNL"
+                    value={`$${formatDecimal(tokenInfo.priceUsd) ?? 0}`}
+                  />
+                </>
+              )}
             </div>
 
             <div className="flex justify-center gap-3 mb-6">
@@ -191,7 +207,7 @@ const TokenModal: React.FC<TokenModalProps> = ({
                 isLoading={buying}
               />
             </div>
-            <div className="flex justify-center gap-4 ">
+            <div className="flex justify-center gap-3">
               {[25, 50, 100].map((percentage) => (
                 <InvestmentButton
                   key={percentage}
@@ -210,6 +226,25 @@ const TokenModal: React.FC<TokenModalProps> = ({
               />
             </div>
 
+            {/* Links to website, Telegram, and Twitter */}
+            <div className="flex justify-center gap-6 mt-8 text-accent">
+              {tokenInfo.websiteUrl && (
+                <Link href={tokenInfo.websiteUrl} target="_blank">
+                  <FaGlobe size={25} />
+                </Link>
+              )}
+              {tokenInfo.telegramUrl && (
+                <Link href={tokenInfo.telegramUrl} target="_blank">
+                  <FaTelegramPlane size={25} />
+                </Link>
+              )}
+              {tokenInfo.twitterUrl && (
+                <Link href={tokenInfo.twitterUrl} target="_blank">
+                  <FaTwitter size={25} />
+                </Link>
+              )}
+            </div>
+
             {transactionStatus && (
               <div className="mt-4 text-white">{transactionStatus}</div>
             )}
@@ -222,7 +257,7 @@ const TokenModal: React.FC<TokenModalProps> = ({
             >
               <IoClose size={24} />
             </button>
-            <div className="text-white">Failed to load token information</div>
+            <div className="text-white">Failed to fetch token data.</div>
           </>
         )}
       </div>
