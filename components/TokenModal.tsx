@@ -116,8 +116,12 @@ const TokenModal: React.FC<TokenModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-40 pb-16">
-      <div className="bg-black max-h-[550px] w-full max-w-md p-4 text-center shadow-lg relative rounded-lg flex flex-col justify-center">
+    <div className="fixed inset-0 bg-black bg-opacity-70 flex items-end justify-center z-40 pb-16">
+      <div
+        className={`bg-black max-h-[550px] w-full max-w-md p-4 text-center shadow-lg relative rounded-t-lg flex flex-col justify-center transition-transform duration-300 ease-in-out transform ${
+          isOpen ? "translate-y-0" : "translate-y-full"
+        }`}
+      >
         {loading ? (
           <div className="flex items-center justify-center">
             <div className="loader ease-linear rounded-full border-8 border-t-8 border-gray-200 h-32 w-32"></div>
