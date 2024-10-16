@@ -158,7 +158,7 @@ const TokenModal: React.FC<TokenModalProps> = ({
               </button>
             </div>
 
-            <div className="grid grid-cols-2 gap-3 gap-y-10 my-8">
+            <div className="grid grid-cols-2 gap-3 gap-y-12 my-8">
               <TokenInfoRow
                 label="Liquidity"
                 value={`$${formatNumber(tokenInfo.liquidityInUsd ?? 0)}`}
@@ -175,6 +175,18 @@ const TokenModal: React.FC<TokenModalProps> = ({
                 label="Price (USD)"
                 value={`$${formatDecimal(tokenInfo.priceUsd) ?? 0}`}
               />
+              {activePosition && (
+                <>
+                  <TokenInfoRow
+                    label="Capital"
+                    value={`$${formatNumber(tokenInfo.volume?.h24 ?? 0)}`}
+                  />
+                  <TokenInfoRow
+                    label="PNL"
+                    value={`$${formatDecimal(tokenInfo.priceUsd) ?? 0}`}
+                  />
+                </>
+              )}
             </div>
 
             <div className="flex justify-center gap-3 mb-6">
