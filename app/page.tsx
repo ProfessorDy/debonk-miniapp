@@ -255,70 +255,72 @@ const Home = () => {
               ))}
             </div>
           </section>
-
           <section className="mt-2 mb-5 bg-[#3C3C3C3B] backdrop-blur-2xl border-[#0493CC] border-[.5px] text-white shadow-lg rounded-xl p-3">
             <p className="text-xs font-light">Position Overview</p>
             <div className="flex flex-col gap-2 mt-2">
               {positions.length > 0 ? (
-                positions.map((position, idx) => (
-                  <div
-                    key={idx}
-                    className="bg-[#1C1C1C] border-[#2F2F2F] border-[1px] p-3 rounded-lg shadow-sm"
-                  >
-                    <div className="flex justify-between items-center mb-2">
-                      <p className="text-base font-bold">
-                        {position.token.name}
-                      </p>
-                    </div>
-                    <div className="text-sm  flex justify-between items-center">
-                      <div>
-                        <p>
-                          <span className="font-bold"> MC </span>
-
-                          {position.token.mc
-                            ? formatNumber(position.token.mc)
-                            : "N/A"}
+                positions
+                  .filter((position) =>
+                    isLiveTrading ? !position.isSim : position.isSim
+                  )
+                  .map((position, idx) => (
+                    <div
+                      key={idx}
+                      className="bg-[#1C1C1C] border-[#2F2F2F] border-[1px] p-3 rounded-lg shadow-sm"
+                    >
+                      <div className="flex justify-between items-center mb-2">
+                        <p className="text-base font-bold">
+                          {position.token.name}
                         </p>
-                        <p>
-                          <span className="font-bold"> LIQ </span>
-                          {position.token.liquidityInUsd
-                            ? formatNumber(position.token.liquidityInUsd)
+                      </div>
+                      <div className="text-sm  flex justify-between items-center">
+                        <div>
+                          <p>
+                            <span className="font-bold"> MC </span>
+                            {position.token.mc
+                              ? formatNumber(position.token.mc)
+                              : "N/A"}
+                          </p>
+                          <p>
+                            <span className="font-bold"> LIQ </span>
+                            {position.token.liquidityInUsd
+                              ? formatNumber(position.token.liquidityInUsd)
+                              : "N/A"}
+                          </p>
+                        </div>
+                        <div className="text-right">
+                          <p>
+                            {position.PNL_sol
+                              ? position.PNL_sol.toFixed(2)
+                              : "0.00"}{" "}
+                            sol
+                          </p>
+                          <p>
+                            $
+                            {position.PNL_usd
+                              ? position.PNL_usd.toFixed(2)
+                              : "0.00"}
+                          </p>
+                        </div>
+                      </div>
+                      <div className="mt-2 text-right">
+                        <p
+                          className={`font-bold ${
+                            position.PNL_Sol_percent &&
+                            Number(position.PNL_Sol_percent) > 0
+                              ? "text-green-500"
+                              : "text-red-500"
+                          }`}
+                        >
+                          {position.PNL_Sol_percent
+                            ? `${
+                                Number(position.PNL_Sol_percent) > 0 ? "+" : ""
+                              }${Number(position.PNL_Sol_percent)}%`
                             : "N/A"}
                         </p>
                       </div>
-                      <div className="text-right">
-                        <p className="">
-                          {position.PNL_sol
-                            ? position.PNL_sol.toFixed(2)
-                            : "0.00"}{" "}
-                          sol
-                        </p>
-                        <p>
-                          $
-                          {position.PNL_usd
-                            ? position.PNL_usd.toFixed(2)
-                            : "0.00"}{" "}
-                        </p>
-                      </div>
                     </div>
-                    <div className="mt-2 text-right">
-                      <p
-                        className={`font-bold ${
-                          position.PNL_Sol_percent &&
-                          Number(position.PNL_Sol_percent) > 0
-                            ? "text-green-500"
-                            : "text-red-500"
-                        }`}
-                      >
-                        {position.PNL_Sol_percent
-                          ? `${
-                              Number(position.PNL_Sol_percent) > 0 ? "+" : ""
-                            }${Number(position.PNL_Sol_percent)}%`
-                          : "N/A"}
-                      </p>
-                    </div>
-                  </div>
-                ))
+                  ))
               ) : (
                 <p className="text-sm text-center text-gray-400">
                   You have no active positions at the moment.
