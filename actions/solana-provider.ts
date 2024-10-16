@@ -1136,7 +1136,7 @@ export class UserSolSmartWalletClass {
     const transaction = new VersionedTransaction(messageV0);
     transaction.sign(senderKeypairs);
     let signature;
-    const retries = 5;
+
     let explorerUrl = "";
 
     const serializedTransaction = Buffer.from(transaction.serialize());
@@ -1152,8 +1152,17 @@ export class UserSolSmartWalletClass {
 
     // If we are not getting a response back, the transaction has not confirmed.
     if (!transactionResponse) {
-      console.error("Transaction not confirmed");
-      return;
+      console.error("Transaction not confirmed: trying one more time...");
+      const latestBlockhash = await connection.getLatestBlockhash();
+      await this.createSendConfirmRetryTransaction(
+        messageV0,
+        senderKeypairs,
+        connection,
+        latestBlockhash,
+        false,
+        feePayerKeypair,
+        initialInstructions
+      );
     }
 
     if (transactionResponse.meta?.err) {
