@@ -2,20 +2,19 @@
 
 import { NextResponse } from "next/server";
 import { WithdrawalInput, withdrawSOl } from "@/actions";
-import { getWebApp } from "@/utils/getWebApp";
 
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
   const telegramId = searchParams.get("telegramId");
   const amount = searchParams.get("amount");
   const destinationAddress = searchParams.get("destinationAddress");
-  const webApp = getWebApp();
+  // const webApp = getWebApp();
 
   const params: WithdrawalInput = {
     telegramId,
     amount: Number(amount),
     destinationAddress,
-    WebAppInitData: webApp.initData,
+    WebAppInitData: "webApp.initData",
   };
 
   if (!telegramId) {
@@ -39,7 +38,10 @@ export async function GET(req: Request) {
   } catch (error) {
     console.error("API error: ", error); // Log the error for debugging
     return NextResponse.json(
-      { error: "Error: Withdrawal Transaction Failed", details: error.message },
+      {
+        error: "Error: Withdrawal Transaction Failed",
+        details: error.message,
+      },
       { status: 500 }
     );
   }

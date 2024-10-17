@@ -1,6 +1,5 @@
 // import { getWebApp } from "@/utils/getWebApp";
 import {
-  formatCurrency,
   formatCurrencyWithoutDollarSign,
   formatter,
   getAddressFromTelegramId,
@@ -66,7 +65,7 @@ export const ExampleFunction = async (data: WebApp) => {
 };
 //NOW TO START THE FUNCTIONS
 
-//SHOW WALLET ADDREEE
+//SHOW WALLET ADDRESS
 
 /**
  * call this function to get the wallet address of the user
@@ -77,7 +76,9 @@ export const getWalletAddress = (data: GetWalletAddressInput): string => {
 
 export const withdrawSOl = async (data: WithdrawalInput): Promise<string> => {
   const key = getPrivateKeyFromTelegramId(data.telegramId);
+  console.log("data.telegramId: ", data.telegramId);
   const userWalletClass = new UserSolSmartWalletClass(key);
+  console.log("userWalletClass: ", userWalletClass.userAddress);
   const res = await userWalletClass.withdrawSol(
     data.amount,
     data.destinationAddress
