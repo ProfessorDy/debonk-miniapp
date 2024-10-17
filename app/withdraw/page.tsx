@@ -8,12 +8,14 @@ import useTelegramUserStore from "@/store/useTelegramUserStore";
 import { useRouter } from "next/navigation";
 import { PublicKey } from "@solana/web3.js";
 import { fetchSolPrice, fetchWalletBalance } from "@/utils/apiUtils";
+import { formatWalletBalance } from "@/utils/numberUtils";
 
 const Withdraw = () => {
   const { userId } = useTelegramUserStore();
   const router = useRouter();
   const [step, setStep] = useState(1);
-  const [amount, setAmount] = useState(0.0);
+  const [amountInSol, setAmountInSol] = useState(0.0);
+  const [amountInUsd, setAmountInUsd] = useState(0.0);
   const [walletAddress, setWalletAddress] = useState("");
   const [addressError, setAddressError] = useState("");
   const [solPrice, setSolPrice] = useState(0);
@@ -29,7 +31,7 @@ const Withdraw = () => {
         const { balance } = await fetchWalletBalance(userId);
         const parsedBalance = parseFloat(balance) || 0;
 
-        setAvailableBalance(parsedBalance);
+        setAvailableBalance(formatWalletBalance(parsedBalance));
       } catch (error) {
         console.error("Error fetching SOL price or balance", error);
       }
@@ -41,7 +43,7 @@ const Withdraw = () => {
   const handleConfirmAndSend = async () => {
     try {
       const response = await fetch(
-        `/api/withdrawSol?telegramId=${userId}&amount=${amount}&destinationAddress=${walletAddress}`
+        `/api/withdrawSol?telegramId=${userId}&amount=${amountInSol}&destinationAddress=${walletAddress}`
       );
       const result = await response.json();
       if (response.ok) {
@@ -122,9 +124,11 @@ const Withdraw = () => {
     const handleAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
       const inputValue = parseFloat(e.target.value) || 0;
       if (isSolMode) {
-        setAmount(inputValue); // Update amount in SOL
+        setAmountInSol(inputValue);
+        setAmountInUsd(inputValue * solPrice);
       } else {
-        setAmount(inputValue / solPrice); // Update amount in SOL based on USD input
+        setAmountInUsd(inputValue);
+        setAmountInSol(inputValue / solPrice);
       }
     };
 
@@ -144,12 +148,10 @@ const Withdraw = () => {
             {/* Top amount display reflects the converted value */}
             <div className="text-5xl text-white font-bold">
               {isSolMode
-                ? `$${(amount * solPrice).toFixed(2)}` // Show USD when input is SOL
-                : `${amount.toFixed(2)} SOL`}{" "}
-              {/* Show SOL when input is USD */}
+                ? `$${(amountInSol * solPrice).toFixed(2)}`
+                : `${amountInSol.toFixed(2)} SOL`}
             </div>
 
-            {/* Toggle button to switch currency */}
             <button onClick={toggleCurrencyMode}>
               <CgArrowsExchangeV className="bg-black text-accent" size={28} />
             </button>
@@ -158,11 +160,10 @@ const Withdraw = () => {
             <div className="flex items-center gap-2">
               {isSolMode ? (
                 <>
-                  {/* Input for SOL */}
                   <input
                     type="number"
-                    className="text-lg inline-block font-light bg-background p-1 rounded-xl text-center outline-none"
-                    value={amount.toFixed(2)}
+                    className="text-lg inline font-light bg-background p-1 rounded-xl text-center outline-none"
+                    value={amountInSol}
                     onChange={handleAmountChange}
                     placeholder="Amount in SOL"
                   />
@@ -170,12 +171,11 @@ const Withdraw = () => {
                 </>
               ) : (
                 <>
-                  {/* Input for USD */}
                   <span className="text-xl text-white font-bold">$</span>
                   <input
                     type="number"
                     className="text-lg inline-block font-light bg-background p-1 rounded-xl text-center outline-none"
-                    value={(amount * solPrice).toFixed(2)}
+                    value={amountInUsd}
                     onChange={handleAmountChange}
                     placeholder="Amount in USD"
                   />
@@ -190,14 +190,13 @@ const Withdraw = () => {
         {/* MAX button and available balance display */}
         <div className="flex justify-between items-center text-white font-light font-poppins text-sm mt-4">
           <button
-            onClick={() => setAmount(availableBalance)}
+            onClick={() => setAmountInSol(availableBalance)}
             className="bg-background px-4 py-2 rounded-md"
           >
             MAX
           </button>
           <span>
-            Available:{" "}
-            {availableBalance !== 0 ? availableBalance.toFixed(3) : 0} SOLANA
+            Available: {availableBalance !== 0 ? availableBalance : 0} SOLANA
           </span>
         </div>
       </>
@@ -217,7 +216,7 @@ const Withdraw = () => {
               To: {`${walletAddress.slice(0, 6)}...${walletAddress.slice(-4)}`}
             </p>
           </div>
-          <p className="text-white font-light">-{amount} SOL</p>
+          <p className="text-white font-light">-{amountInSol} SOL</p>
         </div>
       </div>
     </div>
