@@ -12,7 +12,7 @@ import SkeletonLoader from "@/components/SkeletonLoader";
 import useTelegramUserStore from "@/store/useTelegramUserStore";
 import useLiveTradingStore from "@/store/useLiveTradingStore";
 import useWalletAddressStore from "@/store/useWalletAddressStore";
-import { formatNumber } from "@/utils/numberUtils";
+import { formatNumber, formatWalletBalance } from "@/utils/numberUtils";
 import { useRouter } from "next/navigation";
 import {
   fetchSolPrice,
@@ -55,8 +55,9 @@ const Home = () => {
             userId.toString()
           );
 
-          const parsedLiveBalance = parseFloat(balance) || 0;
-          const parsedSimulationBalance = parseFloat(simulationBalance) || 0;
+          const parsedLiveBalance = formatWalletBalance(balance) || 0;
+          const parsedSimulationBalance =
+            formatWalletBalance(simulationBalance) || 0;
 
           setLiveBalance(parsedLiveBalance);
           setSimulationBalance(parsedSimulationBalance);
@@ -218,7 +219,7 @@ const Home = () => {
                   title="Copy Address"
                 />
               </p>
-              <h2 className="text-[34px] ">{walletBalance.toFixed(3)} SOL</h2>
+              <h2 className="text-[34px] ">{walletBalance} SOL</h2>
               <p className="text-primary flex gap-[2px] items-center">
                 {totalValueInUsd !== null
                   ? `$${totalValueInUsd.toFixed(2)}`

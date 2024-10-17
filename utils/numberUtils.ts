@@ -14,4 +14,8 @@ export const formatNumber = (num: number): string => {
     return num.toLocaleString(undefined, { minimumFractionDigits: 2 });
   };
   
+  export const formatWalletBalance = (balance: number): number => {    
+    return parseInt(balance.toFixed(8).replace(/\.?0+$/, ''))
+  };
+  
   

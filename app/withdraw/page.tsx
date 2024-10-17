@@ -8,6 +8,7 @@ import useTelegramUserStore from "@/store/useTelegramUserStore";
 import { useRouter } from "next/navigation";
 import { PublicKey } from "@solana/web3.js";
 import { fetchSolPrice, fetchWalletBalance } from "@/utils/apiUtils";
+import { formatWalletBalance } from "@/utils/numberUtils";
 
 const Withdraw = () => {
   const { userId } = useTelegramUserStore();
@@ -29,7 +30,7 @@ const Withdraw = () => {
         const { balance } = await fetchWalletBalance(userId);
         const parsedBalance = parseFloat(balance) || 0;
 
-        setAvailableBalance(parsedBalance);
+        setAvailableBalance(formatWalletBalance(parsedBalance));
       } catch (error) {
         console.error("Error fetching SOL price or balance", error);
       }
@@ -161,8 +162,8 @@ const Withdraw = () => {
                   {/* Input for SOL */}
                   <input
                     type="number"
-                    className="text-lg inline-block font-light bg-background p-1 rounded-xl text-center outline-none"
-                    value={amount.toFixed(2)}
+                    className="text-lg inline font-light bg-background p-1 rounded-xl text-center outline-none"
+                    value={amount}
                     onChange={handleAmountChange}
                     placeholder="Amount in SOL"
                   />
@@ -175,7 +176,7 @@ const Withdraw = () => {
                   <input
                     type="number"
                     className="text-lg inline-block font-light bg-background p-1 rounded-xl text-center outline-none"
-                    value={(amount * solPrice).toFixed(2)}
+                    value={amount * solPrice}
                     onChange={handleAmountChange}
                     placeholder="Amount in USD"
                   />
@@ -196,8 +197,7 @@ const Withdraw = () => {
             MAX
           </button>
           <span>
-            Available:{" "}
-            {availableBalance !== 0 ? availableBalance.toFixed(3) : 0} SOLANA
+            Available: {availableBalance !== 0 ? availableBalance : 0} SOLANA
           </span>
         </div>
       </>
