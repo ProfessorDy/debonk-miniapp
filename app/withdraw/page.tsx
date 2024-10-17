@@ -230,7 +230,7 @@ const Withdraw = () => {
 
   return (
     <main
-      className="pt-0 p-3 pb-30 bg-black min-h-screen bg-repeat-y  py-auto"
+      className="pt-0 p-3 pb-30 bg-black min-h-screen bg-repeat-y  py-auto pb-16"
       style={{ backgroundImage: "url('/Rectangle.png')" }}
     >
       {step !== 3 && (
