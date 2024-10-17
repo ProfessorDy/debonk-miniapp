@@ -157,12 +157,12 @@ const Withdraw = () => {
             </button>
 
             {/* Input and currency on the same line */}
-            <div className="flex items-center gap-2">
+            <div className="bg-background p- rounded-xl flex items-center justify-center gap-2">
               {isSolMode ? (
                 <>
                   <input
                     type="number"
-                    className="text-lg inline font-light bg-background p-1 rounded-xl text-center outline-none"
+                    className="text-lg font-light text-center appearance-none p-0 bg-transparent outline-none focus:outline-none border-none min-w-4 max-w-24"
                     value={amountInSol}
                     onChange={handleAmountChange}
                     placeholder="Amount in SOL"
@@ -174,7 +174,7 @@ const Withdraw = () => {
                   <span className="text-xl text-white font-bold">$</span>
                   <input
                     type="number"
-                    className="text-lg inline-block font-light bg-background p-1 rounded-xl text-center outline-none"
+                    className="text-lg font-light text-center appearance-none p-0 bg-transparent outline-none focus:outline-none border-none min-w-5 max-w-12"
                     value={amountInUsd}
                     onChange={handleAmountChange}
                     placeholder="Amount in USD"
@@ -230,7 +230,7 @@ const Withdraw = () => {
 
   return (
     <main
-      className="pt-0 p-3 pb-30 bg-black min-h-screen bg-repeat-y  py-auto"
+      className="pt-0 p-3 pb-30 bg-black min-h-screen bg-repeat-y  py-auto pb-16"
       style={{ backgroundImage: "url('/Rectangle.png')" }}
     >
       {step !== 3 && (
