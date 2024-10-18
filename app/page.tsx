@@ -22,6 +22,7 @@ import {
 import { pasteFromClipboard } from "@/utils/clipboardUtils";
 import { toast } from "react-toastify";
 import PositionOverview from "@/components/Home/PositionOverview";
+import ActionButtons from "@/components/Home/ActionButton";
 
 const Home = () => {
   const { walletAddress, setWalletAddress } = useWalletAddressStore();
@@ -266,7 +267,7 @@ const Home = () => {
   const handleRefresh = () => window.location.reload();
   const handleWithdraw = () => router.push(`/withdraw`);
 
-  const buttons = [
+  const actionButtons = [
     {
       label: "Deposit",
       icon: <IoWalletOutline className="text-[20px]" />,
@@ -354,18 +355,7 @@ const Home = () => {
             </div>
 
             {/* Action Buttons */}
-            <div className="flex w-3/5 mx-auto justify-between mt-4 text-[10px] text-accent font-light">
-              {buttons.map((button, index) => (
-                <button
-                  key={index}
-                  className="flex flex-col items-center gap-[3px] p-2 rounded-lg shadow border border-accent w-[60px]"
-                  onClick={button.action}
-                >
-                  {button.icon}
-                  {button.label}
-                </button>
-              ))}
-            </div>
+            <ActionButtons buttons={actionButtons} />
           </section>
           {/* Positions Overview */}
           <PositionOverview
