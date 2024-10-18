@@ -62,7 +62,7 @@ const Home = () => {
     }
   }, [tokenInput]);
 
-  const handleSell = async (tokenAddress: string) => {
+  const handleSell = async (tokenAddress: string, tokenName: string) => {
     const telegram = window.Telegram?.WebApp;
 
     if (telegram?.initDataUnsafe?.user) {
@@ -121,10 +121,11 @@ const Home = () => {
           throw new Error(`Failed to sell token: ${errorMessage}`);
         }
 
+        toast.success(`${tokenName} sold successfully`);
         console.log(`Token with address ${tokenAddress} sold successfully!`);
       } catch (error) {
         console.error("Error while selling token:", error);
-        toast.error("Failed to sell the token. Reverting changes.");
+        toast.error("Failed to sell the token.");
 
         // Revert optimistic changes if the API call fails
         if (isLiveTrading) {
@@ -369,21 +370,21 @@ const Home = () => {
                   livePositions.map((position, idx) => (
                     <div
                       key={idx}
-                      className="bg-[#3C3C3C3B] backdrop-blur-2xl border-[1px] px-2 py-1 shadow-sm flex justify-between"
+                      className="bg-[#3C3C3C3B] backdrop-blur-2xl px-2 py-1 flex justify-between"
                     >
                       <div className="space-y-1">
-                        <p className="text-base font-bold mb-1">
+                        <p className="text-base font-normal mb-1">
                           {position.token.name}
                         </p>
                         <div>
-                          <p>
-                            <span className="font-bold"> MC </span>
+                          <p className="font-normal">
+                            <span className="font-light"> MC </span>
                             {position.token.mc
                               ? formatNumber(position.token.mc)
                               : "N/A"}
                           </p>
-                          <p>
-                            <span className="font-bold"> LIQ </span>
+                          <p className="font-normal">
+                            <span className="font-light"> LIQ </span>
                             {position.token.liquidityInUsd
                               ? formatNumber(position.token.liquidityInUsd)
                               : "N/A"}
@@ -392,7 +393,7 @@ const Home = () => {
                       </div>
                       <div className="flex items-center gap-1">
                         <p
-                          className={`font-bold text-[9.45px] ${
+                          className={`font-light text-[9.45px] ${
                             position.PNL_Sol_percent &&
                             Number(position.PNL_Sol_percent) > 0
                               ? "text-[#1DD75B]"
@@ -423,7 +424,12 @@ const Home = () => {
                           className={`flex flex-col items-center gap-[3px] p-2 min-w-20 text-[9.45px] rounded-md bg-[#E82E2E] text-white w-[60px] ${
                             sellLoading ? "opacity-50 cursor-not-allowed" : ""
                           }`}
-                          onClick={() => handleSell(position.tokenAddress)}
+                          onClick={() =>
+                            handleSell(
+                              position.token.address,
+                              position.token.name
+                            )
+                          }
                           disabled={sellLoading}
                         >
                           {sellLoading ? "Selling..." : "Sell 100%"}
@@ -440,30 +446,30 @@ const Home = () => {
                 simulationPositions.map((position, idx) => (
                   <div
                     key={idx}
-                    className="bg-[#3C3C3C3B] backdrop-blur-2xl border-[1px] px-2 py-1 shadow-sm flex justify-between"
+                    className="bg-[#3C3C3C3B] backdrop-blur-2xl px- py-1 flex justify-between"
                   >
                     <div className="space-y-1">
-                      <p className="text-base font-bold mb-1">
+                      <p className="text-base font-normal mb-1">
                         {position.token.name}
                       </p>
                       <div>
-                        <p>
-                          <span className="font-bold"> MC </span>
+                        <p className="font-normal">
+                          <span className="font-light"> MC </span>
                           {position.token.mc
                             ? formatNumber(position.token.mc)
                             : "N/A"}
                         </p>
-                        <p>
-                          <span className="font-bold"> LIQ </span>
+                        <p className="font-normal">
+                          <span className="font-light"> LIQ </span>
                           {position.token.liquidityInUsd
                             ? formatNumber(position.token.liquidityInUsd)
                             : "N/A"}
                         </p>
                       </div>
                     </div>
-                    <div className="flex items-center gap-1">
+                    <div className="flex items-center gap-2">
                       <p
-                        className={`font-bold text-[9.45px] ${
+                        className={`font-light text-[9.45px] ${
                           position.PNL_Sol_percent &&
                           Number(position.PNL_Sol_percent) > 0
                             ? "text-[#1DD75B]"
@@ -476,7 +482,7 @@ const Home = () => {
                             }${Number(position.PNL_Sol_percent)}%`
                           : "N/A"}
                       </p>
-                      <div className="text-sm">
+                      <div className="text-sm text-center">
                         <p>
                           {position.PNL_sol
                             ? position.PNL_sol.toFixed(2)
@@ -494,7 +500,12 @@ const Home = () => {
                         className={`flex flex-col items-center gap-[3px] p-2 min-w-20 text-[9.45px] rounded-md bg-[#E82E2E] text-white w-[60px] ${
                           sellLoading ? "opacity-50 cursor-not-allowed" : ""
                         }`}
-                        onClick={() => handleSell(position.tokenAddress)}
+                        onClick={() =>
+                          handleSell(
+                            position.token.address,
+                            position.token.name
+                          )
+                        }
                         disabled={sellLoading}
                       >
                         {sellLoading ? "Selling..." : "Sell 100%"}
