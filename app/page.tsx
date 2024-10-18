@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { IoCopySharp, IoWalletOutline } from "react-icons/io5";
+import { IoCopySharp, IoWalletOutline, IoLinkSharp } from "react-icons/io5";
 import { PiDownloadDuotone, PiTestTubeFill } from "react-icons/pi";
 import { SlRefresh } from "react-icons/sl";
 import { CiCircleAlert } from "react-icons/ci";
@@ -19,7 +19,9 @@ import {
   fetchWalletBalance,
   fetchUserPositions,
 } from "@/utils/apiUtils";
+import { pasteFromClipboard } from "@/utils/clipboardUtils";
 import { toast } from "react-toastify";
+import TokenModal from "@/components/TokenModal";
 
 const Home = () => {
   const { walletAddress, setWalletAddress } = useWalletAddressStore();
@@ -30,6 +32,9 @@ const Home = () => {
   const [liveBalance, setLiveBalance] = useState<number>(0);
   const [simulationBalance, setSimulationBalance] = useState<number>(0);
 
+  const [isPasteModalOpen, setIsPasteModalOpen] = useState(false);
+  const [tokenInput, setTokenInput] = useState("");
+
   const [solPrice, setSolPrice] = useState<number | null>(null);
   const [walletBalance, setWalletBalance] = useState<number>(0);
   const [totalValueInUsd, setTotalValueInUsd] = useState<number | null>(null);
@@ -39,6 +44,21 @@ const Home = () => {
 
   // Add loading state for selling action
   const [sellLoading, setSellLoading] = useState(false);
+
+  const handlePaste = async () => {
+    const clipboardText = await pasteFromClipboard();
+    if (clipboardText) {
+      setTokenInput(clipboardText);
+      setIsPasteModalOpen(true); // Open modal immediately after pasting
+      toast.success("Successfully pasted from clipboard!");
+    }
+  };
+
+  useEffect(() => {
+    if (tokenInput) {
+      setIsPasteModalOpen(true);
+    }
+  }, [tokenInput]);
 
   const handleSell = async (tokenAddress: string) => {
     const telegram = window.Telegram?.WebApp;
@@ -402,6 +422,31 @@ const Home = () => {
             </div>
           </section>
 
+          <section className="fixed bottom-0 w-full shadow-lg space-y-2 z-50">
+            <div className="px-3">
+              <div className="bg-background rounded-xl py-2 px-[8px] text-sm border-accent border">
+                <div className="flex items-center text-[#797979]">
+                  <IoLinkSharp className="text-2xl" />
+                  <input
+                    type="text"
+                    placeholder="Contract Address or Token Link"
+                    value={tokenInput}
+                    onChange={(e) => setTokenInput(e.target.value)}
+                    className="flex-grow px-1 leading-4 font-light bg-background border-none focus:outline-none"
+                  />
+                  <button onClick={handlePaste} className="text-accent p-4">
+                    Paste
+                  </button>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <TokenModal
+            isOpen={isPasteModalOpen}
+            onClose={() => setIsPasteModalOpen(false)}
+            tokenAddress={tokenInput}
+          />
           <DepositModal
             isOpen={isDepositModalOpen}
             onClose={handleCloseDepositModal}
