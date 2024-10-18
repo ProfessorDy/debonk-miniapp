@@ -348,9 +348,9 @@ const Home = () => {
                   .map((position, idx) => (
                     <div
                       key={idx}
-                      className="bg-[#1C1C1C] border-[#2F2F2F] border-[1px] p-3 rounded-lg shadow-sm"
+                      className="bg-[#1C1C1C] border-[#2F2F2F] border-[1px] p-3 rounded-lg shadow-sm flex justify-between"
                     >
-                      <div className="flex justify-between items-center mb-2">
+                      <div className="space-y-2">
                         <p className="text-base font-bold mb-1">
                           {position.token.name}
                         </p>
@@ -369,48 +369,44 @@ const Home = () => {
                           </p>
                         </div>
                       </div>
-                      <div className="text-sm  flex justify-between items-center">
-                        <div className="flex items-center gap-">
-                          <p
-                            className={`font-bold ${
-                              position.PNL_Sol_percent &&
-                              Number(position.PNL_Sol_percent) > 0
-                                ? "text-[#1DD75B]"
-                                : "text-[#E82E2E]"
-                            }`}
-                          >
-                            {position.PNL_Sol_percent
-                              ? `${
-                                  Number(position.PNL_Sol_percent) > 0
-                                    ? "+"
-                                    : ""
-                                }${Number(position.PNL_Sol_percent)}%`
-                              : "N/A"}
+                      <div className="flex items-center gap-2">
+                        <p
+                          className={`font-bold ${
+                            position.PNL_Sol_percent &&
+                            Number(position.PNL_Sol_percent) > 0
+                              ? "text-[#1DD75B]"
+                              : "text-[#E82E2E]"
+                          }`}
+                        >
+                          {position.PNL_Sol_percent
+                            ? `${
+                                Number(position.PNL_Sol_percent) > 0 ? "+" : ""
+                              }${Number(position.PNL_Sol_percent)}%`
+                            : "N/A"}
+                        </p>
+                        <div className="text-right">
+                          <p>
+                            {position.PNL_sol
+                              ? position.PNL_sol.toFixed(2)
+                              : "0.00"}{" "}
+                            sol
                           </p>
-                          <div className="text-right">
-                            <p>
-                              {position.PNL_sol
-                                ? position.PNL_sol.toFixed(2)
-                                : "0.00"}{" "}
-                              sol
-                            </p>
-                            <p>
-                              $
-                              {position.PNL_usd
-                                ? position.PNL_usd.toFixed(2)
-                                : "0.00"}
-                            </p>
-                          </div>
-                          <button
-                            className={`flex flex-col items-center gap-[3px] p-2 min-w-20 rounded-md bg-[#E82E2E] text-white w-[60px] ${
-                              sellLoading ? "opacity-50 cursor-not-allowed" : ""
-                            }`}
-                            onClick={() => handleSell(position.tokenAddress)}
-                            disabled={sellLoading}
-                          >
-                            {sellLoading ? "Selling..." : "Sell 100%"}
-                          </button>
+                          <p>
+                            $
+                            {position.PNL_usd
+                              ? position.PNL_usd.toFixed(2)
+                              : "0.00"}
+                          </p>
                         </div>
+                        <button
+                          className={`flex flex-col items-center gap-[3px] p-2 min-w-20 rounded-md bg-[#E82E2E] text-white w-[60px] ${
+                            sellLoading ? "opacity-50 cursor-not-allowed" : ""
+                          }`}
+                          onClick={() => handleSell(position.tokenAddress)}
+                          disabled={sellLoading}
+                        >
+                          {sellLoading ? "Selling..." : "Sell 100%"}
+                        </button>
                       </div>
                     </div>
                   ))
