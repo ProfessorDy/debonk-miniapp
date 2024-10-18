@@ -19,12 +19,12 @@ import {
   fetchWalletBalance,
   fetchUserPositions,
 } from "@/utils/apiUtils";
+import { toast } from "react-toastify";
 
 const Home = () => {
   const { walletAddress, setWalletAddress } = useWalletAddressStore();
   const { setUserId } = useTelegramUserStore();
   const { isLiveTrading, toggleLiveTrading } = useLiveTradingStore();
-  const [error, setError] = useState<string | null>(null); //eslint-disable-line
   const [unrealizedPNL] = useState("-0.00%");
   const [isDepositModalOpen, setIsDepositModalOpen] = useState(false);
   const [liveBalance, setLiveBalance] = useState<number>(0);
@@ -33,9 +33,73 @@ const Home = () => {
   const [solPrice, setSolPrice] = useState<number | null>(null);
   const [walletBalance, setWalletBalance] = useState<number>(0);
   const [totalValueInUsd, setTotalValueInUsd] = useState<number | null>(null);
-  const [positions, setPositions] = useState<TokenDataArray>([]); //eslint-disable-line
+  const [positions, setPositions] = useState<TokenDataArray>([]);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
+
+  // Add loading state for selling action
+  const [sellLoading, setSellLoading] = useState(false);
+
+  const handleSell = async (tokenAddress: string) => {
+    const telegram = window.Telegram?.WebApp;
+
+    if (telegram?.initDataUnsafe?.user) {
+      const { id: userId } = telegram.initDataUnsafe.user;
+
+      // Find the position to sell
+      const positionToSell = positions.find(
+        (position) => position.tokenAddress === tokenAddress
+      );
+
+      if (!positionToSell) {
+        toast.error("Position not found.");
+        return;
+      }
+
+      // Optimistic Updates
+      const newPositions = positions.filter(
+        (position) => position.tokenAddress !== tokenAddress
+      );
+      const newWalletBalance =
+        walletBalance + (positionToSell.PNL_usd || 0) / solPrice;
+
+      const prevPositions = positions; // Backup previous positions
+      const prevWalletBalance = walletBalance; // Backup previous balance
+
+      // Update UI immediately (optimistic update)
+      setPositions(newPositions);
+      setWalletBalance(newWalletBalance);
+
+      try {
+        setSellLoading(true);
+
+        const response = await fetch(
+          `/api/simulationSellToken?telegramId=${userId}&tokenAddress=${tokenAddress}&amountPercent=${100}&type=PERCENT`,
+          {
+            method: "POST",
+          }
+        );
+
+        if (!response.ok) {
+          const errorMessage = await response.text();
+          throw new Error(`Failed to sell token: ${errorMessage}`);
+        }
+
+        console.log(`Token with address ${tokenAddress} sold successfully!`);
+      } catch (error) {
+        console.error("Error while selling token:", error);
+        toast.error("Failed to sell the token. Reverting changes.");
+
+        // Revert optimistic changes if the API call fails
+        setPositions(prevPositions);
+        setWalletBalance(prevWalletBalance);
+      } finally {
+        setSellLoading(false);
+      }
+    } else {
+      toast.error("Telegram user data is not available.");
+    }
+  };
 
   useEffect(() => {
     const telegram = window.Telegram?.WebApp;
@@ -126,16 +190,13 @@ const Home = () => {
             setWalletAddress(data.address);
             console.log("Wallet address set:", data.address);
           } else {
-            setError(data.error || "Failed to fetch Solana address.");
             console.log("Error fetching Solana address:", data.error);
           }
         })
         .catch((err) => {
           console.error("Error fetching address:", err);
-          setError("Failed to fetch Solana address.");
         });
     } else {
-      setError("Telegram user data is not available.");
       console.log("No Telegram user data available.");
     }
   }, [setWalletAddress]);
@@ -320,6 +381,15 @@ const Home = () => {
                             : "N/A"}
                         </p>
                       </div>
+                      <button
+                        className={`flex flex-col items-center gap-[3px] p-2 rounded-md bg-[#E82E2E] text-white w-[60px] ${
+                          sellLoading ? "opacity-50 cursor-not-allowed" : ""
+                        }`}
+                        onClick={() => handleSell(position.tokenAddress)}
+                        disabled={sellLoading}
+                      >
+                        {sellLoading ? "Selling..." : "Sell 100%"}
+                      </button>
                     </div>
                   ))
               ) : (

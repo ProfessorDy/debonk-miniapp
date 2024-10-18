@@ -21,6 +21,9 @@ const Withdraw = () => {
   const [solPrice, setSolPrice] = useState(0);
   const [availableBalance, setAvailableBalance] = useState(0.0);
   const [isSolMode, setIsSolMode] = useState(true);
+  const [amountError, setAmountError] = useState("");
+
+  const MIN_WITHDRAW_AMOUNT = 0.0001;
 
   useEffect(() => {
     const getSolData = async () => {
@@ -73,10 +76,23 @@ const Withdraw = () => {
     }
   };
 
+  const validateAmount = (amount: number) => {
+    if (amount < MIN_WITHDRAW_AMOUNT) {
+      setAmountError(`Minimum withdrawal is ${MIN_WITHDRAW_AMOUNT} SOL.`);
+      return false;
+    } else if (amount > availableBalance) {
+      setAmountError("Insufficient funds.");
+      return false;
+    } else {
+      setAmountError("");
+      return true;
+    }
+  };
+
   const handleNextStep = () => {
     if (step === 1 && validateAddress(walletAddress)) {
       setStep(2);
-    } else if (step === 2) {
+    } else if (step === 2 && validateAmount(amountInSol)) {
       handleConfirmAndSend();
     } else if (step === 3) {
       router.push("/");
@@ -93,6 +109,23 @@ const Withdraw = () => {
 
   const toggleCurrencyMode = () => {
     setIsSolMode(!isSolMode);
+  };
+
+  const handleAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const inputValue = parseFloat(e.target.value) || 0;
+    if (inputValue < 0) {
+      return; // Prevent negative numbers
+    }
+
+    if (isSolMode) {
+      setAmountInSol(inputValue);
+      setAmountInUsd(inputValue * solPrice);
+    } else {
+      setAmountInUsd(inputValue);
+      setAmountInSol(inputValue / solPrice);
+    }
+
+    validateAmount(inputValue);
   };
 
   const renderStepOne = () => (
@@ -120,88 +153,74 @@ const Withdraw = () => {
     </div>
   );
 
-  const renderStepTwo = () => {
-    const handleAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-      const inputValue = parseFloat(e.target.value) || 0;
-      if (isSolMode) {
-        setAmountInSol(inputValue);
-        setAmountInUsd(inputValue * solPrice);
-      } else {
-        setAmountInUsd(inputValue);
-        setAmountInSol(inputValue / solPrice);
-      }
-    };
+  const renderStepTwo = () => (
+    <>
+      <div className="bg-[#3C3C3C3B] backdrop-blur-2xl border-[#0493CC] border-[.5px] text-white shadow-lg rounded-xl p-4 h-[50vh] my-auto flex flex-col justify-between items-center">
+        {/* Wallet details */}
+        <p className="text-primary font-semibold">
+          To:{" "}
+          <span className="font-normal text-sm">{`${walletAddress.slice(
+            0,
+            6
+          )}...${walletAddress.slice(-4)}`}</span>
+        </p>
 
-    return (
-      <>
-        <div className="bg-[#3C3C3C3B] backdrop-blur-2xl border-[#0493CC] border-[.5px] text-white shadow-lg rounded-xl p-4 h-[50vh] my-auto flex flex-col justify-between items-center">
-          {/* Wallet details */}
-          <p className="text-primary font-semibold">
-            To:{" "}
-            <span className="font-normal text-sm">{`${walletAddress.slice(
-              0,
-              6
-            )}...${walletAddress.slice(-4)}`}</span>
-          </p>
-
-          <div className="flex flex-col items-center gap-2 font-poppins">
-            {/* Top amount display reflects the converted value */}
-            <div className="text-5xl text-white font-bold">
-              {isSolMode
-                ? `$${(amountInSol * solPrice).toFixed(2)}`
-                : `${amountInSol.toFixed(2)} SOL`}
-            </div>
-
-            <button onClick={toggleCurrencyMode}>
-              <CgArrowsExchangeV className="bg-black text-accent" size={28} />
-            </button>
-
-            {/* Input and currency on the same line */}
-            <div className="bg-background p- rounded-xl flex items-center justify-center gap-2">
-              {isSolMode ? (
-                <>
-                  <input
-                    type="number"
-                    className="text-lg font-light text-center appearance-none p-0 bg-transparent outline-none focus:outline-none border-none min-w-4 max-w-24"
-                    value={amountInSol}
-                    onChange={handleAmountChange}
-                    placeholder="Amount in SOL"
-                  />
-                  <span className="text-xl text-white font-bold">SOL</span>
-                </>
-              ) : (
-                <>
-                  <span className="text-xl text-white font-bold">$</span>
-                  <input
-                    type="number"
-                    className="text-lg font-light text-center appearance-none p-0 bg-transparent outline-none focus:outline-none border-none min-w-5 max-w-12"
-                    value={amountInUsd}
-                    onChange={handleAmountChange}
-                    placeholder="Amount in USD"
-                  />
-                </>
-              )}
-            </div>
+        <div className="flex flex-col items-center gap-2 font-poppins">
+          <div className="text-5xl text-white font-bold">
+            {isSolMode
+              ? `$${(amountInSol * solPrice).toFixed(2)}`
+              : `${amountInSol.toFixed(2)} SOL`}
           </div>
 
-          <div></div>
-        </div>
-
-        {/* MAX button and available balance display */}
-        <div className="flex justify-between items-center text-white font-light font-poppins text-sm mt-4">
-          <button
-            onClick={() => setAmountInSol(availableBalance)}
-            className="bg-background px-4 py-2 rounded-md"
-          >
-            MAX
+          <button onClick={toggleCurrencyMode}>
+            <CgArrowsExchangeV className="bg-black text-accent" size={28} />
           </button>
-          <span>
-            Available: {availableBalance !== 0 ? availableBalance : 0} SOLANA
-          </span>
+
+          <div className="bg-background p- rounded-xl flex items-center justify-center gap-2">
+            {isSolMode ? (
+              <>
+                <input
+                  type="number"
+                  className="text-lg font-light text-center appearance-none p-0 bg-transparent outline-none focus:outline-none border-none min-w-4 max-w-24"
+                  value={amountInSol}
+                  onChange={handleAmountChange}
+                  placeholder="Amount in SOL"
+                  min={MIN_WITHDRAW_AMOUNT} // Minimum allowed amount
+                />
+                <span className="text-xl text-white font-bold">SOL</span>
+              </>
+            ) : (
+              <>
+                <span className="text-xl text-white font-bold">$</span>
+                <input
+                  type="number"
+                  className="text-lg font-light text-center appearance-none p-0 bg-transparent outline-none focus:outline-none border-none min-w-5 max-w-12"
+                  value={amountInUsd}
+                  onChange={handleAmountChange}
+                  placeholder="Amount in USD"
+                />
+              </>
+            )}
+          </div>
         </div>
-      </>
-    );
-  };
+        {amountError && (
+          <p className="text-red-500 text-sm mt-2">{amountError}</p>
+        )}
+      </div>
+
+      <div className="flex justify-between items-center text-white font-light font-poppins text-sm mt-4">
+        <button
+          onClick={() => setAmountInSol(availableBalance)}
+          className="bg-background px-4 py-2 rounded-md"
+        >
+          MAX
+        </button>
+        <span>
+          Available: {availableBalance !== 0 ? availableBalance : 0} SOLANA
+        </span>
+      </div>
+    </>
+  );
 
   const renderSuccess = () => (
     <div className="space-y-36  pt-14">
