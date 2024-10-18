@@ -14,8 +14,9 @@ export const formatNumber = (num: number): string => {
     return num.toLocaleString(undefined, { minimumFractionDigits: 2 });
   };
   
-  export const formatWalletBalance = (balance: number): number => {    
-    return parseInt(balance.toFixed(8).replace(/\.?0+$/, ''))
-  };
+ export function formatWalletBalance(balance) {
+    return balance.toFixed(3).replace(/\.?0+$/, ""); // Format to 3 decimal places and remove trailing zeros
+  }
+  
   
   
