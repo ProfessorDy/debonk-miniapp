@@ -371,7 +371,6 @@ const Home = () => {
                       key={idx}
                       className="bg-[#3C3C3C3B] backdrop-blur-2xl border-[1px] px-2 py-1 shadow-sm flex justify-between"
                     >
-                      {/* Render live position */}
                       <div className="space-y-1">
                         <p className="text-base font-bold mb-1">
                           {position.token.name}
@@ -443,8 +442,64 @@ const Home = () => {
                     key={idx}
                     className="bg-[#3C3C3C3B] backdrop-blur-2xl border-[1px] px-2 py-1 shadow-sm flex justify-between"
                   >
-                    {/* Render simulation position */}
-                    {/* The same rendering structure as live positions */}
+                    <div className="space-y-1">
+                      <p className="text-base font-bold mb-1">
+                        {position.token.name}
+                      </p>
+                      <div>
+                        <p>
+                          <span className="font-bold"> MC </span>
+                          {position.token.mc
+                            ? formatNumber(position.token.mc)
+                            : "N/A"}
+                        </p>
+                        <p>
+                          <span className="font-bold"> LIQ </span>
+                          {position.token.liquidityInUsd
+                            ? formatNumber(position.token.liquidityInUsd)
+                            : "N/A"}
+                        </p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <p
+                        className={`font-bold text-[9.45px] ${
+                          position.PNL_Sol_percent &&
+                          Number(position.PNL_Sol_percent) > 0
+                            ? "text-[#1DD75B]"
+                            : "text-[#E82E2E]"
+                        }`}
+                      >
+                        {position.PNL_Sol_percent
+                          ? `${
+                              Number(position.PNL_Sol_percent) > 0 ? "+" : ""
+                            }${Number(position.PNL_Sol_percent)}%`
+                          : "N/A"}
+                      </p>
+                      <div className="text-sm">
+                        <p>
+                          {position.PNL_sol
+                            ? position.PNL_sol.toFixed(2)
+                            : "0.00"}{" "}
+                          sol
+                        </p>
+                        <p className="font-light">
+                          $
+                          {position.PNL_usd
+                            ? position.PNL_usd.toFixed(2)
+                            : "0.00"}
+                        </p>
+                      </div>
+                      <button
+                        className={`flex flex-col items-center gap-[3px] p-2 min-w-20 text-[9.45px] rounded-md bg-[#E82E2E] text-white w-[60px] ${
+                          sellLoading ? "opacity-50 cursor-not-allowed" : ""
+                        }`}
+                        onClick={() => handleSell(position.tokenAddress)}
+                        disabled={sellLoading}
+                      >
+                        {sellLoading ? "Selling..." : "Sell 100%"}
+                      </button>
+                    </div>
                   </div>
                 ))
               ) : (
