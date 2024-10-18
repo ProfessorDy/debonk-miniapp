@@ -50,7 +50,7 @@ const Navbar = () => {
 
   return (
     <footer className="fixed bottom-0 w-full shadow-lg space-y-2 z-50">
-      {/* {showContractInput && (
+      {showContractInput && (
         <div className="px-3">
           <div className="bg-background rounded-xl py-2 px-[8px] text-sm border-accent border">
             <div className="flex items-center text-[#797979]">
@@ -103,7 +103,7 @@ const Navbar = () => {
             </div>
           </Link>
         ))}
-      </div> */}
+      </div>
 
       <TokenModal
         isOpen={isPasteModalOpen}

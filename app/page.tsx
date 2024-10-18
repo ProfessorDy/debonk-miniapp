@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { IoCopySharp, IoWalletOutline } from "react-icons/io5";
+import { IoCopySharp, IoWalletOutline, IoLinkSharp } from "react-icons/io5";
 import { PiDownloadDuotone, PiTestTubeFill } from "react-icons/pi";
 import { SlRefresh } from "react-icons/sl";
 import { CiCircleAlert } from "react-icons/ci";
@@ -19,7 +19,9 @@ import {
   fetchWalletBalance,
   fetchUserPositions,
 } from "@/utils/apiUtils";
+import { pasteFromClipboard } from "@/utils/clipboardUtils";
 import { toast } from "react-toastify";
+import TokenModal from "@/components/TokenModal";
 
 const Home = () => {
   const { walletAddress, setWalletAddress } = useWalletAddressStore();
@@ -30,6 +32,9 @@ const Home = () => {
   const [liveBalance, setLiveBalance] = useState<number>(0);
   const [simulationBalance, setSimulationBalance] = useState<number>(0);
 
+  const [isPasteModalOpen, setIsPasteModalOpen] = useState(false);
+  const [tokenInput, setTokenInput] = useState("");
+
   const [solPrice, setSolPrice] = useState<number | null>(null);
   const [walletBalance, setWalletBalance] = useState<number>(0);
   const [totalValueInUsd, setTotalValueInUsd] = useState<number | null>(null);
@@ -39,6 +44,21 @@ const Home = () => {
 
   // Add loading state for selling action
   const [sellLoading, setSellLoading] = useState(false);
+
+  const handlePaste = async () => {
+    const clipboardText = await pasteFromClipboard();
+    if (clipboardText) {
+      setTokenInput(clipboardText);
+      setIsPasteModalOpen(true); // Open modal immediately after pasting
+      toast.success("Successfully pasted from clipboard!");
+    }
+  };
+
+  useEffect(() => {
+    if (tokenInput) {
+      setIsPasteModalOpen(true);
+    }
+  }, [tokenInput]);
 
   const handleSell = async (tokenAddress: string) => {
     const telegram = window.Telegram?.WebApp;
@@ -317,7 +337,7 @@ const Home = () => {
               ))}
             </div>
           </section>
-          <section className="mt-2 mb-5 bg-[#3C3C3C3B] backdrop-blur-2xl border-[#0493CC] border-[.5px] text-white shadow-lg rounded-xl p-3">
+          <section className="mt-2 text-white shadow-lg rounded-xl p-3">
             <p className="text-xs font-light">Position Overview</p>
             <div className="flex flex-col gap-2 mt-2">
               {positions.length > 0 ? (
@@ -331,11 +351,9 @@ const Home = () => {
                       className="bg-[#1C1C1C] border-[#2F2F2F] border-[1px] p-3 rounded-lg shadow-sm"
                     >
                       <div className="flex justify-between items-center mb-2">
-                        <p className="text-base font-bold">
+                        <p className="text-base font-bold mb-1">
                           {position.token.name}
                         </p>
-                      </div>
-                      <div className="text-sm  flex justify-between items-center">
                         <div>
                           <p>
                             <span className="font-bold"> MC </span>
@@ -350,46 +368,50 @@ const Home = () => {
                               : "N/A"}
                           </p>
                         </div>
-                        <div className="text-right">
-                          <p>
-                            {position.PNL_sol
-                              ? position.PNL_sol.toFixed(2)
-                              : "0.00"}{" "}
-                            sol
+                      </div>
+                      <div className="text-sm  flex justify-between items-center">
+                        <div className="flex items-center gap-">
+                          <p
+                            className={`font-bold ${
+                              position.PNL_Sol_percent &&
+                              Number(position.PNL_Sol_percent) > 0
+                                ? "text-[#1DD75B]"
+                                : "text-[#E82E2E]"
+                            }`}
+                          >
+                            {position.PNL_Sol_percent
+                              ? `${
+                                  Number(position.PNL_Sol_percent) > 0
+                                    ? "+"
+                                    : ""
+                                }${Number(position.PNL_Sol_percent)}%`
+                              : "N/A"}
                           </p>
-                          <p>
-                            $
-                            {position.PNL_usd
-                              ? position.PNL_usd.toFixed(2)
-                              : "0.00"}
-                          </p>
+                          <div className="text-right">
+                            <p>
+                              {position.PNL_sol
+                                ? position.PNL_sol.toFixed(2)
+                                : "0.00"}{" "}
+                              sol
+                            </p>
+                            <p>
+                              $
+                              {position.PNL_usd
+                                ? position.PNL_usd.toFixed(2)
+                                : "0.00"}
+                            </p>
+                          </div>
+                          <button
+                            className={`flex flex-col items-center gap-[3px] p-2 min-w-20 rounded-md bg-[#E82E2E] text-white w-[60px] ${
+                              sellLoading ? "opacity-50 cursor-not-allowed" : ""
+                            }`}
+                            onClick={() => handleSell(position.tokenAddress)}
+                            disabled={sellLoading}
+                          >
+                            {sellLoading ? "Selling..." : "Sell 100%"}
+                          </button>
                         </div>
                       </div>
-                      <div className="mt-2 text-right">
-                        <p
-                          className={`font-bold ${
-                            position.PNL_Sol_percent &&
-                            Number(position.PNL_Sol_percent) > 0
-                              ? "text-green-500"
-                              : "text-red-500"
-                          }`}
-                        >
-                          {position.PNL_Sol_percent
-                            ? `${
-                                Number(position.PNL_Sol_percent) > 0 ? "+" : ""
-                              }${Number(position.PNL_Sol_percent)}%`
-                            : "N/A"}
-                        </p>
-                      </div>
-                      <button
-                        className={`flex flex-col items-center gap-[3px] p-2 rounded-md bg-[#E82E2E] text-white w-[60px] ${
-                          sellLoading ? "opacity-50 cursor-not-allowed" : ""
-                        }`}
-                        onClick={() => handleSell(position.tokenAddress)}
-                        disabled={sellLoading}
-                      >
-                        {sellLoading ? "Selling..." : "Sell 100%"}
-                      </button>
                     </div>
                   ))
               ) : (
@@ -400,6 +422,31 @@ const Home = () => {
             </div>
           </section>
 
+          <section className="fixed bottom-0 w-full shadow-lg space-y-2 z-50">
+            <div className="px-3">
+              <div className="bg-background rounded-xl py-2 px-[8px] text-sm border-accent border">
+                <div className="flex items-center text-[#797979]">
+                  <IoLinkSharp className="text-2xl" />
+                  <input
+                    type="text"
+                    placeholder="Contract Address or Token Link"
+                    value={tokenInput}
+                    onChange={(e) => setTokenInput(e.target.value)}
+                    className="flex-grow px-1 leading-4 font-light bg-background border-none focus:outline-none"
+                  />
+                  <button onClick={handlePaste} className="text-accent p-4">
+                    Paste
+                  </button>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <TokenModal
+            isOpen={isPasteModalOpen}
+            onClose={() => setIsPasteModalOpen(false)}
+            tokenAddress={tokenInput}
+          />
           <DepositModal
             isOpen={isDepositModalOpen}
             onClose={handleCloseDepositModal}

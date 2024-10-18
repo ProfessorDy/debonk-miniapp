@@ -4,7 +4,7 @@ import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 import "./globals.css";
-import Navbar from "@/components/Navbar";
+// import Navbar from "@/components/Navbar";
 import Header from "@/components/Header";
 import Script from "next/script";
 
@@ -36,7 +36,7 @@ export default function RootLayout({
         <Header />
         {children}
         <ToastContainer position="bottom-center" autoClose={2000} />
-        <Navbar />
+        {/* <Navbar /> */}
       </body>
     </html>
   );
