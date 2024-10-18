@@ -16,6 +16,7 @@ export const fetchSolPrice = async () => {
   export const fetchWalletBalance = async (telegramId: string) => {
     const res = await fetch(`/api/getUserSolanaBalance?telegramId=${telegramId}`);
     const data = await res.json();
+    console.log("userSolanaBalance", data)
     if (res.ok) {
       return {
         balance: data.balance,
