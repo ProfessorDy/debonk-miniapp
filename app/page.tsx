@@ -93,9 +93,12 @@ const Home = () => {
       const prevWalletBalance = walletBalance; // Backup previous balance
 
       // Update UI immediately (optimistic update)
-      isLiveTrading
-        ? setLivePositions(newPositions)
-        : setSimulationPositions(newPositions);
+      if (isLiveTrading) {
+        setLivePositions(newPositions);
+      } else {
+        setSimulationPositions(newPositions);
+      }
+
       setWalletBalance(newWalletBalance);
 
       try {
@@ -124,9 +127,11 @@ const Home = () => {
         toast.error("Failed to sell the token. Reverting changes.");
 
         // Revert optimistic changes if the API call fails
-        isLiveTrading
-          ? setLivePositions(prevPositions)
-          : setSimulationPositions(prevPositions);
+        if (isLiveTrading) {
+          setLivePositions(prevPositions);
+        } else {
+          setSimulationPositions(prevPositions);
+        }
         setWalletBalance(prevWalletBalance);
       } finally {
         setSellLoading(false);
