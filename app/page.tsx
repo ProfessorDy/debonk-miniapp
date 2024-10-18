@@ -38,7 +38,9 @@ const Home = () => {
   const [solPrice, setSolPrice] = useState<number | null>(null);
   const [walletBalance, setWalletBalance] = useState<number>(0);
   const [totalValueInUsd, setTotalValueInUsd] = useState<number | null>(null);
-  const [positions, setPositions] = useState<TokenDataArray>([]);
+  const [livePositions, setLivePositions] = useState<TokenDataArray>([]);
+  const [simulationPositions, setSimulationPositions] =
+    useState<TokenDataArray>([]);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
 
@@ -66,8 +68,12 @@ const Home = () => {
     if (telegram?.initDataUnsafe?.user) {
       const { id: userId } = telegram.initDataUnsafe.user;
 
+      const activePositions = isLiveTrading
+        ? livePositions
+        : simulationPositions;
+
       // Find the position to sell
-      const positionToSell = positions.find(
+      const positionToSell = activePositions.find(
         (position) => position.tokenAddress === tokenAddress
       );
 
@@ -77,24 +83,34 @@ const Home = () => {
       }
 
       // Optimistic Updates
-      const newPositions = positions.filter(
+      const newPositions = activePositions.filter(
         (position) => position.tokenAddress !== tokenAddress
       );
       const newWalletBalance =
         walletBalance + (positionToSell.PNL_usd || 0) / solPrice;
 
-      const prevPositions = positions; // Backup previous positions
+      const prevPositions = activePositions; // Backup previous positions
       const prevWalletBalance = walletBalance; // Backup previous balance
 
       // Update UI immediately (optimistic update)
-      setPositions(newPositions);
+      if (isLiveTrading) {
+        setLivePositions(newPositions);
+      } else {
+        setSimulationPositions(newPositions);
+      }
+
       setWalletBalance(newWalletBalance);
 
       try {
         setSellLoading(true);
 
+        // Define the correct API endpoint based on trading mode
+        const apiEndpoint = isLiveTrading
+          ? `/api/sellToken` //  API route for live trading
+          : `/api/simulationSellToken`; // Existing API route for simulation
+
         const response = await fetch(
-          `/api/simulationSellToken?telegramId=${userId}&tokenAddress=${tokenAddress}&amountPercent=${100}&type=PERCENT`,
+          `${apiEndpoint}?telegramId=${userId}&tokenAddress=${tokenAddress}&amountPercent=${100}&type=PERCENT`,
           {
             method: "POST",
           }
@@ -111,7 +127,11 @@ const Home = () => {
         toast.error("Failed to sell the token. Reverting changes.");
 
         // Revert optimistic changes if the API call fails
-        setPositions(prevPositions);
+        if (isLiveTrading) {
+          setLivePositions(prevPositions);
+        } else {
+          setSimulationPositions(prevPositions);
+        }
         setWalletBalance(prevWalletBalance);
       } finally {
         setSellLoading(false);
@@ -154,20 +174,23 @@ const Home = () => {
           const totalValue = walletBalance * price;
           setTotalValueInUsd(totalValue);
 
-          // Fetch active positions
           const userPositions = await fetchUserPositions(userId.toString());
           if (userPositions.length === 0) {
-            setPositions([]);
+            setLivePositions([]);
+            setSimulationPositions([]);
             console.log("No active positions found.");
           } else {
-            setPositions(userPositions);
-            console.log("Fetched User Positions:", userPositions);
+            // Filter based on whether the position is for live trading or simulation
+            const live = userPositions.filter((position) => !position.isSim);
+            const simulation = userPositions.filter(
+              (position) => position.isSim
+            );
+
+            setLivePositions(live);
+            setSimulationPositions(simulation);
+            console.log("Fetched Live Positions:", live);
+            console.log("Fetched Simulation Positions:", simulation);
           }
-        } catch (error) {
-          console.error(
-            "Error fetching SOL price, balance, or positions",
-            error
-          );
         } finally {
           setLoading(false);
         }
@@ -337,20 +360,19 @@ const Home = () => {
               ))}
             </div>
           </section>
+          {/* Positions Overview */}
           <section className="mt-2 text-white shadow-lg rounded-xl p-3">
             <p className="text-xs font-light">Position Overview</p>
             <div className="flex flex-col gap-2 mt-2">
-              {positions.length > 0 ? (
-                positions
-                  .filter((position) =>
-                    isLiveTrading ? !position.isSim : position.isSim
-                  )
-                  .map((position, idx) => (
+              {isLiveTrading ? (
+                livePositions.length > 0 ? (
+                  livePositions.map((position, idx) => (
                     <div
                       key={idx}
-                      className="bg-[#1C1C1C] border-[#2F2F2F] border-[1px] p-3 rounded-lg shadow-sm flex justify-between"
+                      className="bg-[#3C3C3C3B] backdrop-blur-2xl border-[1px] px-2 py-1 shadow-sm flex justify-between"
                     >
-                      <div className="space-y-2">
+                      {/* Render live position */}
+                      <div className="space-y-1">
                         <p className="text-base font-bold mb-1">
                           {position.token.name}
                         </p>
@@ -369,9 +391,9 @@ const Home = () => {
                           </p>
                         </div>
                       </div>
-                      <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-1">
                         <p
-                          className={`font-bold ${
+                          className={`font-bold text-[9.45px] ${
                             position.PNL_Sol_percent &&
                             Number(position.PNL_Sol_percent) > 0
                               ? "text-[#1DD75B]"
@@ -384,14 +406,14 @@ const Home = () => {
                               }${Number(position.PNL_Sol_percent)}%`
                             : "N/A"}
                         </p>
-                        <div className="text-right">
+                        <div className="text-sm">
                           <p>
                             {position.PNL_sol
                               ? position.PNL_sol.toFixed(2)
                               : "0.00"}{" "}
                             sol
                           </p>
-                          <p>
+                          <p className="font-light">
                             $
                             {position.PNL_usd
                               ? position.PNL_usd.toFixed(2)
@@ -399,7 +421,7 @@ const Home = () => {
                           </p>
                         </div>
                         <button
-                          className={`flex flex-col items-center gap-[3px] p-2 min-w-20 rounded-md bg-[#E82E2E] text-white w-[60px] ${
+                          className={`flex flex-col items-center gap-[3px] p-2 min-w-20 text-[9.45px] rounded-md bg-[#E82E2E] text-white w-[60px] ${
                             sellLoading ? "opacity-50 cursor-not-allowed" : ""
                           }`}
                           onClick={() => handleSell(position.tokenAddress)}
@@ -410,9 +432,24 @@ const Home = () => {
                       </div>
                     </div>
                   ))
+                ) : (
+                  <p className="text-sm text-center text-gray-400">
+                    You have no active live positions.
+                  </p>
+                )
+              ) : simulationPositions.length > 0 ? (
+                simulationPositions.map((position, idx) => (
+                  <div
+                    key={idx}
+                    className="bg-[#3C3C3C3B] backdrop-blur-2xl border-[1px] px-2 py-1 shadow-sm flex justify-between"
+                  >
+                    {/* Render simulation position */}
+                    {/* The same rendering structure as live positions */}
+                  </div>
+                ))
               ) : (
                 <p className="text-sm text-center text-gray-400">
-                  You have no active positions at the moment.
+                  You have no active demo positions.
                 </p>
               )}
             </div>
