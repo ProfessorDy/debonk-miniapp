@@ -7,6 +7,7 @@ import useTelegramUserStore from "@/store/useTelegramUserStore";
 import { formatNumber, formatDecimal } from "@/utils/numberUtils";
 import { FaSyncAlt } from "react-icons/fa";
 import { fetchUserPositions } from "@/utils/apiUtils";
+import { Position } from "@prisma/client";
 
 interface TokenModalProps {
   isOpen: boolean;
@@ -84,7 +85,7 @@ const TokenModal: React.FC<TokenModalProps> = ({
     try {
       const positions = await fetchUserPositions(userId);
       const hasPosition = positions.some(
-        (position: any) => position.tokenAddress === tokenAddress
+        (position: Position) => position.tokenAddress === tokenAddress
       );
       setActivePosition(hasPosition);
     } catch (error) {
@@ -97,7 +98,7 @@ const TokenModal: React.FC<TokenModalProps> = ({
       fetchTokenDetails();
       checkActivePosition();
     }
-  }, [isOpen, tokenAddress]);
+  }, [isOpen, tokenAddress, checkActivePosition, fetchTokenDetails]);
 
   // Handle refresh button click
   const handleRefresh = () => {
