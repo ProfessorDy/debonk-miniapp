@@ -17,12 +17,12 @@ const PositionOverview: React.FC<PositionOverviewProps> = ({
   return (
     <section className="mt-2 text-white shadow-lg rounded-xl p-3">
       <p className="text-xs font-light">Position Overview</p>
-      <div className="flex flex-col gap-2 mt-2">
+      <div className="flex flex-col gap-2 mt-3">
         {positions.length > 0 ? (
           positions.map((position, idx) => (
             <div
               key={idx}
-              className="bg-[#3C3C3C3B] backdrop-blur-2xl px-2 py-1 flex justify-between"
+              className="bg-[#3C3C3C3B] backdrop-blur-2xl px-4 py-2 flex justify-between"
             >
               <div className="space-y-1">
                 <p className="text-base font-normal mb-1">
@@ -43,7 +43,7 @@ const PositionOverview: React.FC<PositionOverviewProps> = ({
                   </p>
                 </div>
               </div>
-              <div className="flex items-center gap-1">
+              <div className="flex items-center gap-2">
                 <p
                   className={`font-light text-[9.45px] ${
                     position.PNL_Sol_percent &&
@@ -58,7 +58,7 @@ const PositionOverview: React.FC<PositionOverviewProps> = ({
                       }${Number(position.PNL_Sol_percent)}%`
                     : "N/A"}
                 </p>
-                <div className="text-sm">
+                <div className="text-sm text-center font-light">
                   <p>
                     {position.PNL_sol ? position.PNL_sol.toFixed(2) : "0.00"}{" "}
                     sol
@@ -68,7 +68,7 @@ const PositionOverview: React.FC<PositionOverviewProps> = ({
                   </p>
                 </div>
                 <button
-                  className={`flex flex-col items-center gap-[3px] p-2 min-w-20 text-[9.45px] rounded-md bg-[#E82E2E] text-white w-[60px] ${
+                  className={`text-center  min-w-20 py-[9.45px] text-[9.45px] rounded-[6.3px] bg-[#E82E2E] text-white w-[60px] ${
                     sellLoading ? "opacity-50 cursor-not-allowed" : ""
                   }`}
                   onClick={() =>

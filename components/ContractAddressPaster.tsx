@@ -42,7 +42,7 @@ const ContractAddressPaster = () => {
 
   return (
     <>
-      <section className="px-3">
+      <section className="px-3 mt-6">
         <div className="bg-background rounded-xl py-2 px-[8px] text-sm border-accent border">
           <div className="flex items-center text-[#797979]">
             <IoLinkSharp className="text-2xl" />
