@@ -300,7 +300,7 @@ const Withdraw = () => {
             step !== 3 && (!walletAddress || addressError)
               ? "bg-accent text-black"
               : "bg-black border border-accent text-accent"
-          }   py-5 rounded-xl w-full text-center font-poppins relative -bottom-28`}
+          }   py-5 rounded-xl w-full text-center font-poppins mt-2`}
           disabled={step === 1 && (!walletAddress || !!addressError)}
         >
           {renderButtonText()}

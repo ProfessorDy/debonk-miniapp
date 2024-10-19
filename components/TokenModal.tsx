@@ -5,6 +5,7 @@ import InvestmentButton from "./InvestmentButton";
 import Link from "next/link";
 import useTelegramUserStore from "@/store/useTelegramUserStore";
 import { formatNumber, formatDecimal } from "@/utils/numberUtils";
+import { FaSyncAlt } from "react-icons/fa";
 
 interface TokenModalProps {
   isOpen: boolean;
@@ -43,33 +44,37 @@ const TokenModal: React.FC<TokenModalProps> = ({
     null
   );
   const userId = useTelegramUserStore((state) => state.userId);
+  const fetchTokenDetails = async () => {
+    setLoading(true);
+    try {
+      const response = await fetch(
+        `/api/getTokenDetails?tokenAddress=${tokenAddress}`
+      );
+      const data = await response.json();
+      console.log("Fetched Token Details:", data);
+
+      if (response.ok) {
+        setTokenInfo(data.tokenDetails);
+      } else {
+        console.error("Error fetching token details:", data.error);
+      }
+    } catch (error) {
+      console.error("API Error:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
     if (isOpen && tokenAddress) {
-      const fetchTokenDetails = async () => {
-        setLoading(true);
-        try {
-          const response = await fetch(
-            `/api/getTokenDetails?tokenAddress=${tokenAddress}`
-          );
-          const data = await response.json();
-          console.log("Fetched Token Details:", data);
-
-          if (response.ok) {
-            setTokenInfo(data.tokenDetails);
-          } else {
-            console.error("Error fetching token details:", data.error);
-          }
-        } catch (error) {
-          console.error("API Error:", error);
-        } finally {
-          setLoading(false);
-        }
-      };
-
       fetchTokenDetails();
     }
   }, [isOpen, tokenAddress]);
+
+  // Handle refresh button click
+  const handleRefresh = () => {
+    fetchTokenDetails();
+  };
 
   if (!isOpen) return null;
 
@@ -245,6 +250,9 @@ const TokenModal: React.FC<TokenModalProps> = ({
                   <FaTwitter size={25} />
                 </Link>
               )}
+              <button onClick={handleRefresh} className="text-white">
+                <FaSyncAlt size={25} />
+              </button>
             </div>
 
             {transactionStatus && (
