@@ -1,18 +1,18 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { IoCopySharp, IoWalletOutline, IoLinkSharp } from "react-icons/io5";
 import { PiDownloadDuotone, PiTestTubeFill } from "react-icons/pi";
 import { SlRefresh } from "react-icons/sl";
 import { CiCircleAlert } from "react-icons/ci";
 import { GiPlainCircle } from "react-icons/gi";
 import { copyToClipboard } from "@/utils/clipboardUtils";
-import DepositModal from "@/components/DepositModal";
-import SkeletonLoader from "@/components/SkeletonLoader";
+import dynamic from "next/dynamic";
+import SkeletonLoader from "@/components/Home/SkeletonLoader";
 import useTelegramUserStore from "@/store/useTelegramUserStore";
 import useLiveTradingStore from "@/store/useLiveTradingStore";
 import useWalletAddressStore from "@/store/useWalletAddressStore";
-import { formatNumber, formatWalletBalance } from "@/utils/numberUtils";
+import { formatWalletBalance } from "@/utils/numberUtils";
 import { useRouter } from "next/navigation";
 import {
   fetchSolPrice,
@@ -21,7 +21,9 @@ import {
 } from "@/utils/apiUtils";
 import { pasteFromClipboard } from "@/utils/clipboardUtils";
 import { toast } from "react-toastify";
-import TokenModal from "@/components/TokenModal";
+import PositionOverview from "@/components/Home/PositionOverview";
+import ActionButtons from "@/components/Home/ActionButton";
+import WalletInfo from "@/components/Home/WalletInfo";
 
 const Home = () => {
   const { walletAddress, setWalletAddress } = useWalletAddressStore();
@@ -43,6 +45,9 @@ const Home = () => {
     useState<TokenDataArray>([]);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
+
+  const DepositModal = dynamic(() => import("@/components/DepositModal"));
+  const TokenModal = dynamic(() => import("@/components/TokenModal"));
 
   // Add loading state for selling action
   const [sellLoading, setSellLoading] = useState(false);
@@ -172,8 +177,11 @@ const Home = () => {
             isLiveTrading ? parsedLiveBalance : parsedSimulationBalance
           );
 
-          const totalValue = walletBalance * price;
-          setTotalValueInUsd(totalValue);
+          const totalValueInUsd = useMemo(() => {
+            return walletBalance && solPrice ? walletBalance * solPrice : 0;
+          }, [walletBalance, solPrice]);
+
+          setTotalValueInUsd(totalValueInUsd);
 
           const userPositions = await fetchUserPositions(userId.toString());
           if (userPositions.length === 0) {
@@ -260,7 +268,7 @@ const Home = () => {
   const handleRefresh = () => window.location.reload();
   const handleWithdraw = () => router.push(`/withdraw`);
 
-  const buttons = [
+  const actionButtons = [
     {
       label: "Deposit",
       icon: <IoWalletOutline className="text-[20px]" />,
@@ -289,237 +297,24 @@ const Home = () => {
         >
           <section className="mb-5 bg-[#3C3C3C3B] backdrop-blur-2xl border-[#0493CC] border-[.5px] text-white shadow-lg rounded-xl p-3">
             {/* Wallet Address Section */}
-            <div className="flex justify-between items-start">
-              <div>
-                <p className="text-sm font-light">
-                  Unrealized PNL:{" "}
-                  <span className="text-red-500">{unrealizedPNL}</span>
-                </p>
-                <p className="text-xs text-primary font-light ">$0.00</p>
-              </div>
-              <button
-                className="flex gap-1 items-center self-centertext-xs text-accent rounded-xl bg-black border border-accent px-3 py-1"
-                onClick={toggleLiveTrading}
-              >
-                {isLiveTrading ? (
-                  <>
-                    <PiTestTubeFill className="text-sm" /> Simulation
-                  </>
-                ) : (
-                  <>
-                    <PiTestTubeFill className="text-sm" /> Live Trading
-                  </>
-                )}
-              </button>
-            </div>
-
-            <div className="flex flex-col items-center justify-center">
-              <p className="flex gap-1 relative text-sm items-baseline text-primary">
-                <span>{`${walletAddress.slice(0, 6)}...${walletAddress.slice(
-                  -4
-                )}`}</span>
-                <IoCopySharp
-                  className="cursor-pointer text-[10px]"
-                  onClick={handleCopy}
-                  title="Copy Address"
-                />
-              </p>
-              <h2 className="text-[34px] ">{walletBalance} SOL</h2>
-              <p className="text-primary flex gap-[2px] items-center">
-                {totalValueInUsd !== null
-                  ? `$${totalValueInUsd.toFixed(2)}`
-                  : "$0.00"}{" "}
-                <CiCircleAlert className="text-xs" />
-              </p>
-            </div>
-
-            <div className="flex justify-center items-center text-sm gap-1 pt-2 font-poppins">
-              {isLiveTrading ? (
-                <>
-                  Live{" "}
-                  <GiPlainCircle className="text-[#FF0000] text-xs font-light" />
-                </>
-              ) : (
-                <>
-                  Demo{" "}
-                  <GiPlainCircle className="text-[#1DD75B] text-xs font-light" />
-                </>
-              )}
-            </div>
+            <WalletInfo
+              walletAddress={walletAddress}
+              unrealizedPNL={unrealizedPNL}
+              walletBalance={isLiveTrading ? liveBalance : simulationBalance}
+              totalValueInUsd={totalValueInUsd}
+              handleCopy={handleCopy}
+            />
 
             {/* Action Buttons */}
-            <div className="flex w-3/5 mx-auto justify-between mt-4 text-[10px] text-accent font-light">
-              {buttons.map((button, index) => (
-                <button
-                  key={index}
-                  className="flex flex-col items-center gap-[3px] p-2 rounded-lg shadow border border-accent w-[60px]"
-                  onClick={button.action}
-                >
-                  {button.icon}
-                  {button.label}
-                </button>
-              ))}
-            </div>
+            <ActionButtons buttons={actionButtons} />
           </section>
           {/* Positions Overview */}
-          <section className="mt-2 text-white shadow-lg rounded-xl p-3">
-            <p className="text-xs font-light">Position Overview</p>
-            <div className="flex flex-col gap-2 mt-2">
-              {isLiveTrading ? (
-                livePositions.length > 0 ? (
-                  livePositions.map((position, idx) => (
-                    <div
-                      key={idx}
-                      className="bg-[#3C3C3C3B] backdrop-blur-2xl px-2 py-1 flex justify-between"
-                    >
-                      <div className="space-y-1">
-                        <p className="text-base font-normal mb-1">
-                          {position.token.name}
-                        </p>
-                        <div>
-                          <p className="font-normal">
-                            <span className="font-light"> MC </span>
-                            {position.token.mc
-                              ? formatNumber(position.token.mc)
-                              : "N/A"}
-                          </p>
-                          <p className="font-normal">
-                            <span className="font-light"> LIQ </span>
-                            {position.token.liquidityInUsd
-                              ? formatNumber(position.token.liquidityInUsd)
-                              : "N/A"}
-                          </p>
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-1">
-                        <p
-                          className={`font-light text-[9.45px] ${
-                            position.PNL_Sol_percent &&
-                            Number(position.PNL_Sol_percent) > 0
-                              ? "text-[#1DD75B]"
-                              : "text-[#E82E2E]"
-                          }`}
-                        >
-                          {position.PNL_Sol_percent
-                            ? `${
-                                Number(position.PNL_Sol_percent) > 0 ? "+" : ""
-                              }${Number(position.PNL_Sol_percent)}%`
-                            : "N/A"}
-                        </p>
-                        <div className="text-sm">
-                          <p>
-                            {position.PNL_sol
-                              ? position.PNL_sol.toFixed(2)
-                              : "0.00"}{" "}
-                            sol
-                          </p>
-                          <p className="font-light">
-                            $
-                            {position.PNL_usd
-                              ? position.PNL_usd.toFixed(2)
-                              : "0.00"}
-                          </p>
-                        </div>
-                        <button
-                          className={`flex flex-col items-center gap-[3px] p-2 min-w-20 text-[9.45px] rounded-md bg-[#E82E2E] text-white w-[60px] ${
-                            sellLoading ? "opacity-50 cursor-not-allowed" : ""
-                          }`}
-                          onClick={() =>
-                            handleSell(
-                              position.token.address,
-                              position.token.name
-                            )
-                          }
-                          disabled={sellLoading}
-                        >
-                          {sellLoading ? "Selling..." : "Sell 100%"}
-                        </button>
-                      </div>
-                    </div>
-                  ))
-                ) : (
-                  <p className="text-sm text-center text-gray-400">
-                    You have no active live positions.
-                  </p>
-                )
-              ) : simulationPositions.length > 0 ? (
-                simulationPositions.map((position, idx) => (
-                  <div
-                    key={idx}
-                    className="bg-[#3C3C3C3B] backdrop-blur-2xl px- py-1 flex justify-between"
-                  >
-                    <div className="space-y-1">
-                      <p className="text-base font-normal mb-1">
-                        {position.token.name}
-                      </p>
-                      <div>
-                        <p className="font-normal">
-                          <span className="font-light"> MC </span>
-                          {position.token.mc
-                            ? formatNumber(position.token.mc)
-                            : "N/A"}
-                        </p>
-                        <p className="font-normal">
-                          <span className="font-light"> LIQ </span>
-                          {position.token.liquidityInUsd
-                            ? formatNumber(position.token.liquidityInUsd)
-                            : "N/A"}
-                        </p>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <p
-                        className={`font-light text-[9.45px] ${
-                          position.PNL_Sol_percent &&
-                          Number(position.PNL_Sol_percent) > 0
-                            ? "text-[#1DD75B]"
-                            : "text-[#E82E2E]"
-                        }`}
-                      >
-                        {position.PNL_Sol_percent
-                          ? `${
-                              Number(position.PNL_Sol_percent) > 0 ? "+" : ""
-                            }${Number(position.PNL_Sol_percent)}%`
-                          : "N/A"}
-                      </p>
-                      <div className="text-sm text-center">
-                        <p>
-                          {position.PNL_sol
-                            ? position.PNL_sol.toFixed(2)
-                            : "0.00"}{" "}
-                          sol
-                        </p>
-                        <p className="font-light">
-                          $
-                          {position.PNL_usd
-                            ? position.PNL_usd.toFixed(2)
-                            : "0.00"}
-                        </p>
-                      </div>
-                      <button
-                        className={`flex flex-col items-center gap-[3px] p-2 min-w-20 text-[9.45px] rounded-md bg-[#E82E2E] text-white w-[60px] ${
-                          sellLoading ? "opacity-50 cursor-not-allowed" : ""
-                        }`}
-                        onClick={() =>
-                          handleSell(
-                            position.token.address,
-                            position.token.name
-                          )
-                        }
-                        disabled={sellLoading}
-                      >
-                        {sellLoading ? "Selling..." : "Sell 100%"}
-                      </button>
-                    </div>
-                  </div>
-                ))
-              ) : (
-                <p className="text-sm text-center text-gray-400">
-                  You have no active demo positions.
-                </p>
-              )}
-            </div>
-          </section>
+          <PositionOverview
+            positions={isLiveTrading ? livePositions : simulationPositions}
+            isLiveTrading={isLiveTrading}
+            sellLoading={sellLoading}
+            handleSell={handleSell}
+          />
 
           <section className="fixed bottom-0 w-full shadow-lg space-y-2 z-50">
             <div className="px-3">
