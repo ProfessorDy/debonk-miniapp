@@ -31,6 +31,7 @@ export default function RootLayout({
           src="https://telegram.org/js/telegram-web-app.js"
           strategy="beforeInteractive"
         />
+        <meta httpEquiv="Permissions-Policy" content="clipboard-read=*" />
       </head>
       <body className={`${openSans.variable} antialiased`}>
         <Header />
