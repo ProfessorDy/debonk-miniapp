@@ -16,6 +16,7 @@ import {
   fetchSolPrice,
   fetchWalletBalance,
   fetchUserPositions,
+  simulateSellToken, // Import the new utility function
 } from "@/utils/apiUtils";
 import { toast } from "react-toastify";
 import PositionOverview from "@/components/Home/PositionOverview";
@@ -87,22 +88,13 @@ const Home = () => {
       try {
         setSellLoading(true);
 
-        // Define the correct API endpoint based on trading mode
-        const apiEndpoint = isLiveTrading
-          ? `/api/sellToken` //  API route for live trading
-          : `/api/simulationSellToken`; // Existing API route for simulation
-
-        const response = await fetch(
-          `${apiEndpoint}?telegramId=${userId}&tokenAddress=${tokenAddress}&amountPercent=${100}&type=PERCENT`,
-          {
-            method: "POST",
-          }
-        );
-
-        if (!response.ok) {
-          const errorMessage = await response.text();
-          throw new Error(`Failed to sell token: ${errorMessage}`);
-        }
+        // Use the simulateSellToken utility function
+        const status = await simulateSellToken({
+          telegramId: userId,
+          tokenAddress,
+          amountPercent: 100, // Always sell the full amount
+          type: "PERCENT", // Type can be "PERCENT" or "AMOUNT"
+        });
 
         toast.success(`${tokenName} sold successfully`);
         console.log(`Token with address ${tokenAddress} sold successfully!`);

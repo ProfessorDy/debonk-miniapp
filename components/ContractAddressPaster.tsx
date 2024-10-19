@@ -60,6 +60,11 @@ const ContractAddressPaster = () => {
                   .readText()
                   .then((text) => setTokenInput(text))
               }
+              onTouchStart={() =>
+                navigator.clipboard
+                  .readText()
+                  .then((text) => setTokenInput(text))
+              }
               className="text-accent p-4"
             >
               Paste

@@ -72,7 +72,7 @@ const PositionOverview: React.FC<PositionOverviewProps> = ({
                     sellLoading ? "opacity-50 cursor-not-allowed" : ""
                   }`}
                   onClick={() =>
-                    handleSell(position.token.address, position.token.name)
+                    handleSell(position.tokenAddress, position.token.name)
                   }
                   disabled={sellLoading}
                 >

@@ -40,3 +40,27 @@ export const fetchSolPrice = async () => {
     }
   };
   
+  // Helper function to simulate selling a token
+export const simulateSellToken = async ({
+  telegramId,
+  tokenAddress,
+  amountPercent,
+  type,
+}) => {
+  const queryParams = new URLSearchParams({
+    telegramId,
+    tokenAddress,
+    amountPercent: String(amountPercent),
+    type,
+  });
+
+  const res = await fetch(`/api/simulationSellToken?${queryParams.toString()}`);
+  const data = await res.json();
+
+  if (res.ok) {
+    return data.status; 
+  } else {
+    console.error(data.error);
+    throw new Error("Failed to simulate sell token transaction");
+  }
+};

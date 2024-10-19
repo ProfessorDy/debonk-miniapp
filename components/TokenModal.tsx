@@ -253,6 +253,7 @@ const TokenModal: React.FC<TokenModalProps> = ({
           <>
             <button
               onClick={onClose}
+              onTouchStart={onClose}
               className="absolute top-4 left-4 text-accent"
             >
               <IoClose size={24} />
