@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { IoClose, IoCheckmarkDoneCircle } from "react-icons/io5";
 import { TiArrowBack } from "react-icons/ti";
 import { CgArrowsExchangeV } from "react-icons/cg";
@@ -9,6 +9,7 @@ import { useRouter } from "next/navigation";
 import { PublicKey } from "@solana/web3.js";
 import { fetchSolPrice, fetchWalletBalance } from "@/utils/apiUtils";
 import { formatWalletBalance } from "@/utils/numberUtils";
+import { toast } from "react-toastify";
 
 const Withdraw = () => {
   const { userId } = useTelegramUserStore();
@@ -127,6 +128,24 @@ const Withdraw = () => {
 
     validateAmount(inputValue);
   };
+  // Handle the paste event
+  const handleOnPaste = useCallback(
+    (event: React.ClipboardEvent<HTMLTextAreaElement>) => {
+      const pasteContent = event.clipboardData.getData("text");
+      event.preventDefault();
+      setWalletAddress(pasteContent);
+      toast.success("Address pasted from clipboard!");
+    },
+    []
+  );
+
+  const handleAddressInput = (e) => {
+    if (walletAddress) {
+      setWalletAddress(""); // Clear the address
+    } else {
+      handleOnPaste(e);
+    }
+  };
 
   const renderStepOne = () => (
     <div className="bg-[#3C3C3C3B] backdrop-blur-2xl border-[#0493CC] border-[.5px] text-white shadow-lg rounded-xl p-3 h-[50vh] my-auto">
@@ -143,8 +162,12 @@ const Withdraw = () => {
           />
         </label>
 
-        <button className="text-primary" onClick={() => setWalletAddress("")}>
-          <IoClose size={18} />
+        <button
+          className="text-primary"
+          onClick={(e) => handleAddressInput(e)}
+          onTouchStart={(e) => handleAddressInput(e)}
+        >
+          {walletAddress ? <IoClose size={18} /> : <span>Paste</span>}
         </button>
       </div>
       {addressError && (

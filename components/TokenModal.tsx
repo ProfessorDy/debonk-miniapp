@@ -132,7 +132,9 @@ const TokenModal: React.FC<TokenModalProps> = ({
               <div>
                 <h2 className="text-xl text-left mb-2">
                   {tokenInfo.name}{" "}
-                  <span className="text-base text-primary">$0.00=0.0SOL</span>
+                  {activePosition && (
+                    <span className="text-base text-primary">$0.00=0.0SOL</span>
+                  )}
                 </h2>
 
                 <div className="text-sm mb-2">
