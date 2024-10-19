@@ -1,6 +1,5 @@
 import React from "react";
 import { formatNumber } from "@/utils/numberUtils";
-import { toast } from "react-toastify";
 
 interface PositionOverviewProps {
   positions: TokenData[];

@@ -1,11 +1,9 @@
 "use client";
 
-import React, { useState, useEffect, useMemo } from "react";
-import { IoCopySharp, IoWalletOutline, IoLinkSharp } from "react-icons/io5";
-import { PiDownloadDuotone, PiTestTubeFill } from "react-icons/pi";
+import React, { useState, useEffect } from "react";
+import { IoWalletOutline, IoLinkSharp } from "react-icons/io5";
+import { PiDownloadDuotone } from "react-icons/pi";
 import { SlRefresh } from "react-icons/sl";
-import { CiCircleAlert } from "react-icons/ci";
-import { GiPlainCircle } from "react-icons/gi";
 import { copyToClipboard } from "@/utils/clipboardUtils";
 import dynamic from "next/dynamic";
 import SkeletonLoader from "@/components/Home/SkeletonLoader";
@@ -177,9 +175,8 @@ const Home = () => {
             isLiveTrading ? parsedLiveBalance : parsedSimulationBalance
           );
 
-          const totalValueInUsd = useMemo(() => {
-            return walletBalance && solPrice ? walletBalance * solPrice : 0;
-          }, [walletBalance, solPrice]);
+          const totalValueInUsd =
+            walletBalance && solPrice ? walletBalance * solPrice : 0;
 
           setTotalValueInUsd(totalValueInUsd);
 
@@ -302,7 +299,9 @@ const Home = () => {
               unrealizedPNL={unrealizedPNL}
               walletBalance={isLiveTrading ? liveBalance : simulationBalance}
               totalValueInUsd={totalValueInUsd}
+              isLiveTrading={isLiveTrading}
               handleCopy={handleCopy}
+              toggleLiveTrading={toggleLiveTrading}
             />
 
             {/* Action Buttons */}
