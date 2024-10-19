@@ -42,7 +42,8 @@ const PositionOverview: React.FC<PositionOverviewProps> = ({
               <div
                 key={idx}
                 className="bg-[#3C3C3C3B] backdrop-blur-2xl px-4 py-2 flex justify-between"
-                onClick={handleCardClick(position)}
+                onClick={() => handleCardClick(position)}
+                onTouchStart={() => handleCardClick(position)}
               >
                 <div className="space-y-1">
                   <p className="text-base font-normal mb-1">
