@@ -4,6 +4,7 @@ import React, { useState, useEffect } from "react";
 import { IoWalletOutline } from "react-icons/io5";
 import { PiDownloadDuotone } from "react-icons/pi";
 import { SlRefresh } from "react-icons/sl";
+import { FaCheck } from "react-icons/fa";
 import { copyToClipboard } from "@/utils/clipboardUtils";
 import dynamic from "next/dynamic";
 import SkeletonLoader from "@/components/Home/SkeletonLoader";
@@ -39,6 +40,7 @@ const Home = () => {
   const [simulationPositions, setSimulationPositions] =
     useState<TokenDataArray>([]);
   const [loading, setLoading] = useState(true);
+  const [copySuccess, setCopySuccess] = useState(false);
   const router = useRouter();
 
   const DepositModal = dynamic(() => import("@/components/DepositModal"));
@@ -233,7 +235,12 @@ const Home = () => {
 
   const handleOpenDepositModal = () => setIsDepositModalOpen(true);
   const handleCloseDepositModal = () => setIsDepositModalOpen(false);
-  const handleCopy = () => copyToClipboard(walletAddress);
+  const handleCopy = () => {
+    copyToClipboard(walletAddress);
+    setCopySuccess(true);
+    setTimeout(() => setCopySuccess(false), 2000); // Revert back after 2 seconds
+  };
+
   const handleRefresh = () => window.location.reload();
   const handleWithdraw = () => router.push(`/withdraw`);
 
@@ -274,6 +281,7 @@ const Home = () => {
               isLiveTrading={isLiveTrading}
               handleCopy={handleCopy}
               toggleLiveTrading={toggleLiveTrading}
+              copySuccess={copySuccess}
             />
 
             {/* Action Buttons */}

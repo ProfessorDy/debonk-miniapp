@@ -1,8 +1,9 @@
 import React from "react";
-import { IoCopySharp } from "react-icons/io5";
 import { CiCircleAlert } from "react-icons/ci";
 import { GiPlainCircle } from "react-icons/gi";
 import { PiTestTubeFill } from "react-icons/pi";
+import { FaCheck } from "react-icons/fa";
+import { IoCopyOutline } from "react-icons/io5";
 
 interface WalletInfoProps {
   walletAddress: string;
@@ -12,6 +13,7 @@ interface WalletInfoProps {
   handleCopy: () => void;
   isLiveTrading: boolean;
   toggleLiveTrading: () => void;
+  copySuccess: boolean;
 }
 
 const WalletInfo: React.FC<WalletInfoProps> = ({
@@ -21,7 +23,8 @@ const WalletInfo: React.FC<WalletInfoProps> = ({
   totalValueInUsd,
   handleCopy,
   isLiveTrading,
-  toggleLiveTrading, // Passed down from parent
+  toggleLiveTrading,
+  copySuccess,
 }) => {
   return (
     <>
@@ -54,11 +57,15 @@ const WalletInfo: React.FC<WalletInfoProps> = ({
           <span>{`${walletAddress.slice(0, 6)}...${walletAddress.slice(
             -4
           )}`}</span>
-          <IoCopySharp
-            className="cursor-pointer text-[10px]"
-            onClick={handleCopy}
-            title="Copy Address"
-          />
+          {copySuccess ? (
+            <FaCheck className="text-[10px]" />
+          ) : (
+            <IoCopyOutline
+              className="cursor-pointer text-[10px]"
+              onClick={handleCopy}
+              title="Copy Address"
+            />
+          )}
         </p>
         <h2 className="text-[34px] ">{walletBalance} SOL</h2>
         <p className="text-primary flex gap-[2px] items-center">
