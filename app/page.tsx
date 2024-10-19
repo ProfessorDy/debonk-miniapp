@@ -17,7 +17,6 @@ import {
   fetchWalletBalance,
   fetchUserPositions,
 } from "@/utils/apiUtils";
-import { pasteFromClipboard } from "@/utils/clipboardUtils";
 import { toast } from "react-toastify";
 import PositionOverview from "@/components/Home/PositionOverview";
 import ActionButtons from "@/components/Home/ActionButton";

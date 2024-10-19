@@ -36,6 +36,7 @@ const ContractAddressPaster: React.FC = () => {
         autoClose: 2000,
         hideProgressBar: true,
       });
+      console.log("failed to paste from clipboard", err);
     }
   };
 
