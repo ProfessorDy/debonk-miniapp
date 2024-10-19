@@ -143,7 +143,7 @@ const Withdraw = () => {
     if (walletAddress) {
       setWalletAddress(""); // Clear the address
     } else {
-      handleOnPaste(e);
+      navigator.clipboard.readText().then((text) => setWalletAddress(text));
     }
   };
 
@@ -157,6 +157,7 @@ const Withdraw = () => {
             value={walletAddress}
             onChange={(e) => setWalletAddress(e.target.value)}
             onBlur={() => validateAddress(walletAddress)}
+            onPaste={handleOnPaste}
             placeholder="Enter wallet address"
             className="bg-background text-white w-full   rounded-md focus:outline-none resize-none "
           />

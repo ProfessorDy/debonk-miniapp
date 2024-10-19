@@ -1,8 +1,11 @@
+import { toast } from "react-toastify";
+
 // Function to copy text to clipboard
 export const copyToClipboard = async (text: string): Promise<void> => {
     try {
       if (navigator.clipboard) {
         await navigator.clipboard.writeText(text);
+        toast.success("Wallet Address copied!")
       } else {
         console.log("Clipboard API not supported");
       }
