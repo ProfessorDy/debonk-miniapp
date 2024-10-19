@@ -14,10 +14,12 @@ export async function GET(req: Request) {
 
   try {
     const balance = await getUserSolBalance(telegramId);
+    console.log("balance: ", balance);
 
     const simulationBalance = Number(
       await getUserSImulationBalance(telegramId)
     );
+    console.log("simulationBalance: ", simulationBalance);
     console.log("simulationBalance: ", simulationBalance);
     return NextResponse.json({ balance, simulationBalance });
   } catch (error) {

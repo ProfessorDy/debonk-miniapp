@@ -313,11 +313,15 @@ export const getUserTokenBalance = async (
 };
 
 export const getUserSolBalance = async (telegramId: string) => {
-  const key = getPrivateKeyFromTelegramId(telegramId);
-  const userWalletClass = new UserSolSmartWalletClass(key);
-  const balance = await userWalletClass.getUserSolBalance();
-  console.log("balance: ", balance);
-  return balance / LAMPORTS_PER_SOL;
+  try {
+    const key = getPrivateKeyFromTelegramId(telegramId);
+    const userWalletClass = new UserSolSmartWalletClass(key);
+    const balance = await userWalletClass.getUserSolBalance();
+    console.log("balance: ", balance);
+    return balance / LAMPORTS_PER_SOL;
+  } catch (error) {
+    console.log("error: ", error);
+  }
 };
 
 export const formatter = ({

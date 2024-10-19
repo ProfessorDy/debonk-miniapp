@@ -422,4 +422,94 @@ export const getUserActivePositions = async (telegramId: string) => {
   }
 };
 
+export const getUserTokenPosition = async (
+  telegramId: string,
+  token: string
+) => {
+  const user = await getUserFromTelegramId(telegramId);
+
+  const position = user.positions.find(
+    (position) => position.tokenAddress === token
+  );
+
+  const wallet = user.wallet.filter((wallet: Wallet) => wallet.isPrimary)[0];
+
+  const solPrice = (await UserSolSmartWalletClass.getSolPrice()).solUsdPrice;
+
+  try {
+    const tokenListPosition: { tokenName: string; address: string }[] = [];
+
+    const tokenDetails = await getTokenDetails(position.tokenAddress);
+    tokenListPosition.push({
+      tokenName: tokenDetails.name,
+      address: position.tokenAddress,
+    });
+    const PNL_usd = await calculateProfitLoss(
+      user.id,
+      wallet.id,
+      position.tokenAddress,
+      tokenDetails.priceUsd.toString()
+    );
+    console.log("PNL_usd: ", PNL_usd);
+    const PNL_sol = PNL_usd / solPrice;
+    console.log("PNL_sol: ", PNL_sol);
+    const PNL_Sol_percent = (
+      (PNL_sol /
+        (parseInt(position.amountHeld) * parseFloat(position.avgBuyPrice))) *
+      solPrice *
+      100
+    ).toFixed(2);
+
+    const balance = await getUserTokenBalance(
+      position.tokenAddress,
+      telegramId
+    );
+    const _balance = formatter({
+      decimal: 5,
+    }).format(balance);
+    console.log("_balance: ", _balance);
+
+    const currentPrice = formatter({
+      decimal: 8,
+    }).format(Number(tokenDetails.priceUsd.toString()));
+
+    console.log("currentPrice: ", currentPrice);
+    const currentHolding = formatCurrencyWithoutDollarSign(
+      balance * Number(tokenDetails.priceNative)
+    );
+    console.log("currentHolding: ", currentHolding);
+
+    const PNL_usd_percent = (
+      (PNL_usd /
+        (parseInt(position.amountHeld) * parseFloat(position.avgBuyPrice))) *
+      100
+    ).toFixed(2);
+
+    const data = {
+      tokenTicker: position.tokenTicker,
+      capital: (
+        (parseFloat(position.avgBuyPrice) * parseFloat(position.amountHeld)) /
+        solPrice
+      ).toFixed(2),
+      balance: _balance,
+      currentPrice,
+      mc: tokenDetails.mc,
+      PNL_Sol_percent,
+      PNL_usd_percent,
+      PNL_usd,
+      PNL_sol,
+      currentHolding,
+      tokenAddress: position.tokenAddress,
+      token: tokenDetails,
+      isSim: position.isSimulation,
+    };
+
+    return data;
+  } catch (error) {
+    console.log("error: ", error);
+    console.log("error getting the user token  position");
+    return null;
+  }
+};
+
 //WITHDRWAL
