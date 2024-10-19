@@ -139,7 +139,7 @@ const Withdraw = () => {
     []
   );
 
-  const handleAddressInput = (e) => {
+  const handleAddressInput = () => {
     if (walletAddress) {
       setWalletAddress(""); // Clear the address
     } else {
@@ -165,8 +165,8 @@ const Withdraw = () => {
 
         <button
           className="text-primary"
-          onClick={(e) => handleAddressInput(e)}
-          onTouchStart={(e) => handleAddressInput(e)}
+          onClick={handleAddressInput}
+          onTouchStart={handleAddressInput}
         >
           {walletAddress ? <IoClose size={18} /> : <span>Paste</span>}
         </button>

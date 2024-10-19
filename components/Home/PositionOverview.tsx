@@ -19,11 +19,9 @@ const PositionOverview: React.FC<PositionOverviewProps> = ({
   const [selectedPosition, setSelectedPosition] = useState<TokenData | null>(
     null
   );
-  const [activePosition, setActivePosition] = useState<boolean>(false);
 
   const handleCardClick = (position: TokenData) => {
     setSelectedPosition(position);
-    setActivePosition(position.PNL_Sol_percent !== undefined); // Set active position based on whether PNL exists
     setIsModalOpen(true); // Open the modal
   };
 
@@ -117,7 +115,6 @@ const PositionOverview: React.FC<PositionOverviewProps> = ({
       {selectedPosition && (
         <TokenModal
           isOpen={isModalOpen}
-          activePosition={activePosition}
           onClose={handleCloseModal}
           tokenAddress={selectedPosition.tokenAddress}
         />

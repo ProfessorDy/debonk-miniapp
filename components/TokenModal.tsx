@@ -6,12 +6,24 @@ import Link from "next/link";
 import useTelegramUserStore from "@/store/useTelegramUserStore";
 import { formatNumber, formatDecimal } from "@/utils/numberUtils";
 import { FaSyncAlt } from "react-icons/fa";
+import { fetchUserPositions } from "@/utils/apiUtils";
 
 interface TokenModalProps {
   isOpen: boolean;
-  activePosition?: boolean;
   onClose: () => void;
   tokenAddress: string;
+}
+
+interface TokenDetails {
+  name: string;
+  liquidityInUsd: number;
+  mc: number;
+  volume: { h24: number };
+  priceUsd: number;
+  change: { m5: number; h1: number; h24: number };
+  websiteUrl?: string;
+  telegramUrl?: string;
+  twitterUrl?: string;
 }
 
 const getChangeColor = (value: number) => {
@@ -32,11 +44,11 @@ const TokenInfoRow: React.FC<{ label: string; value: string }> = ({
 
 const TokenModal: React.FC<TokenModalProps> = ({
   isOpen,
-  activePosition,
   onClose,
   tokenAddress,
 }) => {
   const [tokenInfo, setTokenInfo] = useState<TokenDetails | null>(null);
+  const [activePosition, setActivePosition] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
   const [buying, setBuying] = useState<boolean>(false);
   const [selling, setSelling] = useState<boolean>(false);
@@ -44,6 +56,8 @@ const TokenModal: React.FC<TokenModalProps> = ({
     null
   );
   const userId = useTelegramUserStore((state) => state.userId);
+
+  // Fetch token details
   const fetchTokenDetails = async () => {
     setLoading(true);
     try {
@@ -65,15 +79,30 @@ const TokenModal: React.FC<TokenModalProps> = ({
     }
   };
 
+  // Fetch user positions and check if there's an active position
+  const checkActivePosition = async () => {
+    try {
+      const positions = await fetchUserPositions(userId);
+      const hasPosition = positions.some(
+        (position: any) => position.tokenAddress === tokenAddress
+      );
+      setActivePosition(hasPosition);
+    } catch (error) {
+      console.error("Error checking active position:", error);
+    }
+  };
+
   useEffect(() => {
     if (isOpen && tokenAddress) {
       fetchTokenDetails();
+      checkActivePosition();
     }
   }, [isOpen, tokenAddress]);
 
   // Handle refresh button click
   const handleRefresh = () => {
     fetchTokenDetails();
+    checkActivePosition(); // Refresh the active position status
   };
 
   if (!isOpen) return null;
@@ -196,6 +225,7 @@ const TokenModal: React.FC<TokenModalProps> = ({
               )}
             </div>
 
+            {/* Buy and Sell Buttons */}
             <div className="flex justify-center gap-3 mb-6">
               {[0.1, 0.5, 1].map((amount) => (
                 <InvestmentButton
@@ -206,32 +236,21 @@ const TokenModal: React.FC<TokenModalProps> = ({
                   isLoading={buying}
                 />
               ))}
-              <InvestmentButton
-                key={"X"}
-                label={`${"X"} Sol`}
-                onClick={() => handleBuy(10)}
-                type="buy"
-                isLoading={buying}
-              />
             </div>
-            <div className="flex justify-center gap-3">
-              {[25, 50, 100].map((percentage) => (
-                <InvestmentButton
-                  key={percentage}
-                  label={`${percentage} %`}
-                  onClick={() => handleSell(percentage)}
-                  type="sell"
-                  isLoading={selling}
-                />
-              ))}
-              <InvestmentButton
-                key={"X"}
-                label={`${"X"} %`}
-                onClick={() => handleSell(10)}
-                type="sell"
-                isLoading={selling}
-              />
-            </div>
+
+            {activePosition && (
+              <div className="flex justify-center gap-3 mb-6">
+                {[25, 50, 100].map((percentage) => (
+                  <InvestmentButton
+                    key={percentage}
+                    label={`${percentage} %`}
+                    onClick={() => handleSell(percentage)}
+                    type="sell"
+                    isLoading={selling}
+                  />
+                ))}
+              </div>
+            )}
 
             {/* Links to website, Telegram, and Twitter */}
             <div className="flex justify-center gap-6 mt-8 text-accent">
