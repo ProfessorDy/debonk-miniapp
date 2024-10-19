@@ -23,6 +23,7 @@ import { pasteFromClipboard } from "@/utils/clipboardUtils";
 import { toast } from "react-toastify";
 import PositionOverview from "@/components/Home/PositionOverview";
 import ActionButtons from "@/components/Home/ActionButton";
+import WalletInfo from "@/components/Home/WalletInfo";
 
 const Home = () => {
   const { walletAddress, setWalletAddress } = useWalletAddressStore();
@@ -296,63 +297,13 @@ const Home = () => {
         >
           <section className="mb-5 bg-[#3C3C3C3B] backdrop-blur-2xl border-[#0493CC] border-[.5px] text-white shadow-lg rounded-xl p-3">
             {/* Wallet Address Section */}
-            <div className="flex justify-between items-start">
-              <div>
-                <p className="text-sm font-light">
-                  Unrealized PNL:{" "}
-                  <span className="text-red-500">{unrealizedPNL}</span>
-                </p>
-                <p className="text-xs text-primary font-light ">$0.00</p>
-              </div>
-              <button
-                className="flex gap-1 items-center self-centertext-xs text-accent rounded-xl bg-black border border-accent px-3 py-1"
-                onClick={toggleLiveTrading}
-              >
-                {isLiveTrading ? (
-                  <>
-                    <PiTestTubeFill className="text-sm" /> Simulation
-                  </>
-                ) : (
-                  <>
-                    <PiTestTubeFill className="text-sm" /> Live Trading
-                  </>
-                )}
-              </button>
-            </div>
-
-            <div className="flex flex-col items-center justify-center">
-              <p className="flex gap-1 relative text-sm items-baseline text-primary">
-                <span>{`${walletAddress.slice(0, 6)}...${walletAddress.slice(
-                  -4
-                )}`}</span>
-                <IoCopySharp
-                  className="cursor-pointer text-[10px]"
-                  onClick={handleCopy}
-                  title="Copy Address"
-                />
-              </p>
-              <h2 className="text-[34px] ">{walletBalance} SOL</h2>
-              <p className="text-primary flex gap-[2px] items-center">
-                {totalValueInUsd !== null
-                  ? `$${totalValueInUsd.toFixed(2)}`
-                  : "$0.00"}{" "}
-                <CiCircleAlert className="text-xs" />
-              </p>
-            </div>
-
-            <div className="flex justify-center items-center text-sm gap-1 pt-2 font-poppins">
-              {isLiveTrading ? (
-                <>
-                  Live{" "}
-                  <GiPlainCircle className="text-[#FF0000] text-xs font-light" />
-                </>
-              ) : (
-                <>
-                  Demo{" "}
-                  <GiPlainCircle className="text-[#1DD75B] text-xs font-light" />
-                </>
-              )}
-            </div>
+            <WalletInfo
+              walletAddress={walletAddress}
+              unrealizedPNL={unrealizedPNL}
+              walletBalance={isLiveTrading ? liveBalance : simulationBalance}
+              totalValueInUsd={totalValueInUsd}
+              handleCopy={handleCopy}
+            />
 
             {/* Action Buttons */}
             <ActionButtons buttons={actionButtons} />
