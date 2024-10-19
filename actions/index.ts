@@ -431,6 +431,9 @@ export const getUserTokenPosition = async (
   const position = user.positions.find(
     (position) => position.tokenAddress === token
   );
+  if (!position) {
+    return null;
+  }
 
   const wallet = user.wallet.filter((wallet: Wallet) => wallet.isPrimary)[0];
 
