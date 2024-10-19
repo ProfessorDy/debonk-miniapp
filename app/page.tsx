@@ -89,7 +89,7 @@ const Home = () => {
         setSellLoading(true);
 
         // Use the simulateSellToken utility function
-        const status = await simulateSellToken({
+        await simulateSellToken({
           telegramId: userId,
           tokenAddress,
           amountPercent: 100, // Always sell the full amount
@@ -176,7 +176,7 @@ const Home = () => {
 
       getSolData();
     }
-  }, [setWalletBalance, setUserId, isLiveTrading, walletBalance]);
+  }, [solPrice, setWalletBalance, setUserId, isLiveTrading, walletBalance]);
 
   useEffect(() => {
     console.log("Component mounted. Checking Telegram WebApp user data...");
