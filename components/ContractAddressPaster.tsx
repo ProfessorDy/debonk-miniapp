@@ -1,14 +1,12 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { IoLinkSharp } from "react-icons/io5";
-import dynamic from "next/dynamic";
 import { toast } from "react-toastify";
+import dynamic from "next/dynamic";
 
-const ContractAddressPaster: React.FC = () => {
+const ContractAddressPaster = () => {
   const TokenModal = dynamic(() => import("@/components/TokenModal"));
-  const [tokenInput, setTokenInput] = useState("");
   const [isPasteModalOpen, setIsPasteModalOpen] = useState(false);
-  const [showClipboardNotification, setShowClipboardNotification] =
-    useState(false);
+  const [tokenInput, setTokenInput] = useState("");
 
   useEffect(() => {
     if (tokenInput) {
@@ -16,17 +14,18 @@ const ContractAddressPaster: React.FC = () => {
     }
   }, [tokenInput]);
 
-  const handlePaste = async () => {
-    try {
-      // Notify the user to allow clipboard access
-      setShowClipboardNotification(true);
+  // Handle the onPaste event
+  const handleOnPaste: React.ClipboardEventHandler<HTMLInputElement> =
+    useCallback(
+      (event) => {
+        // Get the pasted content from clipboard
+        const pasteContent = event.clipboardData.getData("text");
 
-      // Wait for user interaction
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+        // Prevent the default paste behavior
+        event.preventDefault();
 
-      const clipboardText = await navigator.clipboard.readText();
-      if (clipboardText) {
-        setTokenInput(clipboardText);
+        // Update the input value with the modified content
+        setTokenInput(pasteContent);
 
         // Show a toast notification after successful paste
         toast.success("Address pasted from clipboard!", {
@@ -37,18 +36,9 @@ const ContractAddressPaster: React.FC = () => {
           pauseOnHover: false,
           draggable: false,
         });
-        setShowClipboardNotification(false); // Hide notification after success
-      }
-    } catch (err) {
-      toast.error("Failed to paste from clipboard. Please allow access.", {
-        position: "bottom-center",
-        autoClose: 2000,
-        hideProgressBar: true,
-      });
-      console.log("failed to paste from clipboard", err);
-      setShowClipboardNotification(false); // Hide notification on error
-    }
-  };
+      },
+      [setTokenInput]
+    );
 
   return (
     <>
@@ -61,22 +51,21 @@ const ContractAddressPaster: React.FC = () => {
               placeholder="Contract Address or Token Link"
               value={tokenInput}
               onChange={(e) => setTokenInput(e.target.value)}
+              onPaste={handleOnPaste}
               className="flex-grow px-1 leading-4 font-light bg-background border-none focus:outline-none"
             />
             <button
-              onClick={handlePaste}
-              onTouchStart={handlePaste} // Ensure touch support for mobile
+              onClick={() =>
+                navigator.clipboard
+                  .readText()
+                  .then((text) => setTokenInput(text))
+              }
               className="text-accent p-4"
             >
               Paste
             </button>
           </div>
         </div>
-        {showClipboardNotification && (
-          <div className="mt-2 p-2 bg-yellow-200 text-yellow-800 rounded">
-            Please allow clipboard access for automatic pasting.
-          </div>
-        )}
       </section>
 
       <TokenModal
