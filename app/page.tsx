@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { IoWalletOutline, IoLinkSharp } from "react-icons/io5";
+import { IoWalletOutline } from "react-icons/io5";
 import { PiDownloadDuotone } from "react-icons/pi";
 import { SlRefresh } from "react-icons/sl";
 import { copyToClipboard } from "@/utils/clipboardUtils";
@@ -22,6 +22,7 @@ import { toast } from "react-toastify";
 import PositionOverview from "@/components/Home/PositionOverview";
 import ActionButtons from "@/components/Home/ActionButton";
 import WalletInfo from "@/components/Home/WalletInfo";
+import ContractAddressPaster from "@/components/ContractAddressPaster";
 
 const Home = () => {
   const { walletAddress, setWalletAddress } = useWalletAddressStore();
@@ -31,10 +32,6 @@ const Home = () => {
   const [isDepositModalOpen, setIsDepositModalOpen] = useState(false);
   const [liveBalance, setLiveBalance] = useState<number>(0);
   const [simulationBalance, setSimulationBalance] = useState<number>(0);
-
-  const [isPasteModalOpen, setIsPasteModalOpen] = useState(false);
-  const [tokenInput, setTokenInput] = useState("");
-
   const [solPrice, setSolPrice] = useState<number | null>(null);
   const [walletBalance, setWalletBalance] = useState<number>(0);
   const [totalValueInUsd, setTotalValueInUsd] = useState<number | null>(null);
@@ -45,25 +42,9 @@ const Home = () => {
   const router = useRouter();
 
   const DepositModal = dynamic(() => import("@/components/DepositModal"));
-  const TokenModal = dynamic(() => import("@/components/TokenModal"));
 
   // Add loading state for selling action
   const [sellLoading, setSellLoading] = useState(false);
-
-  const handlePaste = async () => {
-    const clipboardText = await pasteFromClipboard();
-    if (clipboardText) {
-      setTokenInput(clipboardText);
-      setIsPasteModalOpen(true); // Open modal immediately after pasting
-      toast.success("Successfully pasted from clipboard!");
-    }
-  };
-
-  useEffect(() => {
-    if (tokenInput) {
-      setIsPasteModalOpen(true);
-    }
-  }, [tokenInput]);
 
   const handleSell = async (tokenAddress: string, tokenName: string) => {
     const telegram = window.Telegram?.WebApp;
@@ -289,7 +270,7 @@ const Home = () => {
         <SkeletonLoader />
       ) : (
         <main
-          className="pt-0 p-3 pb-20 bg-black min-h-screen bg-repeat-y"
+          className="pt-0 p-3 pb-20 bg-black min-h-screen bg-repeat-y relative"
           style={{ backgroundImage: "url('/Rectangle.png')" }}
         >
           <section className="mb-5 bg-[#3C3C3C3B] backdrop-blur-2xl border-[#0493CC] border-[.5px] text-white shadow-lg rounded-xl p-3">
@@ -315,31 +296,8 @@ const Home = () => {
             handleSell={handleSell}
           />
 
-          <section className="fixed bottom-0 w-full shadow-lg space-y-2 z-50">
-            <div className="px-3">
-              <div className="bg-background rounded-xl py-2 px-[8px] text-sm border-accent border">
-                <div className="flex items-center text-[#797979]">
-                  <IoLinkSharp className="text-2xl" />
-                  <input
-                    type="text"
-                    placeholder="Contract Address or Token Link"
-                    value={tokenInput}
-                    onChange={(e) => setTokenInput(e.target.value)}
-                    className="flex-grow px-1 leading-4 font-light bg-background border-none focus:outline-none"
-                  />
-                  <button onClick={handlePaste} className="text-accent p-4">
-                    Paste
-                  </button>
-                </div>
-              </div>
-            </div>
-          </section>
+          <ContractAddressPaster />
 
-          <TokenModal
-            isOpen={isPasteModalOpen}
-            onClose={() => setIsPasteModalOpen(false)}
-            tokenAddress={tokenInput}
-          />
           <DepositModal
             isOpen={isDepositModalOpen}
             onClose={handleCloseDepositModal}
