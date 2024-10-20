@@ -7,24 +7,11 @@ import useTelegramUserStore from "@/store/useTelegramUserStore";
 import { formatNumber, formatDecimal } from "@/utils/numberUtils";
 import { FaSyncAlt } from "react-icons/fa";
 import { fetchUserPositions } from "@/utils/apiUtils";
-import { Position } from "@prisma/client";
 
 interface TokenModalProps {
   isOpen: boolean;
   onClose: () => void;
   tokenAddress: string;
-}
-
-interface TokenDetails {
-  name: string;
-  liquidityInUsd: number;
-  mc: number;
-  volume: { h24: number };
-  priceUsd: number;
-  change: { m5: number; h1: number; h24: number };
-  websiteUrl?: string;
-  telegramUrl?: string;
-  twitterUrl?: string;
 }
 
 const getChangeColor = (value: number) => {
@@ -49,16 +36,16 @@ const TokenModal: React.FC<TokenModalProps> = ({
   tokenAddress,
 }) => {
   const [tokenInfo, setTokenInfo] = useState<TokenDetails | null>(null);
-  const [activePosition, setActivePosition] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
   const [buying, setBuying] = useState<boolean>(false);
   const [selling, setSelling] = useState<boolean>(false);
+  const [activePosition, setActivePosition] = useState<boolean>(false); // New state for active position
   const [transactionStatus, setTransactionStatus] = useState<string | null>(
     null
   );
   const userId = useTelegramUserStore((state) => state.userId);
+  const [hasFetched, setHasFetched] = useState<boolean>(false); // Prevent refetching
 
-  // Fetch token details
   const fetchTokenDetails = async () => {
     setLoading(true);
     try {
@@ -80,30 +67,31 @@ const TokenModal: React.FC<TokenModalProps> = ({
     }
   };
 
-  // Fetch user positions and check if there's an active position
-  const checkActivePosition = async () => {
+  // Fetch user positions
+  const fetchUserPosition = async () => {
     try {
-      const positions = await fetchUserPositions(userId);
-      const hasPosition = positions.some(
-        (position: Position) => position.tokenAddress === tokenAddress
+      const positions = await fetchUserPositions(userId); // Use userId from store
+      const isActive = positions.some(
+        (position: any) => position.tokenAddress === tokenAddress
       );
-      setActivePosition(hasPosition);
+      setActivePosition(isActive);
     } catch (error) {
-      console.error("Error checking active position:", error);
+      console.error("Error fetching user positions:", error);
     }
   };
 
   useEffect(() => {
-    if (isOpen && tokenAddress) {
+    if (isOpen && tokenAddress && !hasFetched) {
       fetchTokenDetails();
-      checkActivePosition();
+      fetchUserPosition();
+      setHasFetched(true); // Mark as fetched to prevent refetching
     }
-  }, [isOpen, tokenAddress, checkActivePosition, fetchTokenDetails]);
+  }, [isOpen, tokenAddress, hasFetched]);
 
   // Handle refresh button click
   const handleRefresh = () => {
+    setHasFetched(false); // Allow refetching when refreshing
     fetchTokenDetails();
-    checkActivePosition(); // Refresh the active position status
   };
 
   if (!isOpen) return null;
@@ -226,7 +214,6 @@ const TokenModal: React.FC<TokenModalProps> = ({
               )}
             </div>
 
-            {/* Buy and Sell Buttons */}
             <div className="flex justify-center gap-3 mb-6">
               {[0.1, 0.5, 1].map((amount) => (
                 <InvestmentButton
@@ -237,10 +224,16 @@ const TokenModal: React.FC<TokenModalProps> = ({
                   isLoading={buying}
                 />
               ))}
+              <InvestmentButton
+                key={"X"}
+                label={`${"X"} Sol`}
+                onClick={() => handleBuy(10)}
+                type="buy"
+                isLoading={buying}
+              />
             </div>
-
             {activePosition && (
-              <div className="flex justify-center gap-3 mb-6">
+              <div className="flex justify-center gap-3">
                 {[25, 50, 100].map((percentage) => (
                   <InvestmentButton
                     key={percentage}
@@ -252,44 +245,21 @@ const TokenModal: React.FC<TokenModalProps> = ({
                 ))}
               </div>
             )}
-
-            {/* Links to website, Telegram, and Twitter */}
-            <div className="flex justify-center gap-6 mt-8 text-accent">
-              {tokenInfo.websiteUrl && (
-                <Link href={tokenInfo.websiteUrl} target="_blank">
-                  <FaGlobe size={25} />
-                </Link>
-              )}
-              {tokenInfo.telegramUrl && (
-                <Link href={tokenInfo.telegramUrl} target="_blank">
-                  <FaTelegramPlane size={25} />
-                </Link>
-              )}
-              {tokenInfo.twitterUrl && (
-                <Link href={tokenInfo.twitterUrl} target="_blank">
-                  <FaTwitter size={25} />
-                </Link>
-              )}
-              <button onClick={handleRefresh} className="text-white">
-                <FaSyncAlt size={25} />
-              </button>
+            <div className="flex justify-center items-center mt-6 space-x-6">
+              <Link href="/">
+                <FaTelegramPlane size={25} />
+              </Link>
+              <FaTwitter size={25} />
+              <FaSyncAlt
+                size={25}
+                className="cursor-pointer"
+                onClick={handleRefresh}
+              />
+              <FaGlobe size={25} />
             </div>
-
-            {transactionStatus && (
-              <div className="mt-4 text-white">{transactionStatus}</div>
-            )}
           </>
         ) : (
-          <>
-            <button
-              onClick={onClose}
-              onTouchStart={onClose}
-              className="absolute top-4 left-4 text-accent"
-            >
-              <IoClose size={24} />
-            </button>
-            <div className="text-white">Failed to fetch token data.</div>
-          </>
+          <p>No token details available.</p>
         )}
       </div>
     </div>
