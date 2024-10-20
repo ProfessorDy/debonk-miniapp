@@ -302,16 +302,13 @@ const TokenModal: React.FC<TokenModalProps> = ({
                   <FaTwitter />
                 </Link>
               )}
+              <button
+                className="bg-black text-accent px-[6.34px] py-[2.54px] flex items-center justify-center gap-3"
+                onClick={handleRefresh}
+              >
+                <FaSyncAlt />
+              </button>
             </div>
-
-            {/* Refresh Button */}
-            <button
-              className="bg-black text-accent px-[6.34px] py-[2.54px] flex items-center justify-center gap-3"
-              onClick={handleRefresh}
-            >
-              <FaSyncAlt />
-              <span>Refresh</span>
-            </button>
           </div>
         )}
       </div>
