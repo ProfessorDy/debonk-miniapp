@@ -55,8 +55,14 @@ const TokenModal: React.FC<TokenModalProps> = ({
   const [transactionStatus, setTransactionStatus] = useState<string | null>(
     null
   );
-  const userId = useTelegramUserStore((state) => state.userId);
+  const [customAmount, setCustomAmount] = useState<number | null>(null);
+  const [customPercentage, setCustomPercentage] = useState<number | null>(null);
+  const [showCustomAmountInput, setShowCustomAmountInput] =
+    useState<boolean>(false);
+  const [showCustomPercentageInput, setShowCustomPercentageInput] =
+    useState<boolean>(false);
 
+  const userId = useTelegramUserStore((state) => state.userId);
   const tokenDetailsFetchedRef = useRef(false);
 
   const fetchTokenDetails = useCallback(async () => {
@@ -104,8 +110,6 @@ const TokenModal: React.FC<TokenModalProps> = ({
     checkActivePosition();
   };
 
-  if (!isOpen) return null;
-
   const handleBuy = async (amount: number) => {
     setBuying(true);
     setTransactionStatus(null);
@@ -148,6 +152,24 @@ const TokenModal: React.FC<TokenModalProps> = ({
     }
   };
 
+  const handleCustomBuy = async () => {
+    if (customAmount) {
+      handleBuy(customAmount);
+      setCustomAmount(null);
+      setShowCustomAmountInput(false);
+    }
+  };
+
+  const handleCustomSell = async () => {
+    if (customPercentage) {
+      handleSell(customPercentage);
+      setCustomPercentage(null);
+      setShowCustomPercentageInput(false);
+    }
+  };
+
+  if (!isOpen) return null;
+
   return (
     <div className="fixed inset-0 bg-black bg-opacity-70 flex items-end justify-center z-40 pb-16">
       <div
@@ -163,12 +185,7 @@ const TokenModal: React.FC<TokenModalProps> = ({
           <>
             <div className="flex justify-between items-center">
               <div>
-                <h2 className="text-xl text-left mb-2">
-                  {tokenInfo.name}{" "}
-                  {activePosition && (
-                    <span className="text-base text-primary">$0.00=0.0SOL</span>
-                  )}
-                </h2>
+                <h2 className="text-xl text-left mb-2">{tokenInfo.name} </h2>
 
                 <div className="text-sm mb-2">
                   <span className={getChangeColor(tokenInfo.change?.m5 ?? 0)}>
@@ -235,20 +252,70 @@ const TokenModal: React.FC<TokenModalProps> = ({
                   isLoading={buying}
                 />
               ))}
+              <InvestmentButton
+                label="xSol"
+                onClick={() => setShowCustomAmountInput(true)}
+                type="buy"
+              />
             </div>
 
-            {activePosition && (
-              <div className="flex justify-center gap-3 mb-6">
-                {[25, 50, 100].map((percentage) => (
-                  <InvestmentButton
-                    key={percentage}
-                    label={`${percentage} %`}
-                    onClick={() => handleSell(percentage)}
-                    type="sell"
-                    isLoading={selling}
-                  />
-                ))}
+            {showCustomAmountInput && (
+              <div className="flex justify-center mb-4">
+                <input
+                  type="number"
+                  placeholder="Enter amount in Sol"
+                  value={customAmount ?? ""}
+                  onChange={(e) => setCustomAmount(parseFloat(e.target.value))}
+                  className="bg-gray-700 text-white p-2 rounded"
+                />
+                <button
+                  onClick={handleCustomBuy}
+                  className="ml-2 px-4 py-2 bg-blue-500 text-white rounded"
+                >
+                  Buy
+                </button>
               </div>
+            )}
+
+            {activePosition && (
+              <>
+                <div className="flex justify-center gap-3 mb-6">
+                  {[25, 50, 100].map((percentage) => (
+                    <InvestmentButton
+                      key={percentage}
+                      label={`${percentage} %`}
+                      onClick={() => handleSell(percentage)}
+                      type="sell"
+                      isLoading={selling}
+                    />
+                  ))}
+                  <InvestmentButton
+                    label="x%"
+                    onClick={() => setShowCustomPercentageInput(true)}
+                    type="sell"
+                  />
+                </div>
+
+                {showCustomPercentageInput && (
+                  <div className="flex justify-center mb-4">
+                    <input
+                      type="number"
+                      placeholder="Enter sell percentage"
+                      value={customPercentage ?? ""}
+                      onChange={(e) =>
+                        setCustomPercentage(parseFloat(e.target.value))
+                      }
+                      className="bg-gray-700 text-white p-2 rounded"
+                    />
+                    <button
+                      onClick={handleCustomSell}
+                      className="ml-2 px-4 py-2 bg-blue-500 text-white rounded"
+                    >
+                      Sell
+                    </button>
+                  </div>
+                )}
+              </>
             )}
 
             {/* Social Links */}
