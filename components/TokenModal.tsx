@@ -1,11 +1,10 @@
-import React, { useEffect, useState, useCallback, useRef } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { IoClose } from "react-icons/io5";
-import { FaTelegramPlane, FaTwitter, FaGlobe } from "react-icons/fa";
+import { FaTelegramPlane, FaTwitter, FaGlobe, FaSyncAlt } from "react-icons/fa";
 import InvestmentButton from "./InvestmentButton";
 import Link from "next/link";
 import useTelegramUserStore from "@/store/useTelegramUserStore";
 import { formatNumber, formatDecimal } from "@/utils/numberUtils";
-import { FaSyncAlt } from "react-icons/fa";
 import { fetchUserPositions } from "@/utils/apiUtils";
 import { Position } from "@prisma/client";
 
@@ -57,22 +56,18 @@ const TokenModal: React.FC<TokenModalProps> = ({
     null
   );
   const userId = useTelegramUserStore((state) => state.userId);
-  const tokenDetailsFetched = useRef(false); // Track if token details have been fetched
 
-  // Memoize the fetchTokenDetails function
+  const tokenDetailsFetchedRef = useRef(false);
+
   const fetchTokenDetails = useCallback(async () => {
-    if (tokenDetailsFetched.current) return; // Avoid repeated fetching
     setLoading(true);
     try {
       const response = await fetch(
         `/api/getTokenDetails?tokenAddress=${tokenAddress}`
       );
       const data = await response.json();
-      console.log("Fetched Token Details:", data);
-
       if (response.ok) {
         setTokenInfo(data.tokenDetails);
-        tokenDetailsFetched.current = true; // Mark as fetched
       } else {
         console.error("Error fetching token details:", data.error);
       }
@@ -83,7 +78,6 @@ const TokenModal: React.FC<TokenModalProps> = ({
     }
   }, [tokenAddress]);
 
-  // Memoize the checkActivePosition function
   const checkActivePosition = useCallback(async () => {
     try {
       const positions = await fetchUserPositions(userId);
@@ -97,24 +91,20 @@ const TokenModal: React.FC<TokenModalProps> = ({
   }, [tokenAddress, userId]);
 
   useEffect(() => {
-    if (isOpen && tokenAddress) {
+    if (isOpen && tokenAddress && !tokenDetailsFetchedRef.current) {
       fetchTokenDetails();
       checkActivePosition();
+      tokenDetailsFetchedRef.current = true;
     }
-  }, [isOpen, tokenAddress, fetchTokenDetails, checkActivePosition]);
+  }, [isOpen, tokenAddress, checkActivePosition, fetchTokenDetails]);
 
-  useEffect(() => {
-    if (!isOpen) {
-      tokenDetailsFetched.current = false; // Reset fetched state when modal is closed
-    }
-  }, [isOpen]);
-
-  // Handle refresh button click
   const handleRefresh = () => {
-    tokenDetailsFetched.current = false; // Reset fetched state for manual refresh
+    tokenDetailsFetchedRef.current = false;
     fetchTokenDetails();
     checkActivePosition();
   };
+
+  if (!isOpen) return null;
 
   const handleBuy = async (amount: number) => {
     setBuying(true);
@@ -157,8 +147,6 @@ const TokenModal: React.FC<TokenModalProps> = ({
       setSelling(false);
     }
   };
-
-  if (!isOpen) return null;
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-70 flex items-end justify-center z-40 pb-16">
@@ -251,10 +239,10 @@ const TokenModal: React.FC<TokenModalProps> = ({
 
             {activePosition && (
               <div className="flex justify-center gap-3 mb-6">
-                {[10, 50, 100].map((percentage) => (
+                {[25, 50, 100].map((percentage) => (
                   <InvestmentButton
                     key={percentage}
-                    label={`${percentage}%`}
+                    label={`${percentage} %`}
                     onClick={() => handleSell(percentage)}
                     type="sell"
                     isLoading={selling}
@@ -263,53 +251,39 @@ const TokenModal: React.FC<TokenModalProps> = ({
               </div>
             )}
 
-            <p className="text-white text-xs text-left">{transactionStatus}</p>
-          </>
-        ) : (
-          <p className="text-white text-xs text-center">
-            Unable to fetch token details.
-          </p>
-        )}
-
-        {/* Social links */}
-        {tokenInfo && (
-          <div className="absolute bottom-5 right-10 left-10 space-y-2">
-            <div className="flex gap-2 text-white justify-center">
+            {/* Social Links */}
+            <div className="flex justify-center gap-4 mb-4">
               {tokenInfo.websiteUrl && (
-                <Link
-                  href={tokenInfo.websiteUrl}
-                  className="text-lg"
-                  target="_blank"
-                >
-                  <FaGlobe />
+                <Link href={tokenInfo.websiteUrl} target="_blank">
+                  <FaGlobe className="text-white text-lg" />
                 </Link>
               )}
               {tokenInfo.telegramUrl && (
-                <Link
-                  href={tokenInfo.telegramUrl}
-                  className="text-lg"
-                  target="_blank"
-                >
-                  <FaTelegramPlane />
+                <Link href={tokenInfo.telegramUrl} target="_blank">
+                  <FaTelegramPlane className="text-white text-lg" />
                 </Link>
               )}
               {tokenInfo.twitterUrl && (
-                <Link
-                  href={tokenInfo.twitterUrl}
-                  className="text-lg"
-                  target="_blank"
-                >
-                  <FaTwitter />
+                <Link href={tokenInfo.twitterUrl} target="_blank">
+                  <FaTwitter className="text-white text-lg" />
                 </Link>
               )}
               <button
-                className="bg-black text-accent px-[6.34px] py-[2.54px] flex items-center justify-center gap-3"
+                className="text-white text-lg hover:text-gray-400 transition-colors"
                 onClick={handleRefresh}
               >
                 <FaSyncAlt />
               </button>
             </div>
-          </div>
+
+            {transactionStatus && (
+              <div className="text-center text-white mt-3">
+                {transactionStatus}
+              </div>
+            )}
+          </>
+        ) : (
+          <div>No token information available.</div>
         )}
       </div>
     </div>
