@@ -20,6 +20,7 @@ interface TokenDetails {
   mc: number;
   volume: { h24: number };
   priceUsd: number;
+  PNL_usd: number;
   change: { m5: number; h1: number; h24: number };
   websiteUrl?: string;
   telegramUrl?: string;
@@ -235,7 +236,7 @@ const TokenModal: React.FC<TokenModalProps> = ({
                   />
                   <TokenInfoRow
                     label="PNL"
-                    value={`$${formatDecimal(tokenInfo.priceUsd) ?? 0}`}
+                    value={`$${formatDecimal(tokenInfo.PNL_usd) ?? 0}`}
                   />
                 </>
               )}

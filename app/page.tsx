@@ -16,7 +16,7 @@ import {
   fetchSolPrice,
   fetchWalletBalance,
   fetchUserPositions,
-  simulateSellToken, // Import the new utility function
+  simulateSellToken,
 } from "@/utils/apiUtils";
 import { toast } from "react-toastify";
 import PositionOverview from "@/components/Home/PositionOverview";
