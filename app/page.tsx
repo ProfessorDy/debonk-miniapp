@@ -28,7 +28,7 @@ const Home = () => {
   const { walletAddress, setWalletAddress } = useWalletAddressStore();
   const { setUserId } = useTelegramUserStore();
   const { isLiveTrading, toggleLiveTrading } = useLiveTradingStore();
-  const [unrealizedPNL] = useState("-0.00%");
+  const [unrealizedPNL, setUnrealizedPNL] = useState("-0.00%");
   const [isDepositModalOpen, setIsDepositModalOpen] = useState(false);
   const [liveBalance, setLiveBalance] = useState<number>(0);
   const [simulationBalance, setSimulationBalance] = useState<number>(0);
@@ -239,6 +239,42 @@ const Home = () => {
     setCopySuccess(true);
     setTimeout(() => setCopySuccess(false), 2000);
   };
+
+  const calculateUnrealizedPnl = (positions: TokenDataArray) => {
+    return positions.reduce(
+      (acc, position) => {
+        const { capital, currentPrice, currentHolding } = position;
+        const capitalUsd = parseFloat(capital);
+        const currentPriceUsd = parseFloat(currentPrice);
+        const holdings = parseFloat(currentHolding);
+
+        // Calculate Unrealized PnL in USD
+        const unrealizedPnlUsd = currentPriceUsd * holdings - capitalUsd;
+
+        // Calculate Unrealized PnL percentage
+        const pnlPercent = (unrealizedPnlUsd / capitalUsd) * 100;
+
+        acc.totalPnlUsd += unrealizedPnlUsd;
+        acc.totalPnlPercent += pnlPercent;
+
+        return acc;
+      },
+      { totalPnlUsd: 0, totalPnlPercent: 0 }
+    );
+  };
+
+  useEffect(() => {
+    if (livePositions.length || simulationPositions.length) {
+      const activePositions = isLiveTrading
+        ? livePositions
+        : simulationPositions;
+
+      const pnlData = calculateUnrealizedPnl(activePositions);
+      const formattedPnl = `${pnlData.totalPnlPercent.toFixed(2)}%`;
+
+      setUnrealizedPNL(formattedPnl);
+    }
+  }, [isLiveTrading, livePositions, simulationPositions]);
 
   const handleRefresh = () => window.location.reload();
   const handleWithdraw = () => router.push(`/withdraw`);
