@@ -1,8 +1,7 @@
 import React from "react";
 import { CiCircleAlert } from "react-icons/ci";
 import { GiPlainCircle } from "react-icons/gi";
-import { PiTestTubeFill } from "react-icons/pi";
-import { FaCheck } from "react-icons/fa";
+import { FaCheck, FaFlask, FaPlayCircle } from "react-icons/fa";
 import { IoCopyOutline } from "react-icons/io5";
 
 interface WalletInfoProps {
@@ -42,11 +41,11 @@ const WalletInfo: React.FC<WalletInfoProps> = ({
         >
           {isLiveTrading ? (
             <>
-              <PiTestTubeFill className="text-sm" /> Simulation
+              <FaFlask className="text-sm text-yellow-400" /> Demo Mode
             </>
           ) : (
             <>
-              <PiTestTubeFill className="text-sm" /> Live Trading
+              <FaPlayCircle className="text-sm text-green-400" /> Live Trading
             </>
           )}
         </button>
