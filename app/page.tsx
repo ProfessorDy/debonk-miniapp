@@ -237,7 +237,7 @@ const Home = () => {
   const handleCopy = () => {
     copyToClipboard(walletAddress);
     setCopySuccess(true);
-    setTimeout(() => setCopySuccess(false), 2000); // Revert back after 2 seconds
+    setTimeout(() => setCopySuccess(false), 2000);
   };
 
   const handleRefresh = () => window.location.reload();

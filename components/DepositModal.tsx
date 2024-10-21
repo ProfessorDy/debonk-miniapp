@@ -1,6 +1,7 @@
-import React from "react";
-import { IoClose, IoCopySharp } from "react-icons/io5";
+import React, { useState } from "react";
+import { IoClose, IoCopyOutline } from "react-icons/io5";
 import { QRCodeSVG } from "qrcode.react";
+import { FaCheck } from "react-icons/fa";
 import { copyToClipboard } from "@/utils/clipboardUtils";
 
 interface DepositModalProps {
@@ -15,6 +16,7 @@ const DepositModal: React.FC<DepositModalProps> = ({
   walletAddress,
 }) => {
   if (!isOpen) return null;
+  const [copySuccess, setCopySuccess] = useState(false);
 
   const handleShare = async () => {
     if (navigator.share) {
@@ -30,6 +32,12 @@ const DepositModal: React.FC<DepositModalProps> = ({
     } else {
       alert("Sharing is not supported in your browser.");
     }
+  };
+
+  const handleCopy = () => {
+    copyToClipboard(walletAddress);
+    setCopySuccess(true);
+    setTimeout(() => setCopySuccess(false), 2000);
   };
 
   return (
@@ -63,15 +71,19 @@ const DepositModal: React.FC<DepositModalProps> = ({
 
         {/* Address with Copy Button */}
         <div className="bg-[#0493CC] rounded-lg p-3 mb-6 flex justify-center items-center text-black">
-          <span>{`${walletAddress.slice(0, 6)}...${walletAddress.slice(
-            -4
-          )}`}</span>
-          <button
-            className="ml-2"
-            onClick={() => copyToClipboard(walletAddress)}
+          <p
+            className="flex gap-1 relative text-sm items-baseline text-primary cursor-pointer"
+            onClick={handleCopy}
           >
-            <IoCopySharp className="text-black" />
-          </button>
+            <span>{`${walletAddress.slice(0, 6)}...${walletAddress.slice(
+              -4
+            )}`}</span>
+            {copySuccess ? (
+              <FaCheck className="text-[10px]" />
+            ) : (
+              <IoCopyOutline className="text-[10px]" title="Copy Address" />
+            )}
+          </p>
         </div>
 
         {/* Share Button */}

@@ -53,18 +53,17 @@ const WalletInfo: React.FC<WalletInfoProps> = ({
       </div>
 
       <div className="flex flex-col items-center justify-center">
-        <p className="flex gap-1 relative text-sm items-baseline text-primary">
+        <p
+          className="flex gap-1 relative text-sm items-baseline text-primary cursor-pointer"
+          onClick={handleCopy}
+        >
           <span>{`${walletAddress.slice(0, 6)}...${walletAddress.slice(
             -4
           )}`}</span>
           {copySuccess ? (
             <FaCheck className="text-[10px]" />
           ) : (
-            <IoCopyOutline
-              className="cursor-pointer text-[10px]"
-              onClick={handleCopy}
-              title="Copy Address"
-            />
+            <IoCopyOutline className="text-[10px]" title="Copy Address" />
           )}
         </p>
         <h2 className="text-[34px] ">{walletBalance} SOL</h2>
