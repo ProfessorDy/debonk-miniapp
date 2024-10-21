@@ -18,16 +18,9 @@ const ContractAddressPaster = () => {
   const handleOnPaste: React.ClipboardEventHandler<HTMLInputElement> =
     useCallback(
       (event) => {
-        // Get the pasted content from clipboard
         const pasteContent = event.clipboardData.getData("text");
-
-        // Prevent the default paste behavior
         event.preventDefault();
-
-        // Update the input value with the modified content
         setTokenInput(pasteContent);
-
-        // Show a toast notification after successful paste
         toast.success("Address pasted from clipboard!", {
           position: "bottom-center",
           autoClose: 2000,
@@ -42,34 +35,28 @@ const ContractAddressPaster = () => {
 
   return (
     <>
-      <section className="px-3 mt-6 fixed bottom-0">
-        <div className="bg-background rounded-xl py-2 px-[8px] text-sm border-accent border">
-          <div className="flex items-center text-[#797979]">
-            <IoLinkSharp className="text-2xl" />
-            <input
-              type="text"
-              placeholder="Contract Address or Token Link"
-              value={tokenInput}
-              onChange={(e) => setTokenInput(e.target.value)}
-              onPaste={handleOnPaste}
-              className="flex-grow px-1 leading-4 font-light bg-background border-none focus:outline-none"
-            />
-            <button
-              onClick={() =>
-                navigator.clipboard
-                  .readText()
-                  .then((text) => setTokenInput(text))
-              }
-              onTouchStart={() =>
-                navigator.clipboard
-                  .readText()
-                  .then((text) => setTokenInput(text))
-              }
-              className="text-accent p-4"
-            >
-              Paste
-            </button>
-          </div>
+      <section className="px-3 mt-6 fixed bottom-0 w-full">
+        <div className="bg-background rounded-xl py-2 px-3 text-sm border-accent border w-full flex justify-center items-center">
+          <IoLinkSharp className="text-2xl text-[#797979] mr-2" />
+          <input
+            type="text"
+            placeholder="Contract Address or Token Link"
+            value={tokenInput}
+            onChange={(e) => setTokenInput(e.target.value)}
+            onPaste={handleOnPaste}
+            className="flex-grow px-2 py-1 leading-4 font-light bg-background border-none focus:outline-none w-full"
+          />
+          <button
+            onClick={() =>
+              navigator.clipboard.readText().then((text) => setTokenInput(text))
+            }
+            onTouchStart={() =>
+              navigator.clipboard.readText().then((text) => setTokenInput(text))
+            }
+            className="text-accent ml-2 px-4 py-2 rounded-lg bg-accent/20 hover:bg-accent/40 transition-all"
+          >
+            Paste
+          </button>
         </div>
       </section>
 

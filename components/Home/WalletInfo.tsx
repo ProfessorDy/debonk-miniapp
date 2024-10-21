@@ -42,7 +42,7 @@ const WalletInfo: React.FC<WalletInfoProps> = ({
             </span>
           </p>
           <p className="text-xs text-primary font-light ">
-            $ {unrealizedPNLUSD}
+            $ {unrealizedPNLUSD.toFixed(2)}
           </p>
         </div>
         <button
