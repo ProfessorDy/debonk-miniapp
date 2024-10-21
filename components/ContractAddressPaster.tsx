@@ -35,12 +35,12 @@ const ContractAddressPaster = () => {
 
   return (
     <>
-      <section className="px-3 mt-6 fixed bottom-0 w-full">
+      <section className=" mx-6 fixed bottom-0 w-full">
         <div className="bg-background rounded-xl py-2 px-3 text-sm border-accent border w-full flex justify-center items-center">
           <IoLinkSharp className="text-2xl text-[#797979] mr-2" />
           <input
             type="text"
-            placeholder="Contract Address or Token Link"
+            placeholder="Contract Address"
             value={tokenInput}
             onChange={(e) => setTokenInput(e.target.value)}
             onPaste={handleOnPaste}
@@ -50,7 +50,7 @@ const ContractAddressPaster = () => {
             onClick={() =>
               navigator.clipboard.readText().then((text) => setTokenInput(text))
             }
-            onTouchStart={() =>
+            onTouchEnd={() =>
               navigator.clipboard.readText().then((text) => setTokenInput(text))
             }
             className="text-accent ml-2 px-4 py-2 rounded-lg bg-accent/20 hover:bg-accent/40 transition-all"
