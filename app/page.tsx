@@ -28,7 +28,8 @@ const Home = () => {
   const { walletAddress, setWalletAddress } = useWalletAddressStore();
   const { setUserId } = useTelegramUserStore();
   const { isLiveTrading, toggleLiveTrading } = useLiveTradingStore();
-  const [unrealizedPNL, setUnrealizedPNL] = useState("-0.00%");
+  const [unrealizedPNL, setUnrealizedPNL] = useState(-0.0);
+  const [unrealizedPNLUSD, setUnrealizedPNLUSD] = useState(-0.0);
   const [isDepositModalOpen, setIsDepositModalOpen] = useState(false);
   const [liveBalance, setLiveBalance] = useState<number>(0);
   const [simulationBalance, setSimulationBalance] = useState<number>(0);
@@ -261,11 +262,8 @@ const Home = () => {
         0
       );
 
-      setUnrealizedPNL(
-        `${weightedPnLPercent.toFixed(2)}% (${totalUnrealizedPnLUsd.toFixed(
-          2
-        )} USD)`
-      );
+      setUnrealizedPNL(weightedPnLPercent);
+      setUnrealizedPNLUSD(totalUnrealizedPnLUsd);
     } else {
       const totalUnrealizedPnLUsd = simulationPositions.reduce(
         (acc, position) => acc + position.PNL_usd,
@@ -286,11 +284,8 @@ const Home = () => {
         0
       );
 
-      setUnrealizedPNL(
-        `${weightedPnLPercent.toFixed(2)}% (${totalUnrealizedPnLUsd.toFixed(
-          2
-        )} USD)`
-      );
+      setUnrealizedPNL(weightedPnLPercent);
+      setUnrealizedPNLUSD(totalUnrealizedPnLUsd);
     }
   }, [livePositions, simulationPositions, isLiveTrading]);
 
@@ -329,6 +324,7 @@ const Home = () => {
             <WalletInfo
               walletAddress={walletAddress}
               unrealizedPNL={unrealizedPNL}
+              unrealizedPNLUSD={unrealizedPNLUSD}
               walletBalance={isLiveTrading ? liveBalance : simulationBalance}
               totalValueInUsd={totalValueInUsd}
               isLiveTrading={isLiveTrading}

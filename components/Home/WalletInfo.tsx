@@ -6,7 +6,8 @@ import { IoCopyOutline } from "react-icons/io5";
 
 interface WalletInfoProps {
   walletAddress: string;
-  unrealizedPNL: string;
+  unrealizedPNL: number;
+  unrealizedPNLUSD: number;
   walletBalance: number;
   totalValueInUsd: number | null;
   handleCopy: () => void;
@@ -18,6 +19,7 @@ interface WalletInfoProps {
 const WalletInfo: React.FC<WalletInfoProps> = ({
   walletAddress,
   unrealizedPNL,
+  unrealizedPNLUSD,
   walletBalance,
   totalValueInUsd,
   handleCopy,
@@ -31,13 +33,21 @@ const WalletInfo: React.FC<WalletInfoProps> = ({
         <div>
           <p className="text-sm font-light">
             Unrealized PNL:{" "}
-            <span className="text-red-500">{unrealizedPNL}</span>
+            <span
+              className={`${
+                unrealizedPNL >= 0 ? "text-green-500" : "text-red-500"
+              }`}
+            >
+              {unrealizedPNL.toFixed(2)}%
+            </span>
           </p>
-          <p className="text-xs text-primary font-light ">$0.00</p>
+          <p className="text-xs text-primary font-light ">
+            $ {unrealizedPNLUSD}
+          </p>
         </div>
         <button
           className="flex gap-1 items-center text-xs text-accent rounded-xl bg-black border border-accent px-3 py-1"
-          onClick={toggleLiveTrading} // Now using the toggle function passed via props
+          onClick={toggleLiveTrading}
         >
           {isLiveTrading ? (
             <>
