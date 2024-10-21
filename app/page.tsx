@@ -240,41 +240,59 @@ const Home = () => {
     setTimeout(() => setCopySuccess(false), 2000);
   };
 
-  const calculateUnrealizedPnl = (positions: TokenDataArray) => {
-    return positions.reduce(
-      (acc, position) => {
-        const { capital, currentPrice, currentHolding } = position;
-        const capitalUsd = parseFloat(capital);
-        const currentPriceUsd = parseFloat(currentPrice);
-        const holdings = parseFloat(currentHolding);
-
-        // Calculate Unrealized PnL in USD
-        const unrealizedPnlUsd = currentPriceUsd * holdings - capitalUsd;
-
-        // Calculate Unrealized PnL percentage
-        const pnlPercent = (unrealizedPnlUsd / capitalUsd) * 100;
-
-        acc.totalPnlUsd += unrealizedPnlUsd;
-        acc.totalPnlPercent += pnlPercent;
-
-        return acc;
-      },
-      { totalPnlUsd: 0, totalPnlPercent: 0 }
-    );
-  };
-
   useEffect(() => {
-    if (livePositions.length || simulationPositions.length) {
-      const activePositions = isLiveTrading
-        ? livePositions
-        : simulationPositions;
+    if (isLiveTrading) {
+      const totalUnrealizedPnLUsd = livePositions.reduce(
+        (acc, position) => acc + position.PNL_usd,
+        0
+      );
 
-      const pnlData = calculateUnrealizedPnl(activePositions);
-      const formattedPnl = `${pnlData.totalPnlPercent.toFixed(2)}%`;
+      const totalCapital = livePositions.reduce(
+        (acc, position) => acc + parseFloat(position.capital),
+        0
+      );
 
-      setUnrealizedPNL(formattedPnl);
+      const weightedPnLPercent = livePositions.reduce(
+        (acc, position) =>
+          acc +
+          (parseFloat(position.PNL_usd_percent) *
+            parseFloat(position.capital)) /
+            totalCapital,
+        0
+      );
+
+      setUnrealizedPNL(
+        `${weightedPnLPercent.toFixed(2)}% (${totalUnrealizedPnLUsd.toFixed(
+          2
+        )} USD)`
+      );
+    } else {
+      const totalUnrealizedPnLUsd = simulationPositions.reduce(
+        (acc, position) => acc + position.PNL_usd,
+        0
+      );
+
+      const totalCapital = simulationPositions.reduce(
+        (acc, position) => acc + parseFloat(position.capital),
+        0
+      );
+
+      const weightedPnLPercent = simulationPositions.reduce(
+        (acc, position) =>
+          acc +
+          (parseFloat(position.PNL_usd_percent) *
+            parseFloat(position.capital)) /
+            totalCapital,
+        0
+      );
+
+      setUnrealizedPNL(
+        `${weightedPnLPercent.toFixed(2)}% (${totalUnrealizedPnLUsd.toFixed(
+          2
+        )} USD)`
+      );
     }
-  }, [isLiveTrading, livePositions, simulationPositions]);
+  }, [livePositions, simulationPositions, isLiveTrading]);
 
   const handleRefresh = () => window.location.reload();
   const handleWithdraw = () => router.push(`/withdraw`);
