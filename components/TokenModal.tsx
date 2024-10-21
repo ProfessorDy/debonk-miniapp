@@ -351,7 +351,15 @@ const TokenModal: React.FC<TokenModalProps> = ({
             )}
           </>
         ) : (
-          <div>No token information available.</div>
+          <>
+            <button
+              onClick={onClose}
+              className="px-[6.34px] py-[2.54px] text-accent bg-[#3C3C3C3B] ml-auto"
+            >
+              <IoClose size={24} />
+            </button>
+            <div>No token information available.</div>
+          </>
         )}
       </div>
     </div>

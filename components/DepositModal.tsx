@@ -15,7 +15,6 @@ const DepositModal: React.FC<DepositModalProps> = ({
   onClose,
   walletAddress,
 }) => {
-  if (!isOpen) return null;
   const [copySuccess, setCopySuccess] = useState(false);
 
   const handleShare = async () => {
@@ -39,6 +38,8 @@ const DepositModal: React.FC<DepositModalProps> = ({
     setCopySuccess(true);
     setTimeout(() => setCopySuccess(false), 2000);
   };
+
+  if (!isOpen) return null;
 
   return (
     <div className="fixed inset-0 bg-black flex items-center justify-center z-40 pb-16">
