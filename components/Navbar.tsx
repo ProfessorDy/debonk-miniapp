@@ -48,6 +48,8 @@ const Navbar = () => {
     }
   }, [tokenInput]);
 
+  const isPageAllowed = pathname === "/" || pathname === "/positions";
+
   return (
     <footer className="fixed bottom-0 w-full shadow-lg space-y-2 z-50">
       {showContractInput && (
@@ -91,10 +93,14 @@ const Navbar = () => {
 
       <div className="flex justify-around items-center h-16 bg-background">
         {tabs.map(({ id, url, Icon }) => (
-          <Link key={id} href={url}>
+          <Link key={id} href={isPageAllowed ? url : "#"} passHref>
             <div
               className={`flex flex-col items-center ${
                 pathname === url ? "text-accent" : "text-primary"
+              } ${
+                !isPageAllowed && url !== "/" && url !== "/positions"
+                  ? "opacity-50 pointer-events-none"
+                  : ""
               }`}
             >
               <Icon

@@ -22,7 +22,6 @@ import { toast } from "react-toastify";
 import PositionOverview from "@/components/Home/PositionOverview";
 import ActionButtons from "@/components/Home/ActionButton";
 import WalletInfo from "@/components/Home/WalletInfo";
-import ContractAddressPaster from "@/components/ContractAddressPaster";
 
 const Home = () => {
   const { walletAddress, setWalletAddress } = useWalletAddressStore();
@@ -343,8 +342,6 @@ const Home = () => {
             sellLoading={sellLoading}
             handleSell={handleSell}
           />
-
-          <ContractAddressPaster />
 
           <DepositModal
             isOpen={isDepositModalOpen}
