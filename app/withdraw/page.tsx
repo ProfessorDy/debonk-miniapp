@@ -227,9 +227,8 @@ const Withdraw = () => {
             )}
           </div>
         </div>
-        {amountError && (
-          <p className="text-red-500 text-sm mt-2">{amountError}</p>
-        )}
+
+        <p className="text-red-500 text-sm mt-2">{amountError}</p>
       </div>
 
       <div className="flex justify-between items-center text-white font-light font-poppins text-sm mt-4">

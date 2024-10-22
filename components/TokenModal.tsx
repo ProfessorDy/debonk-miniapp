@@ -1,12 +1,19 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import { IoClose } from "react-icons/io5";
-import { FaTelegramPlane, FaTwitter, FaGlobe, FaSyncAlt } from "react-icons/fa";
+import { IoClose, IoCopyOutline } from "react-icons/io5";
+import {
+  FaTelegramPlane,
+  FaTwitter,
+  FaGlobe,
+  FaSyncAlt,
+  FaCheck,
+} from "react-icons/fa";
 import InvestmentButton from "./InvestmentButton";
 import Link from "next/link";
 import useTelegramUserStore from "@/store/useTelegramUserStore";
 import { formatNumber, formatDecimal } from "@/utils/numberUtils";
 import { fetchUserPositions } from "@/utils/apiUtils";
 import { Position } from "@prisma/client";
+import { copyToClipboard } from "@/utils/clipboardUtils";
 
 interface TokenModalProps {
   isOpen: boolean;
@@ -49,9 +56,16 @@ const TokenModal: React.FC<TokenModalProps> = ({
     useState<boolean>(false);
   const [showCustomPercentageInput, setShowCustomPercentageInput] =
     useState<boolean>(false);
+  const [copySuccess, setCopySuccess] = useState(false);
 
   const userId = useTelegramUserStore((state) => state.userId);
   const tokenDetailsFetchedRef = useRef(false);
+
+  const handleCopy = () => {
+    copyToClipboard(tokenAddress);
+    setCopySuccess(true);
+    setTimeout(() => setCopySuccess(false), 2000);
+  };
 
   // Fetch token details and active position in parallel
   const fetchTokenAndPosition = useCallback(async () => {
@@ -173,9 +187,18 @@ const TokenModal: React.FC<TokenModalProps> = ({
           <>
             <div className="flex justify-between items-center">
               <div>
-                <h2 className="text-xl text-left mb-2">
-                  {tokenInfo.token?.name ?? "N/A"}{" "}
-                </h2>
+                <button className="text-xl text-left mb-2" onClick={handleCopy}>
+                  <span>{tokenInfo.token?.name ?? "N/A"} </span>
+
+                  {copySuccess ? (
+                    <FaCheck className="text-[10px]" />
+                  ) : (
+                    <IoCopyOutline
+                      className="text-[10px]"
+                      title="Copy Address"
+                    />
+                  )}
+                </button>
 
                 <div className="text-sm mb-2">
                   <span

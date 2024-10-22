@@ -73,7 +73,7 @@ const DepositModal: React.FC<DepositModalProps> = ({
         {/* Address with Copy Button */}
         <div className="bg-[#0493CC] rounded-lg p-3 mb-6 flex justify-center items-center text-black">
           <p
-            className="flex gap-1 relative text-sm items-baseline text-primary cursor-pointer"
+            className="flex gap-1 relative text-sm items-baseline cursor-pointer"
             onClick={handleCopy}
           >
             <span>{`${walletAddress.slice(0, 6)}...${walletAddress.slice(
