@@ -33,7 +33,7 @@ const PositionOverview: React.FC<PositionOverviewProps> = ({
   return (
     <>
       <section className="mt-2 text-white shadow-lg rounded-xl p-3">
-        <p className="text-xs font-light">Position Overview</p>
+        <p className="text-xs font-light">Positions Overview</p>
         <div className="flex flex-col gap-2 mt-3">
           {positions.length > 0 ? (
             positions.map((position, idx) => (
