@@ -14,6 +14,7 @@ import { formatNumber, formatDecimal } from "@/utils/numberUtils";
 import { fetchUserPositions } from "@/utils/apiUtils";
 import { Position } from "@prisma/client";
 import { copyToClipboard } from "@/utils/clipboardUtils";
+import { TokenDetails } from "@/actions/types";
 
 interface TokenModalProps {
   isOpen: boolean;
@@ -42,7 +43,7 @@ const TokenModal: React.FC<TokenModalProps> = ({
   onClose,
   tokenAddress,
 }) => {
-  const [tokenInfo, setTokenInfo] = useState<TokenData | null>(null);
+  const [tokenInfo, setTokenInfo] = useState<TokenDetails | null>(null);
   const [activePosition, setActivePosition] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
   const [buying, setBuying] = useState<boolean>(false);
@@ -57,6 +58,10 @@ const TokenModal: React.FC<TokenModalProps> = ({
   const [showCustomPercentageInput, setShowCustomPercentageInput] =
     useState<boolean>(false);
   const [copySuccess, setCopySuccess] = useState(false);
+  const [position, setPosition] = useState<{
+    capital: number;
+    PNL_usd: number;
+  } | null>(null);
 
   const userId = useTelegramUserStore((state) => state.userId);
   const tokenDetailsFetchedRef = useRef(false);
@@ -67,7 +72,6 @@ const TokenModal: React.FC<TokenModalProps> = ({
     setTimeout(() => setCopySuccess(false), 2000);
   };
 
-  // Fetch token details and active position in parallel
   const fetchTokenAndPosition = useCallback(async () => {
     setLoading(true);
     try {
@@ -78,15 +82,26 @@ const TokenModal: React.FC<TokenModalProps> = ({
 
       const tokenData = await tokenResponse.json();
       if (tokenResponse.ok) {
-        setTokenInfo(tokenData);
+        setTokenInfo(tokenData.tokenDetails);
       } else {
         console.error("Error fetching token details:", tokenData.error);
       }
 
-      const hasPosition = positions.some(
+      // Check if there is a position for the token and extract the capital and PNL
+      const userPosition = positions.find(
         (position: Position) => position.tokenAddress === tokenAddress
       );
-      setActivePosition(hasPosition);
+
+      if (userPosition) {
+        setActivePosition(true);
+        setPosition({
+          capital: userPosition.capital, // Assuming the position has 'capital'
+          PNL_usd: userPosition.PNL_usd, // Assuming the position has 'PNL_usd'
+        });
+      } else {
+        setActivePosition(false);
+        setPosition(null); // No position for this token
+      }
     } catch (error) {
       console.error("Error fetching token details or position:", error);
     } finally {
@@ -188,7 +203,7 @@ const TokenModal: React.FC<TokenModalProps> = ({
             <div className="flex justify-between items-center">
               <div>
                 <button className="text-xl text-left mb-2" onClick={handleCopy}>
-                  <span>{tokenInfo.token?.name ?? "N/A"} </span>
+                  <span>{tokenInfo.name ?? "N/A"} </span>
 
                   {copySuccess ? (
                     <FaCheck className="text-[10px]" />
@@ -201,24 +216,16 @@ const TokenModal: React.FC<TokenModalProps> = ({
                 </button>
 
                 <div className="text-sm mb-2">
-                  <span
-                    className={getChangeColor(tokenInfo.token?.change?.m5 ?? 0)}
-                  >
-                    5m: {tokenInfo.token?.change?.m5 ?? 0}%
+                  <span className={getChangeColor(tokenInfo.change?.m5 ?? 0)}>
+                    5m: {tokenInfo.change?.m5 ?? 0}%
                   </span>{" "}
                   |{" "}
-                  <span
-                    className={getChangeColor(tokenInfo.token?.change?.h1 ?? 0)}
-                  >
-                    1hr: {tokenInfo.token?.change?.h1 ?? 0}%
+                  <span className={getChangeColor(tokenInfo.change?.h1 ?? 0)}>
+                    1hr: {tokenInfo.change?.h1 ?? 0}%
                   </span>{" "}
                   |{" "}
-                  <span
-                    className={getChangeColor(
-                      tokenInfo.token?.change?.h24 ?? 0
-                    )}
-                  >
-                    24hrs: {tokenInfo.token?.change?.h24 ?? 0}%
+                  <span className={getChangeColor(tokenInfo.change?.h24 ?? 0)}>
+                    24hrs: {tokenInfo.change?.h24 ?? 0}%
                   </span>
                 </div>
               </div>
@@ -234,7 +241,7 @@ const TokenModal: React.FC<TokenModalProps> = ({
             <div className="grid grid-cols-2 gap-3 gap-y-12 my-8">
               <TokenInfoRow
                 label="Liquidity"
-                value={`$${formatNumber(tokenInfo.token?.liquidityInUsd ?? 0)}`}
+                value={`$${formatNumber(tokenInfo.liquidityInUsd ?? 0)}`}
               />
               <TokenInfoRow
                 label="Market Cap"
@@ -242,21 +249,21 @@ const TokenModal: React.FC<TokenModalProps> = ({
               />
               <TokenInfoRow
                 label="Volume (24h)"
-                value={`$${formatNumber(tokenInfo.token?.volume?.h24 ?? 0)}`}
+                value={`$${formatNumber(tokenInfo.volume?.h24 ?? 0)}`}
               />
               <TokenInfoRow
                 label="Price (USD)"
-                value={`$${formatDecimal(tokenInfo.token?.priceUsd) ?? 0}`}
+                value={`$${formatDecimal(tokenInfo.priceUsd) ?? 0}`}
               />
               {activePosition && (
                 <>
                   <TokenInfoRow
                     label="Capital"
-                    value={`$${tokenInfo.capital ?? 0} sol`}
+                    value={`$${position.capital ?? 0} sol`}
                   />
                   <TokenInfoRow
                     label="PNL"
-                    value={`$${formatNumber(tokenInfo.PNL_usd ?? 0)}`}
+                    value={`$${formatNumber(position.PNL_usd ?? 0)}`}
                   />
                 </>
               )}
@@ -341,21 +348,18 @@ const TokenModal: React.FC<TokenModalProps> = ({
 
             {/* Social Links */}
             <div className="flex justify-center gap-4 mb-4">
-              {tokenInfo.token?.websiteUrl && (
-                <Link href={tokenInfo.token?.websiteUrl ?? "#"} target="_blank">
+              {tokenInfo.websiteUrl && (
+                <Link href={tokenInfo.websiteUrl ?? "#"} target="_blank">
                   <FaGlobe className="text-white text-lg" />
                 </Link>
               )}
-              {tokenInfo.token?.telegramUrl && (
-                <Link
-                  href={tokenInfo.token?.telegramUrl ?? "#"}
-                  target="_blank"
-                >
+              {tokenInfo.telegramUrl && (
+                <Link href={tokenInfo.telegramUrl ?? "#"} target="_blank">
                   <FaTelegramPlane className="text-white text-lg" />
                 </Link>
               )}
-              {tokenInfo.token?.twitterUrl && (
-                <Link href={tokenInfo.token?.twitterUrl ?? "#"} target="_blank">
+              {tokenInfo.twitterUrl && (
+                <Link href={tokenInfo.twitterUrl ?? "#"} target="_blank">
                   <FaTwitter className="text-white text-lg" />
                 </Link>
               )}
