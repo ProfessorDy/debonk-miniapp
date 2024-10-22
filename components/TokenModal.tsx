@@ -174,26 +174,28 @@ const TokenModal: React.FC<TokenModalProps> = ({
             <div className="flex justify-between items-center">
               <div>
                 <h2 className="text-xl text-left mb-2">
-                  {tokenInfo.token.name}{" "}
+                  {tokenInfo.token?.name ?? "N/A"}{" "}
                 </h2>
 
                 <div className="text-sm mb-2">
                   <span
-                    className={getChangeColor(tokenInfo.token.change?.m5 ?? 0)}
+                    className={getChangeColor(tokenInfo.token?.change?.m5 ?? 0)}
                   >
-                    5m: {tokenInfo.token.change?.m5 ?? 0}%
+                    5m: {tokenInfo.token?.change?.m5 ?? 0}%
                   </span>{" "}
                   |{" "}
                   <span
-                    className={getChangeColor(tokenInfo.token.change?.h1 ?? 0)}
+                    className={getChangeColor(tokenInfo.token?.change?.h1 ?? 0)}
                   >
-                    1hr: {tokenInfo.token.change?.h1 ?? 0}%
+                    1hr: {tokenInfo.token?.change?.h1 ?? 0}%
                   </span>{" "}
                   |{" "}
                   <span
-                    className={getChangeColor(tokenInfo.token.change?.h24 ?? 0)}
+                    className={getChangeColor(
+                      tokenInfo.token?.change?.h24 ?? 0
+                    )}
                   >
-                    24hrs: {tokenInfo.token.change?.h24 ?? 0}%
+                    24hrs: {tokenInfo.token?.change?.h24 ?? 0}%
                   </span>
                 </div>
               </div>
@@ -209,7 +211,7 @@ const TokenModal: React.FC<TokenModalProps> = ({
             <div className="grid grid-cols-2 gap-3 gap-y-12 my-8">
               <TokenInfoRow
                 label="Liquidity"
-                value={`$${formatNumber(tokenInfo.token.liquidityInUsd ?? 0)}`}
+                value={`$${formatNumber(tokenInfo.token?.liquidityInUsd ?? 0)}`}
               />
               <TokenInfoRow
                 label="Market Cap"
@@ -217,21 +219,21 @@ const TokenModal: React.FC<TokenModalProps> = ({
               />
               <TokenInfoRow
                 label="Volume (24h)"
-                value={`$${formatNumber(tokenInfo.token.volume?.h24 ?? 0)}`}
+                value={`$${formatNumber(tokenInfo.token?.volume?.h24 ?? 0)}`}
               />
               <TokenInfoRow
                 label="Price (USD)"
-                value={`$${formatDecimal(tokenInfo.token.priceUsd) ?? 0}`}
+                value={`$${formatDecimal(tokenInfo.token?.priceUsd) ?? 0}`}
               />
               {activePosition && (
                 <>
                   <TokenInfoRow
                     label="Capital"
-                    value={`$${formatNumber(tokenInfo.token.volume?.h24 ?? 0)}`}
+                    value={`$${tokenInfo.capital ?? 0} sol`}
                   />
                   <TokenInfoRow
                     label="PNL"
-                    value={`$${formatDecimal(tokenInfo.PNL_usd) ?? 0}`}
+                    value={`$${formatNumber(tokenInfo.PNL_usd ?? 0)}`}
                   />
                 </>
               )}
@@ -316,18 +318,21 @@ const TokenModal: React.FC<TokenModalProps> = ({
 
             {/* Social Links */}
             <div className="flex justify-center gap-4 mb-4">
-              {tokenInfo.token.websiteUrl && (
-                <Link href={tokenInfo.token.websiteUrl} target="_blank">
+              {tokenInfo.token?.websiteUrl && (
+                <Link href={tokenInfo.token?.websiteUrl ?? "#"} target="_blank">
                   <FaGlobe className="text-white text-lg" />
                 </Link>
               )}
-              {tokenInfo.token.telegramUrl && (
-                <Link href={tokenInfo.token.telegramUrl} target="_blank">
+              {tokenInfo.token?.telegramUrl && (
+                <Link
+                  href={tokenInfo.token?.telegramUrl ?? "#"}
+                  target="_blank"
+                >
                   <FaTelegramPlane className="text-white text-lg" />
                 </Link>
               )}
-              {tokenInfo.token.twitterUrl && (
-                <Link href={tokenInfo.token.twitterUrl} target="_blank">
+              {tokenInfo.token?.twitterUrl && (
+                <Link href={tokenInfo.token?.twitterUrl ?? "#"} target="_blank">
                   <FaTwitter className="text-white text-lg" />
                 </Link>
               )}
