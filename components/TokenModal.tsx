@@ -78,7 +78,7 @@ const TokenModal: React.FC<TokenModalProps> = ({
 
       const tokenData = await tokenResponse.json();
       if (tokenResponse.ok) {
-        setTokenInfo(tokenData.tokenDetails);
+        setTokenInfo(tokenData);
       } else {
         console.error("Error fetching token details:", tokenData.error);
       }
