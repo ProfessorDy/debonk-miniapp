@@ -66,49 +66,49 @@ const TokenModal: React.FC<TokenModalProps> = ({
   const userId = useTelegramUserStore((state) => state.userId);
   const tokenDetailsFetchedRef = useRef(false);
 
-  const fetchTokenDetails = useCallback(async () => {
+  // Fetch token details and active position in parallel
+  const fetchTokenAndPosition = useCallback(async () => {
     setLoading(true);
     try {
-      const response = await fetch(
-        `/api/getTokenDetails?tokenAddress=${tokenAddress}`
-      );
-      const data = await response.json();
-      if (response.ok) {
-        setTokenInfo(data.tokenDetails);
-      } else {
-        console.error("Error fetching token details:", data.error);
-      }
-    } catch (error) {
-      console.error("API Error:", error);
-    } finally {
-      setLoading(false);
-    }
-  }, [tokenAddress]);
+      const [tokenResponse, positions] = await Promise.all([
+        fetch(`/api/getTokenDetails?tokenAddress=${tokenAddress}`),
+        fetchUserPositions(userId),
+      ]);
 
-  const checkActivePosition = useCallback(async () => {
-    try {
-      const positions = await fetchUserPositions(userId);
+      const tokenData = await tokenResponse.json();
+      if (tokenResponse.ok) {
+        setTokenInfo(tokenData.tokenDetails);
+      } else {
+        console.error("Error fetching token details:", tokenData.error);
+      }
+
       const hasPosition = positions.some(
         (position: Position) => position.tokenAddress === tokenAddress
       );
       setActivePosition(hasPosition);
     } catch (error) {
-      console.error("Error checking active position:", error);
+      console.error("Error fetching token details or position:", error);
+    } finally {
+      setLoading(false);
     }
   }, [tokenAddress, userId]);
 
+  // Trigger loading state and fetch data when the modal is open
   useEffect(() => {
     if (isOpen && tokenAddress && !tokenDetailsFetchedRef.current) {
-      fetchTokenDetails();
-      checkActivePosition();
+      fetchTokenAndPosition();
       tokenDetailsFetchedRef.current = true;
     }
-  }, [isOpen, tokenAddress, checkActivePosition, fetchTokenDetails]);
+  }, [isOpen, tokenAddress, fetchTokenAndPosition]);
 
   const handleRefresh = () => {
     tokenDetailsFetchedRef.current = false;
-    fetchTokenDetails();
-    checkActivePosition();
+    fetchTokenAndPosition();
+  };
+
+  const handleTransactionStatus = (status: string) => {
+    setTransactionStatus(status);
+    setTimeout(() => setTransactionStatus(null), 3000); // Clear status after 3 seconds
   };
 
   const handleBuy = async (amount: number) => {
@@ -120,12 +120,12 @@ const TokenModal: React.FC<TokenModalProps> = ({
       );
       const result = await response.json();
       if (result.status) {
-        setTransactionStatus("Buy transaction successful!");
+        handleTransactionStatus("Buy transaction successful!");
       } else {
-        setTransactionStatus("Buy transaction failed.");
+        handleTransactionStatus("Buy transaction failed.");
       }
     } catch (error) {
-      setTransactionStatus("API error during buy.");
+      handleTransactionStatus("error during buy.");
       console.log("API error during buy", error);
     } finally {
       setBuying(false);
@@ -141,12 +141,12 @@ const TokenModal: React.FC<TokenModalProps> = ({
       );
       const result = await response.json();
       if (result.status) {
-        setTransactionStatus("Sell transaction successful!");
+        handleTransactionStatus("Sell transaction successful!");
       } else {
-        setTransactionStatus("Sell transaction failed.");
+        handleTransactionStatus("Sell transaction failed.");
       }
     } catch (error) {
-      setTransactionStatus("API error during sell.");
+      handleTransactionStatus("error during sell.");
       console.log("API error during sell", error);
     } finally {
       setSelling(false);
