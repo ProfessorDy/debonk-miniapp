@@ -118,58 +118,39 @@ const Home = () => {
     }
   };
 
+  // Inside the Home component
   useEffect(() => {
     const telegram = window.Telegram?.WebApp;
+    const cachedPositions = localStorage.getItem("positions");
+
+    if (cachedPositions) {
+      const parsedPositions = JSON.parse(cachedPositions);
+      setLivePositions(parsedPositions.live || []);
+      setSimulationPositions(parsedPositions.simulation || []);
+    }
 
     if (telegram?.initDataUnsafe?.user) {
       const { id: userId } = telegram.initDataUnsafe.user;
 
-      setUserId(userId.toString());
-
       const getSolData = async () => {
         setLoading(true);
         try {
+          // Fetch price, balance, and positions
           const price = await fetchSolPrice();
           setSolPrice(price);
 
-          const { balance, simulationBalance } = await fetchWalletBalance(
-            userId.toString()
-          );
-
-          const parsedLiveBalance = formatWalletBalance(balance) || 0;
-          const parsedSimulationBalance =
-            formatWalletBalance(simulationBalance) || 0;
-
-          setLiveBalance(parsedLiveBalance);
-          setSimulationBalance(parsedSimulationBalance);
-
-          // Set the balance based on the current trading mode
-          setWalletBalance(
-            isLiveTrading ? parsedLiveBalance : parsedSimulationBalance
-          );
-
-          const totalValueInUsd =
-            walletBalance && solPrice ? walletBalance * solPrice : 0;
-
-          setTotalValueInUsd(totalValueInUsd);
-
           const userPositions = await fetchUserPositions(userId.toString());
-          if (userPositions.length === 0) {
-            setLivePositions([]);
-            setSimulationPositions([]);
-            console.log("No active positions found.");
-          } else {
-            // Filter based on whether the position is for live trading or simulation
-            const live = userPositions.filter((position) => !position.isSim);
-            const simulation = userPositions.filter(
-              (position) => position.isSim
-            );
+          const live = userPositions.filter((position) => !position.isSim);
+          const simulation = userPositions.filter((position) => position.isSim);
 
-            setLivePositions(live);
-            setSimulationPositions(simulation);
-            console.log("Fetched Live Positions:", live);
-            console.log("Fetched Simulation Positions:", simulation);
-          }
+          // Store positions in localStorage for future use
+          localStorage.setItem(
+            "positions",
+            JSON.stringify({ live, simulation })
+          );
+
+          setLivePositions(live);
+          setSimulationPositions(simulation);
         } finally {
           setLoading(false);
         }
@@ -177,7 +158,7 @@ const Home = () => {
 
       getSolData();
     }
-  }, [solPrice, setWalletBalance, setUserId, isLiveTrading, walletBalance]);
+  }, [setLivePositions, setSimulationPositions]);
 
   useEffect(() => {
     console.log("Component mounted. Checking Telegram WebApp user data...");

@@ -95,8 +95,8 @@ const TokenModal: React.FC<TokenModalProps> = ({
       if (userPosition) {
         setActivePosition(true);
         setPosition({
-          capital: userPosition.capital, // Assuming the position has 'capital'
-          PNL_usd: userPosition.PNL_usd, // Assuming the position has 'PNL_usd'
+          capital: userPosition.capital,
+          PNL_usd: userPosition.PNL_usd,
         });
       } else {
         setActivePosition(false);
@@ -203,16 +203,17 @@ const TokenModal: React.FC<TokenModalProps> = ({
             <div className="flex justify-between items-center">
               <div>
                 <button className="text-xl text-left mb-2" onClick={handleCopy}>
-                  <span>{tokenInfo.name ?? "N/A"} </span>
-
-                  {copySuccess ? (
-                    <FaCheck className="text-[10px]" />
-                  ) : (
-                    <IoCopyOutline
-                      className="text-[10px]"
-                      title="Copy Address"
-                    />
-                  )}
+                  {tokenInfo.name ?? "N/A"}
+                  <span>
+                    {copySuccess ? (
+                      <FaCheck className="text-[10px]" />
+                    ) : (
+                      <IoCopyOutline
+                        className="text-[10px]"
+                        title="Copy Address"
+                      />
+                    )}
+                  </span>
                 </button>
 
                 <div className="text-sm mb-2">
@@ -259,7 +260,7 @@ const TokenModal: React.FC<TokenModalProps> = ({
                 <>
                   <TokenInfoRow
                     label="Capital"
-                    value={`$${position.capital ?? 0} sol`}
+                    value={`${position.capital ?? 0} sol`}
                   />
                   <TokenInfoRow
                     label="PNL"
