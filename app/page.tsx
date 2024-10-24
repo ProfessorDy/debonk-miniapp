@@ -57,7 +57,6 @@ const Home = () => {
         ? livePositions
         : simulationPositions;
 
-      // Find the position to sell
       const positionToSell = activePositions.find(
         (position) => position.tokenAddress === tokenAddress
       );
@@ -67,54 +66,50 @@ const Home = () => {
         return;
       }
 
-      // Optimistic Updates
-      const newPositions = activePositions.filter(
-        (position) => position.tokenAddress !== tokenAddress
+      // Set token to 'pending' state
+      const updatedPositions = activePositions.map((position) =>
+        position.tokenAddress === tokenAddress
+          ? { ...position, isPending: true }
+          : position
       );
-      const newWalletBalance =
-        walletBalance + (positionToSell.PNL_usd || 0) / solPrice;
-
-      const prevPositions = activePositions; // Backup previous positions
-      const prevWalletBalance = walletBalance; // Backup previous balance
-
-      // Update UI immediately (optimistic update)
-      if (isLiveTrading) {
-        setLivePositions(newPositions);
-      } else {
-        setSimulationPositions(newPositions);
-      }
-
-      setWalletBalance(newWalletBalance);
+      isLiveTrading
+        ? setLivePositions(updatedPositions)
+        : setSimulationPositions(updatedPositions);
 
       try {
         setSellLoading(true);
 
-        // Use the simulateSellToken utility function
         await simulateSellToken({
           telegramId: userId,
           tokenAddress,
-          amountPercent: 100, // Always sell the full amount
-          type: "PERCENT", // Type can be "PERCENT" or "AMOUNT"
+          amountPercent: 100,
+          type: "PERCENT",
         });
 
         toast.success(`${tokenName} sold successfully`);
-        console.log(`Token with address ${tokenAddress} sold successfully!`);
+
+        // Filter out sold token after successful sell
+        const newPositions = activePositions.filter(
+          (position) => position.tokenAddress !== tokenAddress
+        );
+        isLiveTrading
+          ? setLivePositions(newPositions)
+          : setSimulationPositions(newPositions);
       } catch (error) {
-        console.error("Error while selling token:", error);
         toast.error("Failed to sell the token.");
 
-        // Revert optimistic changes if the API call fails
-        if (isLiveTrading) {
-          setLivePositions(prevPositions);
-        } else {
-          setSimulationPositions(prevPositions);
-        }
-        setWalletBalance(prevWalletBalance);
+        // Revert 'pending' state in case of failure
+        const revertedPositions = activePositions.map((position) =>
+          position.tokenAddress === tokenAddress
+            ? { ...position, isPending: false }
+            : position
+        );
+        isLiveTrading
+          ? setLivePositions(revertedPositions)
+          : setSimulationPositions(revertedPositions);
       } finally {
         setSellLoading(false);
       }
-    } else {
-      toast.error("Telegram user data is not available.");
     }
   };
 
