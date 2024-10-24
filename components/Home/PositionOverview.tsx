@@ -57,29 +57,27 @@ const PositionOverview: React.FC<PositionOverviewProps> = ({
           {activePositions.map((position, idx) => (
             <div
               key={idx}
-              className="bg-[#3C3C3C3B] backdrop-blur-2xl px-2 py-1 flex justify-between cursor-pointer"
+              className="bg-[#3C3C3C3B] backdrop-blur-xl px-4 py-2 flex justify-between items-center cursor-pointer font-normal"
               onClick={() => handleCardClick(position)}
             >
               <div className="space-y-1">
-                <p className="text-base font-normal mb-1">
-                  {position.token.name}
-                </p>
+                <p className="text-xl">{position.token.name}</p>
                 <div>
                   <p className="font-normal">
-                    <span className="font-light"> MC </span>
+                    <span className="font-light"> MC{"  "}</span>
                     {position.token.mc
                       ? formatNumber(position.token.mc)
                       : "N/A"}
                   </p>
                   <p className="font-normal">
-                    <span className="font-light"> LIQ </span>
+                    <span className="font-light"> LIQ{"  "}</span>
                     {position.token.liquidityInUsd
                       ? formatNumber(position.token.liquidityInUsd)
                       : "N/A"}
                   </p>
                 </div>
               </div>
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-4">
                 <p
                   className={`font-light text-[9.45px] ${
                     position.PNL_Sol_percent &&
@@ -94,17 +92,20 @@ const PositionOverview: React.FC<PositionOverviewProps> = ({
                       }${Number(position.PNL_Sol_percent)}%`
                     : "N/A"}
                 </p>
-                <div className="text-sm text-center font-light">
+                <div className="text-xs text-center font-light">
                   <p>
                     {position.PNL_sol ? position.PNL_sol.toFixed(2) : "0.00"}{" "}
-                    SOL
+                    sol
                   </p>
                   <p className="font-light">
-                    ${position.PNL_usd ? position.PNL_usd.toFixed(2) : "0.00"}
+                    $
+                    {position.PNL_usd
+                      ? Math.abs(position.PNL_usd).toFixed(2)
+                      : "0.00"}
                   </p>
                 </div>
                 <button
-                  className={`text-center py-[9.45px] text-[9.45px] rounded-[6.3px] bg-[#E82E2E] text-white w-[60px] ${
+                  className={`text-center py-[9.45px] px-2 text-[9.45px] rounded-[6.3px] bg-[#E82E2E] text-white w-[60px] ${
                     sellLoading ? "opacity-50 cursor-not-allowed" : ""
                   }`}
                   onClick={(e) => {
