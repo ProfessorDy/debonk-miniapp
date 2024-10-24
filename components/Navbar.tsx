@@ -1,7 +1,3 @@
-/* eslint-disable */
-
-"use client";
-
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -30,8 +26,11 @@ const Navbar = () => {
   const [tokenInput, setTokenInput] = useState("");
   const pathname = usePathname();
 
-  const showContractInput = pathname === "/" || pathname === "/positions";
   const showReferralSection = pathname === "/referrals";
+
+  // Update to also check if the modal is not open
+  const showContractInput =
+    (pathname === "/" || pathname === "/positions") && !isPasteModalOpen;
 
   const handlePaste = async () => {
     const clipboardText = await pasteFromClipboard();

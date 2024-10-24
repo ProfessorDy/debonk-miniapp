@@ -15,6 +15,7 @@ import { fetchUserPositions } from "@/utils/apiUtils";
 import { Position } from "@prisma/client";
 import { copyToClipboard } from "@/utils/clipboardUtils";
 import { TokenDetails } from "@/actions/types";
+import { useRouter } from "next/navigation";
 
 interface TokenModalProps {
   isOpen: boolean;
@@ -65,6 +66,7 @@ const TokenModal: React.FC<TokenModalProps> = ({
 
   const userId = useTelegramUserStore((state) => state.userId);
   const tokenDetailsFetchedRef = useRef(false);
+  const router = useRouter();
 
   const handleCopy = () => {
     copyToClipboard(tokenAddress);
