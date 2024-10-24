@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import { Open_Sans } from "next/font/google";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
@@ -7,12 +6,6 @@ import "./globals.css";
 import Navbar from "@/components/Navbar";
 import Header from "@/components/Header";
 import Script from "next/script";
-
-const openSans = Open_Sans({
-  subsets: ["latin"],
-  variable: "--font-open-sans",
-  weight: ["300", "400", "500", "600", "700", "800"],
-});
 
 export const metadata: Metadata = {
   title: "Debonk miniapp",
@@ -33,7 +26,7 @@ export default function RootLayout({
         />
         <meta httpEquiv="Permissions-Policy" content="clipboard-read=*" />
       </head>
-      <body className={`${openSans.variable} antialiased`}>
+      <body className="antialiased">
         <Header />
         {children}
         <ToastContainer position="bottom-center" autoClose={2000} />

@@ -15,6 +15,7 @@ const config: Config = {
         foreground: "var(--foreground)",
       },
       fontFamily: {
+        sans: ['"Open Sans"', 'Arial', 'Helvetica', 'sans-serif'],
         poppins: ['Poppins', 'sans-serif'],  
       },
     },

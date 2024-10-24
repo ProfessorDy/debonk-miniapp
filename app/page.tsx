@@ -296,7 +296,7 @@ const Home = () => {
             <ActionButtons buttons={actionButtons} />
           </section>
 
-          <section>
+          <section className="mb-5 bg-[#3C3C3C3B] backdrop-blur-2xl border-[#0493CC] border-[.5px] py-3 px-5 rounded-[6.3px]">
             <PositionOverview
               livePositions={livePositions}
               simulationPositions={simulationPositions}

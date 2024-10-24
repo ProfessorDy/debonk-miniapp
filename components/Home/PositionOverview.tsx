@@ -51,13 +51,13 @@ const PositionOverview: React.FC<PositionOverviewProps> = ({
 
   return (
     <>
-      <section className="mt-2 text-white shadow-lg rounded-xl pb-20 p-3">
+      <section className="mt-2 text-white pb-20">
         <p className="text-xs font-light">Positions Overview</p>
         <div className="flex flex-col gap-2 mt-3">
           {activePositions.map((position, idx) => (
             <div
               key={idx}
-              className="bg-[#3C3C3C3B] backdrop-blur-2xl px-4 py-2 flex justify-between cursor-pointer"
+              className="bg-[#3C3C3C3B] backdrop-blur-2xl px-2 py-1 flex justify-between cursor-pointer"
               onClick={() => handleCardClick(position)}
             >
               <div className="space-y-1">
