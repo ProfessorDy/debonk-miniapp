@@ -23,11 +23,14 @@ const Withdraw = () => {
   const [availableBalance, setAvailableBalance] = useState(0.0);
   const [isSolMode, setIsSolMode] = useState(true);
   const [amountError, setAmountError] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const MIN_WITHDRAW_AMOUNT = 0.0001;
 
   useEffect(() => {
     const getSolData = async () => {
+      setIsLoading(true);
       try {
         const price = await fetchSolPrice();
         setSolPrice(price);
@@ -38,13 +41,16 @@ const Withdraw = () => {
         setAvailableBalance(formatWalletBalance(parsedBalance));
       } catch (error) {
         console.error("Error fetching SOL price or balance", error);
+      } finally {
+        setIsLoading(false);
       }
     };
 
     getSolData();
   }, [userId]);
 
-  const handleConfirmAndSend = async () => {
+  const handleConfirmAndSend = useCallback(async () => {
+    setIsSubmitting(true);
     try {
       const response = await fetch(
         `/api/withdrawSol?telegramId=${userId}&amount=${amountInSol}&destinationAddress=${walletAddress}`
@@ -57,10 +63,12 @@ const Withdraw = () => {
       }
     } catch (error) {
       console.error("Error while processing withdrawal:", error);
+    } finally {
+      setIsSubmitting(false);
     }
-  };
+  }, [userId, amountInSol, walletAddress]);
 
-  const validateAddress = (address: string) => {
+  const validateAddress = useCallback((address: string) => {
     try {
       const pubKey = new PublicKey(address);
       if (PublicKey.isOnCurve(pubKey)) {
@@ -75,22 +83,25 @@ const Withdraw = () => {
       console.log("Invalid sol address", error);
       return false;
     }
-  };
+  }, []);
 
-  const validateAmount = (amount: number) => {
-    if (amount < MIN_WITHDRAW_AMOUNT) {
-      setAmountError(`Minimum withdrawal is ${MIN_WITHDRAW_AMOUNT} SOL.`);
-      return false;
-    } else if (amount > availableBalance) {
-      setAmountError("Insufficient funds.");
-      return false;
-    } else {
-      setAmountError("");
-      return true;
-    }
-  };
+  const validateAmount = useCallback(
+    (amount: number) => {
+      if (amount < MIN_WITHDRAW_AMOUNT) {
+        setAmountError(`Minimum withdrawal is ${MIN_WITHDRAW_AMOUNT} SOL.`);
+        return false;
+      } else if (amount > availableBalance) {
+        setAmountError("Insufficient funds.");
+        return false;
+      } else {
+        setAmountError("");
+        return true;
+      }
+    },
+    [availableBalance]
+  );
 
-  const handleNextStep = () => {
+  const handleNextStep = useCallback(() => {
     if (step === 1 && validateAddress(walletAddress)) {
       setStep(2);
     } else if (step === 2 && validateAmount(amountInSol)) {
@@ -98,36 +109,48 @@ const Withdraw = () => {
     } else if (step === 3) {
       router.push("/");
     }
-  };
+  }, [
+    step,
+    walletAddress,
+    amountInSol,
+    validateAddress,
+    validateAmount,
+    handleConfirmAndSend,
+    router,
+  ]);
 
-  const handlePreviousStep = () => {
+  const handlePreviousStep = useCallback(() => {
     if (step === 2) {
       setStep(1);
     } else {
       router.push("/");
     }
-  };
+  }, [step, router]);
 
-  const toggleCurrencyMode = () => {
+  const toggleCurrencyMode = useCallback(() => {
     setIsSolMode(!isSolMode);
-  };
+  }, [isSolMode]);
 
-  const handleAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const inputValue = parseFloat(e.target.value) || 0;
-    if (inputValue < 0) {
-      return; // Prevent negative numbers
-    }
+  const handleAmountChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const inputValue = parseFloat(e.target.value) || 0;
+      if (inputValue < 0) {
+        return; // Prevent negative numbers
+      }
 
-    if (isSolMode) {
-      setAmountInSol(inputValue);
-      setAmountInUsd(inputValue * solPrice);
-    } else {
-      setAmountInUsd(inputValue);
-      setAmountInSol(inputValue / solPrice);
-    }
+      if (isSolMode) {
+        setAmountInSol(inputValue);
+        setAmountInUsd(inputValue * solPrice);
+      } else {
+        setAmountInUsd(inputValue);
+        setAmountInSol(inputValue / solPrice);
+      }
 
-    validateAmount(inputValue);
-  };
+      validateAmount(inputValue);
+    },
+    [isSolMode, solPrice, validateAmount]
+  );
+
   // Handle the paste event
   const handleOnPaste = useCallback(
     (event: React.ClipboardEvent<HTMLTextAreaElement>) => {
@@ -139,13 +162,13 @@ const Withdraw = () => {
     []
   );
 
-  const handleAddressInput = () => {
+  const handleAddressInput = useCallback(() => {
     if (walletAddress) {
       setWalletAddress(""); // Clear the address
     } else {
       navigator.clipboard.readText().then((text) => setWalletAddress(text));
     }
-  };
+  }, [walletAddress]);
 
   const renderStepOne = () => (
     <div className="bg-[#3C3C3C3B] backdrop-blur-2xl border-[#0493CC] border-[.5px] text-white shadow-lg rounded-xl p-3 h-[50vh] my-auto">
@@ -159,7 +182,8 @@ const Withdraw = () => {
             onBlur={() => validateAddress(walletAddress)}
             onPaste={handleOnPaste}
             placeholder="Enter wallet address"
-            className="bg-background text-white w-full   rounded-md focus:outline-none resize-none "
+            className="bg-background text-white w-full rounded-md focus:outline-none resize-none"
+            disabled={isLoading || isSubmitting}
           />
         </label>
 
@@ -167,6 +191,7 @@ const Withdraw = () => {
           className="text-primary"
           onClick={handleAddressInput}
           onTouchStart={handleAddressInput}
+          disabled={isLoading || isSubmitting}
         >
           {walletAddress ? <IoClose size={18} /> : <span>Paste</span>}
         </button>
@@ -196,7 +221,7 @@ const Withdraw = () => {
               : `${amountInSol.toFixed(2)} SOL`}
           </div>
 
-          <button onClick={toggleCurrencyMode}>
+          <button onClick={toggleCurrencyMode} disabled={isSubmitting}>
             <CgArrowsExchangeV className="bg-black text-accent" size={28} />
           </button>
 
@@ -210,6 +235,7 @@ const Withdraw = () => {
                   onChange={handleAmountChange}
                   placeholder="Amount in SOL"
                   min={MIN_WITHDRAW_AMOUNT} // Minimum allowed amount
+                  disabled={isSubmitting}
                 />
                 <span className="text-xl text-white font-bold">SOL</span>
               </>
@@ -222,6 +248,7 @@ const Withdraw = () => {
                   value={amountInUsd}
                   onChange={handleAmountChange}
                   placeholder="Amount in USD"
+                  disabled={isSubmitting}
                 />
               </>
             )}
@@ -235,6 +262,7 @@ const Withdraw = () => {
         <button
           onClick={() => setAmountInSol(availableBalance)}
           className="bg-background px-4 py-2 rounded-md"
+          disabled={isSubmitting}
         >
           MAX
         </button>
@@ -266,7 +294,7 @@ const Withdraw = () => {
 
   const renderButtonText = () => {
     if (step === 1) return "Continue";
-    if (step === 2) return "Send";
+    if (step === 2) return isSubmitting ? "Sending..." : "Send";
     if (step === 3) return "Close";
   };
 
@@ -296,11 +324,15 @@ const Withdraw = () => {
         <button
           onClick={handleNextStep}
           className={`${
-            step !== 3 && (!walletAddress || addressError)
-              ? "bg-accent text-black"
+            step !== 3 &&
+            (!walletAddress || addressError || isSubmitting || isLoading)
+              ? "bg-gray-400 text-black cursor-not-allowed"
               : "bg-black border border-accent text-accent"
-          }   py-5 rounded-xl w-full text-center font-poppins mt-2`}
-          disabled={step === 1 && (!walletAddress || !!addressError)}
+          } py-5 rounded-xl w-full text-center font-poppins mt-2`}
+          disabled={
+            step === 1 &&
+            (!walletAddress || !!addressError || isSubmitting || isLoading)
+          }
         >
           {renderButtonText()}
         </button>
