@@ -26,26 +26,22 @@ import WalletInfo from "@/components/Home/WalletInfo";
 const Home = () => {
   const { walletAddress, setWalletAddress } = useWalletAddressStore();
   const { setUserId } = useTelegramUserStore();
-  const { isLiveTrading, toggleLiveTrading } = useLiveTradingStore();
+  const { isLiveTrading } = useLiveTradingStore();
   const [unrealizedPNL, setUnrealizedPNL] = useState(-0.0);
   const [unrealizedPNLUSD, setUnrealizedPNLUSD] = useState(-0.0);
   const [isDepositModalOpen, setIsDepositModalOpen] = useState(false);
   const [liveBalance, setLiveBalance] = useState<number>(0);
   const [simulationBalance, setSimulationBalance] = useState<number>(0);
   const [solPrice, setSolPrice] = useState<number | null>(null);
-  const [walletBalance, setWalletBalance] = useState<number>(0);
-  const [totalValueInUsd, setTotalValueInUsd] = useState<number | null>(null);
   const [livePositions, setLivePositions] = useState<TokenDataArray>([]);
   const [simulationPositions, setSimulationPositions] =
     useState<TokenDataArray>([]);
   const [loading, setLoading] = useState(true);
   const [copySuccess, setCopySuccess] = useState(false);
+  const [sellLoading, setSellLoading] = useState(false);
   const router = useRouter();
 
   const DepositModal = dynamic(() => import("@/components/DepositModal"));
-
-  // Add loading state for selling action
-  const [sellLoading, setSellLoading] = useState(false);
 
   const handleSell = async (tokenAddress: string, tokenName: string) => {
     const telegram = window.Telegram?.WebApp;
@@ -66,7 +62,7 @@ const Home = () => {
         return;
       }
 
-      // Set token to 'pending' state
+      // Optimistic update: Set token to 'pending' state
       const updatedPositions = activePositions.map((position) =>
         position.tokenAddress === tokenAddress
           ? { ...position, isPending: true }
@@ -113,36 +109,37 @@ const Home = () => {
     }
   };
 
-  // Inside the Home component
   useEffect(() => {
     const telegram = window.Telegram?.WebApp;
-    const cachedPositions = localStorage.getItem("positions");
-
-    if (cachedPositions) {
-      const parsedPositions = JSON.parse(cachedPositions);
-      setLivePositions(parsedPositions.live || []);
-      setSimulationPositions(parsedPositions.simulation || []);
-    }
 
     if (telegram?.initDataUnsafe?.user) {
       const { id: userId } = telegram.initDataUnsafe.user;
+      setUserId(userId.toString());
 
-      const getSolData = async () => {
+      const fetchData = async () => {
         setLoading(true);
+
         try {
-          // Fetch price, balance, and positions
-          const price = await fetchSolPrice();
+          // Fetch price, balance, and positions concurrently
+          const [price, walletData, userPositions] = await Promise.all([
+            fetchSolPrice(),
+            fetchWalletBalance(userId.toString()),
+            fetchUserPositions(userId.toString()),
+          ]);
+
           setSolPrice(price);
 
-          const userPositions = await fetchUserPositions(userId.toString());
+          const parsedLiveBalance =
+            formatWalletBalance(walletData.balance) || 0;
+          const parsedSimulationBalance =
+            formatWalletBalance(walletData.simulationBalance) || 0;
+
+          setLiveBalance(parsedLiveBalance);
+          setSimulationBalance(parsedSimulationBalance);
+
+          // Filter live and simulation positions
           const live = userPositions.filter((position) => !position.isSim);
           const simulation = userPositions.filter((position) => position.isSim);
-
-          // Store positions in localStorage for future use
-          localStorage.setItem(
-            "positions",
-            JSON.stringify({ live, simulation })
-          );
 
           setLivePositions(live);
           setSimulationPositions(simulation);
@@ -151,29 +148,23 @@ const Home = () => {
         }
       };
 
-      getSolData();
+      fetchData();
     }
-  }, [setLivePositions, setSimulationPositions]);
+  }, [isLiveTrading]);
 
   useEffect(() => {
-    console.log("Component mounted. Checking Telegram WebApp user data...");
-
     const telegram = window.Telegram?.WebApp;
     if (telegram?.initDataUnsafe?.user) {
       const { id: userId } = telegram.initDataUnsafe.user;
 
-      // Use dynamic URL for the API request
       const apiUrl = `/api/getAddressFromTelegramId?telegramId=${userId}`;
-      console.log("apiUrl", apiUrl);
-      console.log("Fetching Solana wallet address for Telegram ID:", userId);
 
-      // Fetch Solana address for the user
       fetch(apiUrl)
         .then(async (response) => {
           const contentType = response.headers.get("content-type");
 
           if (!response.ok) {
-            const errorText = await response.text(); // Get HTML error page if any
+            const errorText = await response.text();
             throw new Error(`Error ${response.status}: ${errorText}`);
           }
 
@@ -186,7 +177,6 @@ const Home = () => {
         .then((data) => {
           if (data.address) {
             setWalletAddress(data.address);
-            console.log("Wallet address set:", data.address);
           } else {
             console.log("Error fetching Solana address:", data.error);
           }
@@ -194,27 +184,8 @@ const Home = () => {
         .catch((err) => {
           console.error("Error fetching address:", err);
         });
-    } else {
-      console.log("No Telegram user data available.");
     }
   }, [setWalletAddress]);
-
-  // Toggle between live and simulation balances when trading mode changes
-  useEffect(() => {
-    setWalletBalance(isLiveTrading ? liveBalance : simulationBalance);
-
-    const totalValue =
-      (isLiveTrading ? liveBalance : simulationBalance) * solPrice;
-    setTotalValueInUsd(totalValue);
-  }, [isLiveTrading, liveBalance, simulationBalance, solPrice]);
-
-  const handleOpenDepositModal = () => setIsDepositModalOpen(true);
-  const handleCloseDepositModal = () => setIsDepositModalOpen(false);
-  const handleCopy = () => {
-    copyToClipboard(walletAddress);
-    setCopySuccess(true);
-    setTimeout(() => setCopySuccess(false), 2000);
-  };
 
   useEffect(() => {
     if (isLiveTrading) {
@@ -264,6 +235,14 @@ const Home = () => {
     }
   }, [livePositions, simulationPositions, isLiveTrading]);
 
+  const handleOpenDepositModal = () => setIsDepositModalOpen(true);
+  const handleCloseDepositModal = () => setIsDepositModalOpen(false);
+  const handleCopy = () => {
+    copyToClipboard(walletAddress);
+    setCopySuccess(true);
+    setTimeout(() => setCopySuccess(false), 2000);
+  };
+
   const handleRefresh = () => window.location.reload();
   const handleWithdraw = () => router.push(`/withdraw`);
 
@@ -285,6 +264,9 @@ const Home = () => {
     },
   ];
 
+  const walletBalance = isLiveTrading ? liveBalance : simulationBalance;
+  const totalValueInUsd = walletBalance * (solPrice || 0);
+
   return (
     <>
       {loading ? (
@@ -294,37 +276,37 @@ const Home = () => {
           className="pt-0 p-3 pb-20 bg-black min-h-screen bg-repeat-y relative"
           style={{ backgroundImage: "url('/Rectangle.png')" }}
         >
-          <section className="mb-5 bg-[#3C3C3C3B] backdrop-blur-2xl border-[#0493CC] border-[.5px] text-white shadow-lg rounded-xl p-3">
-            {/* Wallet Address Section */}
+          <section className="mb-5 bg-[#3C3C3C3B] backdrop-blur-2xl border-[#0493CC] border-[.5px] py-3 px-5 rounded-[6.3px]">
             <WalletInfo
-              walletAddress={walletAddress}
+              walletBalance={walletBalance}
+              totalValueInUsd={totalValueInUsd}
               unrealizedPNL={unrealizedPNL}
               unrealizedPNLUSD={unrealizedPNLUSD}
-              walletBalance={isLiveTrading ? liveBalance : simulationBalance}
-              totalValueInUsd={totalValueInUsd}
-              isLiveTrading={isLiveTrading}
-              handleCopy={handleCopy}
-              toggleLiveTrading={toggleLiveTrading}
+              walletAddress={walletAddress}
               copySuccess={copySuccess}
+              handleCopy={handleCopy}
             />
-
-            {/* Action Buttons */}
             <ActionButtons buttons={actionButtons} />
           </section>
-          {/* Positions Overview */}
-          <PositionOverview
-            positions={isLiveTrading ? livePositions : simulationPositions}
-            isLiveTrading={isLiveTrading}
-            sellLoading={sellLoading}
-            handleSell={handleSell}
-          />
 
-          <DepositModal
-            isOpen={isDepositModalOpen}
-            onClose={handleCloseDepositModal}
-            walletAddress={walletAddress}
-          />
+          <section>
+            <PositionOverview
+              livePositions={livePositions}
+              simulationPositions={simulationPositions}
+              handleSell={handleSell}
+              isLiveTrading={isLiveTrading}
+              sellLoading={sellLoading}
+            />
+          </section>
         </main>
+      )}
+
+      {isDepositModalOpen && (
+        <DepositModal
+          isOpen={isDepositModalOpen}
+          onClose={handleCloseDepositModal}
+          walletAddress={walletAddress}
+        />
       )}
     </>
   );

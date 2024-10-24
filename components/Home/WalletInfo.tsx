@@ -1,8 +1,9 @@
-import React from "react";
+import React, { useMemo, useCallback } from "react";
 import { CiCircleAlert } from "react-icons/ci";
 import { GiPlainCircle } from "react-icons/gi";
 import { FaCheck, FaFlask, FaPlayCircle } from "react-icons/fa";
 import { IoCopyOutline } from "react-icons/io5";
+import useLiveTradingStore from "@/store/useLiveTradingStore";
 
 interface WalletInfoProps {
   walletAddress: string;
@@ -11,8 +12,6 @@ interface WalletInfoProps {
   walletBalance: number;
   totalValueInUsd: number | null;
   handleCopy: () => void;
-  isLiveTrading: boolean;
-  toggleLiveTrading: () => void;
   copySuccess: boolean;
 }
 
@@ -23,23 +22,41 @@ const WalletInfo: React.FC<WalletInfoProps> = ({
   walletBalance,
   totalValueInUsd,
   handleCopy,
-  isLiveTrading,
-  toggleLiveTrading,
   copySuccess,
 }) => {
+  const { isLiveTrading, toggleLiveTrading } = useLiveTradingStore();
+  // Memoizing values that don't change often to avoid recalculation
+  const formattedWalletAddress = useMemo(
+    () => `${walletAddress.slice(0, 6)}...${walletAddress.slice(-4)}`,
+    [walletAddress]
+  );
+
+  const pnlClassName = useMemo(
+    () => (unrealizedPNL >= 0 ? "text-green-500" : "text-red-500"),
+    [unrealizedPNL]
+  );
+
+  const totalValueDisplay = useMemo(
+    () =>
+      totalValueInUsd !== null ? `$${totalValueInUsd.toFixed(2)}` : "$0.00",
+    [totalValueInUsd]
+  );
+
+  const handleCopyMemo = useCallback(() => {
+    handleCopy();
+  }, [handleCopy]);
+
+  const toggleLiveTradingMemo = useCallback(() => {
+    toggleLiveTrading();
+  }, [toggleLiveTrading]);
+
   return (
     <>
       <div className="flex justify-between items-start">
         <div>
           <p className="text-sm font-light">
             Unrealized PNL:{" "}
-            <span
-              className={`${
-                unrealizedPNL >= 0 ? "text-green-500" : "text-red-500"
-              }`}
-            >
-              {unrealizedPNL.toFixed(2)}%
-            </span>
+            <span className={pnlClassName}>{unrealizedPNL.toFixed(2)}%</span>
           </p>
           <p className="text-xs text-primary font-light ">
             $ {unrealizedPNLUSD.toFixed(2)}
@@ -47,7 +64,7 @@ const WalletInfo: React.FC<WalletInfoProps> = ({
         </div>
         <button
           className="flex gap-1 items-center text-xs text-accent rounded-xl bg-black border border-accent px-3 py-1"
-          onClick={toggleLiveTrading}
+          onClick={toggleLiveTradingMemo}
         >
           {isLiveTrading ? (
             <>
@@ -64,11 +81,9 @@ const WalletInfo: React.FC<WalletInfoProps> = ({
       <div className="flex flex-col items-center justify-center">
         <p
           className="flex gap-1 relative text-sm items-baseline text-primary cursor-pointer"
-          onClick={handleCopy}
+          onClick={handleCopyMemo}
         >
-          <span>{`${walletAddress.slice(0, 6)}...${walletAddress.slice(
-            -4
-          )}`}</span>
+          <span>{formattedWalletAddress}</span>
           {copySuccess ? (
             <FaCheck className="text-[10px]" />
           ) : (
@@ -77,10 +92,7 @@ const WalletInfo: React.FC<WalletInfoProps> = ({
         </p>
         <h2 className="text-[34px] ">{walletBalance} SOL</h2>
         <p className="text-primary flex gap-[2px] items-center">
-          {totalValueInUsd !== null
-            ? `$${totalValueInUsd.toFixed(2)}`
-            : "$0.00"}{" "}
-          <CiCircleAlert className="text-xs" />
+          {totalValueDisplay} <CiCircleAlert className="text-xs" />
         </p>
       </div>
 
