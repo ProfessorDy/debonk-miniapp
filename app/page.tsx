@@ -68,9 +68,11 @@ const Home = () => {
           ? { ...position, isPending: true }
           : position
       );
-      isLiveTrading
-        ? setLivePositions(updatedPositions)
-        : setSimulationPositions(updatedPositions);
+      if (isLiveTrading) {
+        setLivePositions(updatedPositions);
+      } else {
+        setSimulationPositions(updatedPositions);
+      }
 
       try {
         setSellLoading(true);
@@ -88,10 +90,13 @@ const Home = () => {
         const newPositions = activePositions.filter(
           (position) => position.tokenAddress !== tokenAddress
         );
-        isLiveTrading
-          ? setLivePositions(newPositions)
-          : setSimulationPositions(newPositions);
+        if (isLiveTrading) {
+          setLivePositions(newPositions);
+        } else {
+          setSimulationPositions(newPositions);
+        }
       } catch (error) {
+        console.log("Failed to sell the token.", error);
         toast.error("Failed to sell the token.");
 
         // Revert 'pending' state in case of failure
@@ -100,9 +105,11 @@ const Home = () => {
             ? { ...position, isPending: false }
             : position
         );
-        isLiveTrading
-          ? setLivePositions(revertedPositions)
-          : setSimulationPositions(revertedPositions);
+        if (isLiveTrading) {
+          setLivePositions(revertedPositions);
+        } else {
+          setSimulationPositions(revertedPositions);
+        }
       } finally {
         setSellLoading(false);
       }
@@ -150,7 +157,7 @@ const Home = () => {
 
       fetchData();
     }
-  }, [isLiveTrading]);
+  }, [isLiveTrading, setUserId]);
 
   useEffect(() => {
     const telegram = window.Telegram?.WebApp;
