@@ -3,6 +3,7 @@ import { IoClose, IoCopyOutline } from "react-icons/io5";
 import { QRCodeSVG } from "qrcode.react";
 import { FaCheck } from "react-icons/fa";
 import { copyToClipboard } from "@/utils/clipboardUtils";
+import { toast } from "react-toastify";
 
 interface DepositModalProps {
   isOpen: boolean;
@@ -29,7 +30,9 @@ const DepositModal: React.FC<DepositModalProps> = ({
         console.error("Error sharing address:", error);
       }
     } else {
-      alert("Sharing is not supported in your browser.");
+      toast.info(
+        "Sharing is not supported on your device. Please copy the wallet address below and paste it into your preferred app to share it manually"
+      );
     }
   };
 
