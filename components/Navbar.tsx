@@ -33,12 +33,45 @@ const Navbar = () => {
     (pathname === "/" || pathname === "/positions") && !isPasteModalOpen;
 
   const handlePaste = async () => {
-    const clipboardText = await pasteFromClipboard();
-    if (clipboardText) {
-      setTokenInput(clipboardText);
-      setIsPasteModalOpen(true); // Open modal immediately after pasting
-      toast.success("Successfully pasted from clipboard!");
+    try {
+      if (
+        navigator.clipboard &&
+        typeof navigator.clipboard.readText === "function"
+      ) {
+        // Use the modern Clipboard API if available
+        const clipboardText = await navigator.clipboard.readText();
+        if (clipboardText) {
+          setTokenInput(clipboardText);
+          setIsPasteModalOpen(true);
+          toast.success("Successfully pasted from clipboard!");
+        }
+      } else {
+        // Silent fallback
+        handlePasteFallback();
+      }
+    } catch (error) {
+      // Silent failure handling, fallback will take over
+      handlePasteFallback();
     }
+  };
+
+  const handlePasteFallback = () => {
+    const pasteEvent = (event) => {
+      const clipboardText = event.clipboardData?.getData("text") || "";
+      if (clipboardText) {
+        setTokenInput(clipboardText);
+        setIsPasteModalOpen(true);
+        toast.success("Pasted from clipboard!");
+      }
+    };
+
+    // Listen for the paste event to capture clipboard data
+    document.addEventListener("paste", pasteEvent);
+
+    // Automatically remove the event listener after a short time
+    setTimeout(() => {
+      document.removeEventListener("paste", pasteEvent);
+    }, 5000);
   };
 
   useEffect(() => {
